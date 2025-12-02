@@ -1,0 +1,1 @@
+"""Projudi bot exceptions."""
