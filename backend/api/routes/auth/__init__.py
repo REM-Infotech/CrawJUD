@@ -1,0 +1,104 @@
+"""Módulo de controle das rotas de autenticação da API."""
+
+from __future__ import annotations
+
+import traceback
+from typing import TYPE_CHECKING
+
+from flask import (
+    Blueprint,
+    Response,
+    abort,
+    current_app,
+    jsonify,
+    make_response,
+    request,
+)
+from flask_jwt_extended import (
+    create_access_token,
+    set_access_cookies,
+    unset_jwt_cookies,
+)
+from werkzeug.exceptions import HTTPException
+
+from api.models import User
+
+if TYPE_CHECKING:
+    from flask_sqlalchemy import SQLAlchemy
+
+auth = Blueprint("auth", __name__, url_prefix="/auth")
+
+
+@auth.post("/login")
+def login() -> Response:
+    """Rota de autenticação da api.
+
+    Returns:
+        Response: Response da autenticação
+
+    """
+    try:
+        db: SQLAlchemy = current_app.extensions["sqlalchemy"]
+        data = request.get_json(force=True)  # força o parsing do JSON
+
+        # Verifica se os campos obrigatórios estão presentes
+        if not data or not data.get("login") or not data.get("password"):
+            abort(400, description="Login e senha são obrigatórios.")
+
+        user = db.session.query(User).filter_by(login=data["login"]).first()
+        authenticated = User.authenticate(
+            data["login"],
+            data["password"],
+        )
+        if not authenticated:
+            return make_response(
+                jsonify({"message": "Credenciais inválidas"}),
+                401,
+            )
+
+        if not user:
+            return make_response(
+                jsonify({"message": "Usuário não encontrado."}),
+                401,
+            )
+
+        response = make_response(
+            jsonify(message="Login efetuado com sucesso!"),
+            200,
+        )
+        access_token = create_access_token(identity=str(user.Id))
+        set_access_cookies(
+            response=response,
+            encoded_access_token=access_token,
+        )
+
+    except HTTPException as e:
+        response = make_response(
+            jsonify({
+                "name": e.name,
+                "status": e.code,
+                "message": e.description,
+            }),
+            e.code,
+        )
+
+    except Exception as e:
+        _exc = traceback.format_exception(e)
+        abort(500)
+
+    return response
+
+
+@auth.route("/logout", methods=["POST"])
+def logout() -> Response:
+    """Rota de logout.
+
+    Returns:
+        Response: Response do logout.
+
+    """
+    response = make_response(
+        jsonify(message="Logout efetuado com sucesso!"),
+    )
+    unset_jwt_cookies(response)
+    return response
