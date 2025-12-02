@@ -1,5 +1,5 @@
 ---
-applyTo: "api/**/*.md task_manager/**/*.md"
+applyTo: "backend.api/**/*.md task_manager/**/*.md"
 ---
 
 # Project documentation writing guidelines

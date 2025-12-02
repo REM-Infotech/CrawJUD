@@ -21,7 +21,7 @@ from flask_jwt_extended import (
 )
 from werkzeug.exceptions import HTTPException
 
-from api.models import User
+from backend.api.models import User
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy

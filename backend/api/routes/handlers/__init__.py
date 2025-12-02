@@ -10,13 +10,13 @@ from typing import TYPE_CHECKING
 
 from flask_socketio import join_room
 
-from api.extensions import io
+from backend.api.extensions import io
 
 from . import filehandler
 
 if TYPE_CHECKING:
-    from api.interfaces import Message
-    from api.types_app import AnyType
+    from backend.api.interfaces import Message
+    from backend.api.types_app import AnyType
 
 lock = Lock()
 

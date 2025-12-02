@@ -18,19 +18,19 @@ from flask import (
 )
 from flask_jwt_extended import get_current_user, jwt_required
 
-from api._forms.head import FormBot
-from api.constants import SISTEMAS
-from api.decorators import CrossDomain
-from api.resources import gerar_id
+from backend.api._forms.head import FormBot
+from backend.api.constants import SISTEMAS
+from backend.api.decorators import CrossDomain
+from backend.api.resources import gerar_id
 
 if TYPE_CHECKING:
-    from api.extensions._minio import Minio
-    from api.models import User
+    from backend.api.extensions._minio import Minio
+    from backend.api.models import User
+    from backend.api.types_app import Sistemas
     from backend.task_manager.types_app.responses import (
         PayloadDownloadExecucao,
         Response,
     )
-    from api.types_app import Sistemas
 
 bots = Blueprint("bots", __name__, url_prefix="/bot")
 

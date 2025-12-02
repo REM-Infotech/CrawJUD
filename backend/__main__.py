@@ -11,10 +11,10 @@ from os import environ
 from threading import Thread
 from typing import TYPE_CHECKING
 
-from api import create_app
 from celery.apps.worker import Worker
 from clear import clear
 
+from backend.api import create_app
 from backend.task_manager import app as celery_app
 
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ port: int = int(environ.get("FLASK_PORT", FLASK_PORT)) or FLASK_PORT
 # Obtenha a extensão SocketIO da aplicação
 io: SocketIO = app.extensions["socketio"]
 # Importe rotas para garantir o registro
-importlib.import_module("api.routes", __package__)
+importlib.import_module("backend.api.routes", __package__)
 clear()
 
 

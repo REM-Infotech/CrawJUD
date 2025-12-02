@@ -12,9 +12,9 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from socketio.redis_manager import RedisManager
 
-from api.base import Model, Query
-from api.base._tst import CustomPattern
-from api.extensions._minio import Minio
+from backend.api.base import Model, Query
+from backend.api.base._tst import CustomPattern
+from backend.api.extensions._minio import Minio
 
 if TYPE_CHECKING:
     from dynaconf.contrib import DynaconfConfig

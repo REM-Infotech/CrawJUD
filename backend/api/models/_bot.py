@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
 
-from api.extensions import db
+from backend.api.extensions import db
 
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from api.models._users import LicenseUser, User
+    from backend.api.models._users import LicenseUser, User
 
 rel = db.relationship
 

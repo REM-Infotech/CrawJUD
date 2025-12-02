@@ -9,11 +9,11 @@ import bcrypt
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
 
-from api import crypt_context
-from api.extensions import db
+from backend.api import crypt_context
+from backend.api.extensions import db
 
 if TYPE_CHECKING:
-    from api.models._bot import Bots, CredenciaisRobo, ExecucoesBot
+    from backend.api.models._bot import Bots, CredenciaisRobo, ExecucoesBot
 
 rel = db.relationship
 salt = bcrypt.gensalt()

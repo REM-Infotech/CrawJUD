@@ -18,14 +18,14 @@ from flask import (
     url_for,
 )
 
-from api import app
-from api.extensions import db
-from api.routes import handlers
-from api.routes.auth import auth
-from api.routes.bots import bots
+from backend.api import app
+from backend.api.extensions import db
+from backend.api.routes import handlers
+from backend.api.routes.auth import auth
+from backend.api.routes.bots import bots
 
 if TYPE_CHECKING:
-    from api.types_app import HealtCheck
+    from backend.api.types_app import HealtCheck
 
 
 __all__ = ["handlers"]

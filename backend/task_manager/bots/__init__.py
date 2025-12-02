@@ -5,8 +5,6 @@ operações automatizadas, como administração, busca,
 cálculo, capa, emissão, intimações, movimentação e protocolo.
 """
 
-import api.task_manager._hook as hook
-
 from . import (
     admin,
     buscadores,
@@ -26,7 +24,6 @@ __all__ = [
     "capa",
     "emissao",
     "habilitacao",
-    "hook",
     "intimacoes",
     "movimentacao",
     "protocolo",

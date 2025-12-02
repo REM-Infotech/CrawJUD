@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING, ClassVar, Self
 from flask import request
 from flask_jwt_extended import get_current_user
 
-from api.extensions import celery
-from api.models import Bots, LicenseUser, User, db
-from api.resources import camel_to_snake
+from backend.api.extensions import celery
+from backend.api.models import Bots, LicenseUser, User, db
+from backend.api.resources import camel_to_snake
 
 if TYPE_CHECKING:
-    from api.types_app import Dict
+    from backend.api.types_app import Dict
 
 
 class FormBot:

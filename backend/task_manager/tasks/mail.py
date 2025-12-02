@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Literal
 from flask import Flask
 from flask_mail import Message
 
-from api.models import User
+from backend.api.models import User
 from backend.task_manager.decorators import (
     SharedClassMethodTask as SharedClassMethodTask,
 )

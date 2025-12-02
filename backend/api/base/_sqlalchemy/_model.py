@@ -7,12 +7,12 @@ from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.model import Model as FSA_Model
 
-from api.resources import camel_to_snake
+from backend.api.resources import camel_to_snake
 
 from ._query import Query, QueryProperty
 
 if TYPE_CHECKING:
-    from api.types_app import AnyType
+    from backend.api.types_app import AnyType
 
 
 class FSAProperty:

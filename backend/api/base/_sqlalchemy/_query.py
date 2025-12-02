@@ -15,12 +15,12 @@ from sqlalchemy.sql._typing import (
     _ColumnsClauseArgument,
 )
 
-from api.types_app import AnyType, T
+from backend.api.types_app import AnyType, T
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
 
-    from api.base._sqlalchemy._model import Model
+    from backend.api.base._sqlalchemy._model import Model
 
 
 _Entities = _ColumnsClauseArgument[T] | Sequence[_ColumnsClauseArgument[T]]
@@ -31,7 +31,7 @@ class QueryProperty[T]:
         pass
 
     def __get__(self, instance: AnyType, owner: type[T]) -> Query[T]:
-        from api import app
+        from backend.api import app
 
         cls = cast("Model", owner)
         if "sqlalchemy" in app.extensions:

@@ -22,8 +22,8 @@ from backend.task_manager.types_app import MessageLog, MessageType
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from backend.api.types_app import AnyType
     from backend.task_manager.controllers.head import CrawJUD
-    from api.types_app import AnyType
 
 load_dotenv()
 

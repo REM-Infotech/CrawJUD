@@ -17,7 +17,7 @@ from flask import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from api.types_app import AnyType, Methods, P
+    from backend.api.types_app import AnyType, Methods, P
 
 MAX_AGE = 21600
 

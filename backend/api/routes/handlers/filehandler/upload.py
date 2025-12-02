@@ -10,9 +10,9 @@ from typing import Self, TypedDict
 
 from flask import request
 
-from api import app
-from api.extensions import storage
-from api.resources import formata_string
+from backend.api import app
+from backend.api.extensions import storage
+from backend.api.resources import formata_string
 
 WORKDIR = Path.cwd()
 

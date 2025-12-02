@@ -6,16 +6,16 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, TypedDict
 
-from api.extensions import db
-from api.models._bot import Bots, CredenciaisRobo, ExecucoesBot
-from api.models._users import LicenseUser, User
+from backend.api.extensions import db
+from backend.api.models._bot import Bots, CredenciaisRobo, ExecucoesBot
+from backend.api.models._users import LicenseUser, User
 
 from ._jwt import TokenBlocklist
 
 if TYPE_CHECKING:
     from flask import Flask
 
-    from api.types_app import Dict
+    from backend.api.types_app import Dict
 
 __all__ = [
     "Bots",

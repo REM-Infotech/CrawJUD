@@ -36,8 +36,8 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
+    from backend.api.types_app import AnyType
     from backend.task_manager.types_app import Dict
-    from api.types_app import AnyType
 
 MODULE_SPLIT_SIZE = 3
 TZ = ZoneInfo("America/Sao_Paulo")

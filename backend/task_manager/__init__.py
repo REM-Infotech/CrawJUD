@@ -2,15 +2,15 @@
 
 import importlib
 
-import api.task_manager._hook as hook
 from celery import Celery
 from dynaconf import FlaskDynaconf
 
+from backend import _hook
 from backend.task_manager.base import FlaskTask
 from backend.task_manager.config import CeleryConfig, config
 from backend.task_manager.extensions import flaskapp
 
-__all__ = ["hook"]
+__all__ = ["_hook"]
 
 
 def make_celery() -> Celery:
