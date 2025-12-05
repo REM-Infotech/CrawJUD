@@ -1,27 +1,16 @@
 """CrawJUD - Sistema de Automação Jurídica."""
 
 import importlib
-import logging
 
-from celery import Celery, signals
+from celery import Celery
 from dynaconf import FlaskDynaconf
 
 from backend import _hook
-from backend.config._log._handlers import RichQueueHandler
 from backend.task_manager.base import FlaskTask
 from backend.task_manager.config import CeleryConfig, config
 from backend.task_manager.extensions import flaskapp
 
 __all__ = ["_hook"]
-
-
-@signals.setup_logging.connect
-def on_celery_setup_logging(**kwargs) -> list[logging.Handler]:
-
-    logger = logging.getLogger("backend.task_manager")
-    logger.addHandler(RichQueueHandler(target="backend.task_manager"))
-
-    return [logger.handlers[0]]
 
 
 celery_app = Celery(flaskapp.name, task_cls=FlaskTask)

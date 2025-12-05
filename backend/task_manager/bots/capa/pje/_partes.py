@@ -88,8 +88,7 @@ class PartesPJe:
         return ""
 
     @classmethod
-    def partes(cls, cliente: Client, regiao: str, id_processo: str):
-
+    def partes(cls, cliente: Client, regiao: str, id_processo: str) -> None:
         link_partes = el.LINK_CONSULTA_PARTES.format(
             trt_id=regiao,
             id_processo=id_processo,
@@ -107,7 +106,6 @@ class PartesPJe:
 
     @classmethod
     def formata_partes(cls, request_partes: list[dict[str, str]]) -> None:
-
         partes = []
         representantes_unformatted = []
         for parte in request_partes:
@@ -138,8 +136,7 @@ class PartesPJe:
                 representantes_unformatted.extend(representantes)
 
     @classmethod
-    def formata_representantes(cls, unformatted: list[dict[str, str]]):
-
+    def formata_representantes(cls, unformatted: list[dict[str, str]]) -> None:
         representantes: list[Representantes] = []
         for representante in unformatted:
             processo = ""
@@ -168,5 +165,5 @@ class PartesPJe:
                         representante.get("emails", []),
                     ),
                     TELEFONE=__formata_numero_representante(representante),
-                )
+                ),
             )

@@ -5,12 +5,15 @@ from __future__ import annotations
 from os import environ as env
 from typing import TYPE_CHECKING, TypedDict
 
+from dotenv import dotenv_values
 from pykeepass import Entry, PyKeePass
 
 if TYPE_CHECKING:
     import uuid as pyuuid
 
     from pykeepass.group import Group
+
+environ = dotenv_values()
 
 
 class KeePassFindEntryKwargs(TypedDict):

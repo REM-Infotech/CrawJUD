@@ -17,7 +17,6 @@ def log(message: str, target: str) -> None:
 
 
 def run_console() -> NoReturn:
-
     layout = Layout(name="root")
 
     titles = {
@@ -50,7 +49,6 @@ def run_console() -> NoReturn:
             logs[target] = logs[target][remove:]
 
     def update_panel() -> None:
-
         layout[target].update(
             Panel(
                 Text.from_ansi("\n".join(logs[target]), style="cyan"),

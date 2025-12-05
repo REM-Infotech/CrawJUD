@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import traceback
 from contextlib import suppress
-from os import environ
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import jpype
 import pyotp
 import requests
+from dotenv import dotenv_values
 
 # Importa classes Java
 from jpype import JClass
@@ -40,6 +40,7 @@ if TYPE_CHECKING:
 if not jpype.isJVMStarted():
     jpype.startJVM()
 
+environ = dotenv_values()
 
 ByteArrayInputStream = JClass("java.io.ByteArrayInputStream")
 CertificateFactory = JClass("java.security.cert.CertificateFactory")
@@ -179,7 +180,6 @@ class AutenticadorPJe(AutenticadorBot):
         }
 
     def _get_otp_uri(self) -> str:
-
         kp = KeyStore()
         username = self.credenciais.username
         if environ.get("DEBUG_PJE", "0") == "1":
@@ -188,6 +188,12 @@ class AutenticadorPJe(AutenticadorBot):
         entries = kp.find_entries({"username": username})
 
         if isinstance(entries, list):
-            return list(filter(lambda x: x.otp, entries))[-1].otp
+            lista_filtrada = list(
+                filter(
+                    lambda x: x.otp and "sso.cloud.pje.jus.br" in x.url,
+                    entries,
+                ),
+            )
+            return lista_filtrada[-1].otp
 
         return entries.otp

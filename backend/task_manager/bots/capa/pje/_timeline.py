@@ -30,12 +30,10 @@ class LinkPJe(UserString):
         query: dict,
         endpoint: str,
     ) -> None:
-
         seq = f"https://pje.trt{regiao}.jus.br/pje-comum-api/api/processos/id/{id_proc}/{endpoint}?{query}"
         super().__init__(seq)
 
     def __repr__(self) -> ReprLinkTimeline:
-
         return f"<LinkPJe({self.data})>"
 
 
@@ -43,7 +41,6 @@ class NomeDocumentoPJe(UserString):
     NOME_DOCUMENTO = "{ANO} - {TIPO} - {PROCESSO} - {TITULO} - {PID}.pdf"
 
     def __init__(self, tl: TimeLinePJe, documento: DocumentoPJe) -> None:
-
         ano = datetime.now(tz=TZ_SAO_PAULO).strftime("%Y")
         tipo = documento["tipo"]
         titulo = documento["titulo"]
@@ -78,7 +75,6 @@ class TimeLinePJe:
         cliente: Client,
         bot: PJeBot,
     ) -> None:
-
         self.id_processo = id_processo
         self.regiao = regiao
         self.processo = processo
@@ -98,7 +94,6 @@ class TimeLinePJe:
         buscar_movimentos: bool = True,
         buscar_documentos: bool = True,
     ) -> Self:
-
         self = cls(
             id_processo=id_processo,
             regiao=regiao,
@@ -136,7 +131,6 @@ class TimeLinePJe:
         incluir_capa: bool = False,
         inclur_assinatura: bool = False,
     ) -> bytes:
-
         query = "&".join([
             f"grau={grau}",
             "=".join(["incluirCapa", str(incluir_capa).lower()]),

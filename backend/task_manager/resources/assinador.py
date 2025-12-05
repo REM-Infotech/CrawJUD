@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import base64
-from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated, ClassVar, Literal, cast
 
@@ -27,6 +26,7 @@ from cryptography.hazmat.primitives.serialization.pkcs12 import (
     PKCS12KeyAndCertificates,
     load_pkcs12,
 )
+from dotenv import dotenv_values
 
 # Importa classes Java
 from jpype import JArray, JByte, JClass
@@ -42,7 +42,7 @@ if not jpype.isJVMStarted():
     jpype.startJVM()
 
 app = Typer()
-
+environ = dotenv_values()
 
 type PrivateKey = (
     DHPrivateKey
@@ -106,7 +106,6 @@ class ConteudoAssinado:
 
     @property
     def cadeia_base64(self) -> str:
-
         cf = CertificateFactory.getInstance("X.509")
         java_chain = ArrayList()
 
@@ -162,7 +161,6 @@ class Assinador:
         conteudo: str | bytes,
         algoritmo_assinatura: Algoritmos = "MD5withRSA",
     ) -> ConteudoAssinado:
-
         if isinstance(conteudo, str):
             conteudo = conteudo.encode()
 

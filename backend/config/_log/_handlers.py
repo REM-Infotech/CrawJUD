@@ -22,4 +22,4 @@ class RichQueueHandler(Handler):
         msg = self.format(record)
         msg = self.markups[record.levelno].format(msg=msg)
 
-        print(f"[{self.target}] {msg}")  # noqa: T201
+        print(f"[{self.target}] {msg}")

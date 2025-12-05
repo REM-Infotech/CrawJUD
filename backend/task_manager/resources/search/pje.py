@@ -108,7 +108,6 @@ class PjeSeach(SearchBot):
         )
 
     def _format_response_pje(self, response: Response) -> _ResponseDadosBasicos:
-
         with suppress(JSONDecodeError):
             data_request = response.json()
             if isinstance(data_request, list):

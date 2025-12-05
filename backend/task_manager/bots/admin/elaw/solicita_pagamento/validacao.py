@@ -17,7 +17,9 @@ from backend.task_manager.resources.elements.elaw import (
 from .properties import Geral
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver import WebElementBot as WebElement
+    from backend.task_manager.resources.driver import (
+        WebElementBot as WebElement,
+    )
 
 
 STATUS_AGUARDANDO_APROVACAO = "Aguardando Aprovação"

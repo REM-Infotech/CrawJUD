@@ -206,16 +206,15 @@ class PrintMessage:
                         clear()
 
                         exc = "\n".join(traceback.format_exception(e))
-                        print(exc)  # noqa: T201
+                        print(exc)
                         to_write = exc
 
                     with self.file_log.open(mode=mode, encoding="utf-8") as fp:
                         tqdm.write(to_write, file=fp)
 
     def emit_message(self, data: Message, sio: Client) -> None:
-
         sio.emit("logbot", data=data, namespace="/bot_logs")
-        print(data["message"])  # noqa: T201
+        print(data["message"])
 
     def set_event(self, *args: AnyType, **kwargs: AnyType) -> None:
         """Evento de parada do robô.

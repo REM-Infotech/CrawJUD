@@ -46,6 +46,9 @@ class QueueIterator[T]:
         """
         data = None
         try:
+            while self._queue.empty():
+                ...
+
             data = self._queue.get_nowait()
 
         except Empty:

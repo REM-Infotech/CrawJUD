@@ -12,7 +12,9 @@ from pandas import DataFrame
 
 from backend.task_manager.interfaces import DataSave
 from backend.task_manager.resources.iterators.queues import QueueIterator
-from backend.task_manager.resources.queues.file_operation.main import FileOperator
+from backend.task_manager.resources.queues.file_operation.main import (
+    FileOperator,
+)
 
 if TYPE_CHECKING:
     from backend.task_manager.controllers.head import CrawJUD

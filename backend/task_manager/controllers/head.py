@@ -14,6 +14,7 @@ from warnings import warn
 from zoneinfo import ZoneInfo
 
 from clear import clear
+from dotenv import load_dotenv
 
 from backend.task_manager.constants import WORKDIR
 from backend.task_manager.decorators import SharedTask
@@ -313,6 +314,7 @@ def start_bot(config: Dict) -> None:
         None: Não retorna valor.
 
     """
+    load_dotenv()
     try:
         bot_nome = f"{config['categoria']}_{config['sistema']}"
         bot = CrawJUD.bots.get(bot_nome)

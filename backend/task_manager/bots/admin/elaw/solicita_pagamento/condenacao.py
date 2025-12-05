@@ -6,7 +6,9 @@ import traceback
 
 from backend.task_manager.common.raises import raise_execution_error
 from backend.task_manager.interfaces.elaw.main import ElawData
-from backend.task_manager.resources.elements.elaw import PgtoCondenacao as Element
+from backend.task_manager.resources.elements.elaw import (
+    PgtoCondenacao as Element,
+)
 
 from .inicializacao import Inicializacao
 from .inputs import Inputs

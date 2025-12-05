@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from contextlib import suppress
 from typing import TYPE_CHECKING, TypedDict
 
@@ -35,7 +37,6 @@ class AudienciasProcessos(TypedDict):
 class InformacoesAudiencias:
     @classmethod
     def audiencias(cls, regiao: str, id_processo: str, cliente: Client) -> None:
-
         link_audiencias = el.LINK_AUDIENCIAS.format(
             trt_id=regiao,
             id_processo=id_processo,

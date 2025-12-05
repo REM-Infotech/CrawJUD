@@ -8,7 +8,9 @@ from __future__ import annotations
 
 from typing import NoReturn
 
-from backend.task_manager.common.exceptions.validacao import ValidacaoStringError
+from backend.task_manager.common.exceptions.validacao import (
+    ValidacaoStringError,
+)
 
 from .exceptions import ExecutionError, PasswordTokenError
 

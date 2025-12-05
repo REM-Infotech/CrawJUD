@@ -152,7 +152,6 @@ class Emissor(CrawJUD):
             ),
         ).find_elements(By.TAG_NAME, "option")
         for item in lista_tribunal:
-            item = item
             if str(self.bot_data.get("TRIBUNAL")).lower() in item.text.lower():
                 item.click()
                 break
@@ -170,7 +169,6 @@ class Emissor(CrawJUD):
             )),
         ).find_elements(By.TAG_NAME, "option")
         for item in lista_comarca:
-            item = item
             if str(self.bot_data.get("COMARCA")).lower() in item.text.lower():
                 item.click()
                 break
@@ -186,7 +184,6 @@ class Emissor(CrawJUD):
             )),
         ).find_elements(By.TAG_NAME, "option")
         for item in lista_vara:
-            item = item
             if str(self.bot_data.get("VARA")).lower() in item.text.lower():
                 item.click()
                 break
@@ -202,7 +199,6 @@ class Emissor(CrawJUD):
             )),
         ).find_elements(By.TAG_NAME, "option")
         for item in lista_agencia:
-            item = item
             if str(self.bot_data.get("AGENCIA")).lower() in item.text.lower():
                 item.click()
                 break
@@ -241,7 +237,6 @@ class Emissor(CrawJUD):
             'select[id="j_id5:filtroView:formFormulario:idOrigemAcao"]',
         ).find_elements(By.TAG_NAME, "option")
         for item in list_type_acao_process:
-            item = item
             if str(self.bot_data.get("TIPO_ACAO")).lower() in item.text.lower():
                 item.click()
                 break
@@ -287,7 +282,6 @@ class Emissor(CrawJUD):
         ).find_elements(By.TAG_NAME, "option")
 
         for item in doctype_autor:
-            item = item
             if item.text.lower() == doct_type.lower():
                 item.click()
                 break
@@ -482,9 +476,8 @@ class Emissor(CrawJUD):
 
         # Imprima os números encontrados
         for numero in numeros_encontrados:
-            numero = str(numero)
             bar_code = (
-                numero.replace("  ", "").replace(" ", "").replace(".", " ")
+                str(numero).replace("  ", "").replace(" ", "").replace(".", " ")
             )
 
         return [

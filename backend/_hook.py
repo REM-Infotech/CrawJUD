@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import importlib.abc
 import importlib.util
 import json

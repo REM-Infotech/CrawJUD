@@ -37,7 +37,6 @@ class AssuntosPJe:
         regiao: str,
         id_processo: str,
     ) -> list[Assuntos]:
-
         link_assuntos = el.LINK_CONSULTA_ASSUNTOS.format(
             trt_id=regiao,
             id_processo=id_processo,

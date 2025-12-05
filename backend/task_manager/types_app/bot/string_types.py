@@ -112,7 +112,6 @@ class MessageLog(UserString):
         """
         # Extrai os primeiros 6 caracteres do PID
         # e converte para maiúsculo
-        pid = pid
         # Define o fuso horário para São Paulo
         tz = ZoneInfo("America/Sao_Paulo")
         # Obtém o horário atual formatado
