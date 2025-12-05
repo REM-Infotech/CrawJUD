@@ -69,3 +69,4 @@ default:
   task_default_exchange: "celery"
   task_default_exchange_type: "direct"
   task_default_routing_key: "celery"
+  worker_hijack_root_logger: "@bool off"

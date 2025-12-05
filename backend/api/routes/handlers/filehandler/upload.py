@@ -64,6 +64,9 @@ class IterQueueFile:
             StopIteration: Quando a fila é encerrada.
 
         """
+        while self.queue.empty():
+            ...
+
         try:
             return self.queue.get_nowait()
 

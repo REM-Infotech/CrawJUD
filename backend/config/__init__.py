@@ -1,0 +1,1 @@
+"""Configuraçõs gerais do CrawJUD."""

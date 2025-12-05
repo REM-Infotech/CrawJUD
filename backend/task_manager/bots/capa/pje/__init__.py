@@ -11,7 +11,9 @@ from httpx import Client
 from tqdm import tqdm
 
 from backend.task_manager.bots.capa.pje._timeline import TimeLinePJe
-from backend.task_manager.common.exceptions import ExecutionError as ExecutionError
+from backend.task_manager.common.exceptions import (
+    ExecutionError as ExecutionError,
+)
 from backend.task_manager.controllers.pje import PJeBot
 from backend.task_manager.interfaces.pje import (
     CapaPJe,
