@@ -34,7 +34,7 @@ def _start_api() -> None:
 def _start_worker() -> None:
     from backend.task_manager import app as celery_app
 
-    worker = Worker(app=celery_app, loglevel="DEBUG")
+    worker = Worker(app=celery_app, loglevel="INFO")
     worker.start()
 
 
