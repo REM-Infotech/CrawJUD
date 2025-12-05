@@ -38,7 +38,7 @@ def run_console() -> NoReturn:
 
     logs = {"backend.api": [], "backend.task_manager": []}
 
-    live = Live(layout, console=main_console, refresh_per_second=4, screen=True)
+    live = Live(layout, console=main_console, refresh_per_second=5, screen=True)
 
     def remove_logs() -> None:
         if len(logs[target]) >= live.console.height - 2:
