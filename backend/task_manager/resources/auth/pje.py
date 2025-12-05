@@ -36,6 +36,7 @@ if TYPE_CHECKING:
     from cryptography.x509 import Certificate
 
     from backend.task_manager.controllers.pje import PJeBot
+    from backend.task_manager.resources.driver.web_element import WebElementBot
 
 if not jpype.isJVMStarted():
     jpype.startJVM()
@@ -147,7 +148,7 @@ class AutenticadorPJe(AutenticadorBot):
         otp_uri = self._get_otp_uri()
         otp = str(pyotp.parse_uri(uri=otp_uri).now())
 
-        input_otp = WebDriverWait(self.driver, 60).until(
+        input_otp: WebElementBot = WebDriverWait(self.driver, 60).until(
             ec.presence_of_element_located((
                 By.CSS_SELECTOR,
                 'input[id="otp"]',

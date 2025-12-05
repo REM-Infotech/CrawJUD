@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 from backend.api._forms.head import FormBot
