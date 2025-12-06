@@ -42,12 +42,12 @@ def login() -> Response:
         data = request.get_json(force=True)  # força o parsing do JSON
 
         # Verifica se os campos obrigatórios estão presentes
-        if not data or not data.get("login") or not data.get("password"):
+        if not data or not data.get("username") or not data.get("password"):
             abort(400, description="Login e senha são obrigatórios.")
 
-        user = db.session.query(User).filter_by(login=data["login"]).first()
+        user = db.session.query(User).filter_by(login=data["username"]).first()
         authenticated = User.authenticate(
-            data["login"],
+            data["username"],
             data["password"],
         )
         if not authenticated:
@@ -62,11 +62,15 @@ def login() -> Response:
                 401,
             )
 
+        access_token = create_access_token(identity=str(user.Id))
         response = make_response(
-            jsonify(message="Login efetuado com sucesso!"),
+            jsonify(
+                message="Login efetuado com sucesso!",
+                access_token=access_token,
+            ),
             200,
         )
-        access_token = create_access_token(identity=str(user.Id))
+
         set_access_cookies(
             response=response,
             encoded_access_token=access_token,
