@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import traceback
+from contextlib import suppress
 from typing import TYPE_CHECKING
 
 from flask import (
@@ -39,11 +40,18 @@ def login() -> Response:
     """
     try:
         db: SQLAlchemy = current_app.extensions["sqlalchemy"]
-        data = request.get_json(force=True)  # força o parsing do JSON
+        data = {}
+        with suppress(Exception):
+            data = request.get_json(force=True)  # força o parsing do JSON
 
         # Verifica se os campos obrigatórios estão presentes
         if not data or not data.get("username") or not data.get("password"):
-            abort(400, description="Login e senha são obrigatórios.")
+            return make_response(
+                jsonify(
+                    message="Login e senha são obrigatórios.",
+                ),
+                401,
+            )
 
         user = db.session.query(User).filter_by(login=data["username"]).first()
         authenticated = User.authenticate(

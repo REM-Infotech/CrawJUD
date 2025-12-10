@@ -46,7 +46,6 @@ def start_extensions(app: Flask) -> None:
         )
         cors.init_app(
             app,
-            allow_headers=["Content-Type", "Authorization"],
             supports_credentials=True,
             transports=["websocket"],
         )
