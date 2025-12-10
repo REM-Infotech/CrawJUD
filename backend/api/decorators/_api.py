@@ -98,6 +98,7 @@ class CrossDomain:
 
             elif self.automatic_options and request.method == "OPTIONS":
                 response = self._handle_options()
+
             elif request.method == "POST":
                 response = self._handle_request(
                     wrapped_function,
@@ -231,7 +232,11 @@ class CrossDomain:
             xsrf_token = None
             if isinstance(cookie_xsrf_name, str):
                 xsrf_token = request.cookies.get(cookie_xsrf_name, None)
-            if not xsrf_token and self.current_request_method != "GET":
+            if (
+                not xsrf_token
+                and not request.headers.get(header_xsrf_name)
+                and self.current_request_method != "GET"
+            ):
                 abort(401, description="Missing XSRF Token")
 
             else:

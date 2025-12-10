@@ -37,11 +37,11 @@ class FormBot:
         """
         # Obtém os dados do request e identifica o formulário a ser carregado
         request_data: Dict = json.loads(request.get_data())
-        form_name: str = request_data["configuracao_form"]
+        form_name: str = camel_to_snake(request_data["configuracao_form"])
         kwargs: dict = {
-            k: v
+            k.lower(): v
             for k, v in list(request_data.items())
-            if k != "configuracao_form"
+            if k != "configuracao_form" and k != "seeduploadedfiles"
         }
         return cls._subclass[form_name.replace("_", "")](**kwargs)
 
@@ -54,6 +54,7 @@ class FormBot:
         """
         try:
             # Converte os dados do formulário para dicionário
+            seed_files = json.loads(request.get_data())["seeduploadfiles"]
             kwargs = self.to_dict()
             kwargs["pid"] = pid_exec
             # Busca o bot no banco de dados
@@ -61,6 +62,7 @@ class FormBot:
             user: User = get_current_user()
             kwargs["sistema"] = bot.sistema.lower()
             kwargs["categoria"] = bot.categoria.lower()
+            kwargs["seeduploadfiles"] = seed_files
 
             # Envia tarefa principal
             celery.send_task("crawjud", kwargs={"config": kwargs})
