@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from backend.api._forms.head import FormBot
 
 
-@dataclass
+@dataclass(match_args=False)
 class FileAuth(FormBot):
     """Represente um formulário para autenticação de arquivo.
 
@@ -21,7 +21,7 @@ class FileAuth(FormBot):
     planilha_xlsx: str
 
 
-@dataclass
+@dataclass(match_args=False)
 class Pje(FormBot):
     """Represente um formulário para protocolo PJe com certificado digital.
 

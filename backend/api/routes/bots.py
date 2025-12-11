@@ -15,11 +15,9 @@ from flask import (
     current_app,
     jsonify,
     make_response,
-    request,
 )
 from flask.wrappers import Response
 from flask_jwt_extended import (
-    get_csrf_token,
     get_current_user,
     jwt_required,
 )
@@ -60,15 +58,6 @@ def is_sistema(valor: Sistemas) -> bool:
 
     """
     return valor in SISTEMAS
-
-
-@bots.route("/xsrf-cookie")
-@jwt_required()
-def jwt_xsrf() -> Response:
-
-    current = request.headers["Authorization"].split("Bearer ")[-1]
-    csrf = get_csrf_token(current)
-    return make_response(jsonify(csrf=csrf))
 
 
 @bots.route("/listagem")
