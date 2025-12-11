@@ -16,4 +16,4 @@ class OnlyFile(FormBot):
 
     bot_id: str
     sid_filesocket: str
-    planilha_xlsx: str
+    xlsx: str

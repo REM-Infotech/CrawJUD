@@ -43,7 +43,7 @@ class PjeProtocolo(FormBot):
 
     bot_id: str
     sid_filesocket: str
-    planilha_xlsx: str
+    xlsx: str
     anexos: list[str]
     certificado: str
     senha_certificado: str

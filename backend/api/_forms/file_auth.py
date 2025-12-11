@@ -18,7 +18,7 @@ class FileAuth(FormBot):
     bot_id: str
     sid_filesocket: str
     credencial: str
-    planilha_xlsx: str
+    xlsx: str
 
 
 @dataclass(match_args=False)
@@ -38,4 +38,7 @@ class Pje(FormBot):
 
     bot_id: str
     sid_filesocket: str
-    planilha_xlsx: str
+    xlsx: str
+    certificado: str
+    kbdx: str
+    senha_kbdx: str
