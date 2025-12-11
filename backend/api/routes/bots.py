@@ -16,7 +16,11 @@ from flask import (
     jsonify,
     make_response,
 )
-from flask_jwt_extended import get_current_user, jwt_required
+from flask.wrappers import Response
+from flask_jwt_extended import (
+    get_current_user,
+    jwt_required,
+)
 
 from backend.api._forms.head import FormBot
 from backend.api.constants import SISTEMAS

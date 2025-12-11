@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from backend.api._forms.head import FormBot
 
 
-@dataclass
+@dataclass(match_args=False)
 class OnlyAuth(FormBot):
     """Represente um formulário para autenticação sem upload de arquivo.
 

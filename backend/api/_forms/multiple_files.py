@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from backend.api._forms.head import FormBot
 
 
-@dataclass
+@dataclass(match_args=False)
 class MultipleFiles(FormBot):
     """Represente um formulário para múltiplos arquivos anexados.
 
@@ -25,7 +25,7 @@ class MultipleFiles(FormBot):
     anexos: list[str]
 
 
-@dataclass
+@dataclass(match_args=False)
 class PjeProtocolo(FormBot):
     """Represente um formulário para protocolo PJe com certificado digital.
 
@@ -43,7 +43,7 @@ class PjeProtocolo(FormBot):
 
     bot_id: str
     sid_filesocket: str
-    planilha_xlsx: str
+    xlsx: str
     anexos: list[str]
     certificado: str
     senha_certificado: str

@@ -10,39 +10,40 @@ from os import environ
 from threading import Thread
 from typing import TYPE_CHECKING
 
-from celery.apps.worker import Worker
-
-from backend.api import create_app
+from clear import clear
 
 if TYPE_CHECKING:
     from flask_socketio import SocketIO
 
 FLASK_PORT: int = 5000
+clear()
 
-app = create_app()
 
-
-def _start_api() -> None:
+def _api() -> None:
+    from backend.api import create_app
     from backend.api import routes as routes
 
-    io: SocketIO = app.extensions["socketio"]
+    flaskapp = create_app()
+    io: SocketIO = flaskapp.extensions["socketio"]
     port: int = int(environ.get("FLASK_PORT", FLASK_PORT)) or FLASK_PORT
 
-    io.run(app, host="localhost", port=port, allow_unsafe_werkzeug=True)
+    io.run(flaskapp, host="localhost", port=port, allow_unsafe_werkzeug=True)
 
 
-def _start_worker() -> None:
+def _celery_worker() -> None:
+    from celery.apps.worker import Worker
+
     from backend.task_manager import app as celery_app
 
     worker = Worker(app=celery_app, loglevel="INFO")
     worker.start()
 
 
-api_thread = Thread(target=_start_api, daemon=True)
-worker_thread = Thread(target=_start_worker, daemon=True)
+api_ = Thread(target=_api, daemon=True)
+celery_ = Thread(target=_celery_worker, daemon=True)
 
-api_thread.start()
-worker_thread.start()
+api_.start()
+celery_.start()
 
 while True:
     ...

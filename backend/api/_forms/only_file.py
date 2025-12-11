@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from backend.api._forms.head import FormBot
 
 
-@dataclass
+@dataclass(match_args=False)
 class OnlyFile(FormBot):
     """Represente um formulário para upload de arquivo único.
 
@@ -16,4 +16,4 @@ class OnlyFile(FormBot):
 
     bot_id: str
     sid_filesocket: str
-    planilha_xlsx: str
+    xlsx: str

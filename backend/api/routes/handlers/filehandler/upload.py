@@ -6,6 +6,7 @@ from contextlib import suppress
 from pathlib import Path
 from queue import Empty, Queue, ShutDown
 from threading import Thread
+from time import sleep
 from typing import Self, TypedDict
 
 from flask import request
@@ -28,6 +29,7 @@ class DataFileUpload(TypedDict):
     name: str
     fileSize: int
     chunk: bytes
+    seed: str
 
 
 class IterQueueFile:
@@ -108,11 +110,14 @@ class FileUploader:
         self.queue_upload_file.put_nowait(data)
 
     def upload_file(self, data: DataFileUpload) -> None:
-        output = WORKDIR.joinpath("output", self.sid)
+
+        seed = data["seed"]
+        output = WORKDIR.joinpath("output", seed)
         filename = formata_string(data["name"])
         path_file = output.joinpath(filename)
         output.mkdir(exist_ok=True, parents=True)
-        object_path = Path(self.sid).joinpath(filename).as_posix()
+        sleep(0.25)
+        object_path = Path(seed).joinpath(filename).as_posix()
 
         mode = "ab"
         if not path_file.exists():
