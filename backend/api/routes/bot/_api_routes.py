@@ -42,7 +42,7 @@ bots = Blueprint("bots", __name__, url_prefix="/bot")
 def format_time(val: datetime | None) -> str | None:
     """Formata data/hora para string legível ou retorne valor original."""
     if val and isinstance(val, datetime):
-        return val.strftime("%d/%m/%Y, %H:%M:%S")
+        return val.strftime("%d/%m/%Y, %H:%M:%S:%z")
 
     return val
 

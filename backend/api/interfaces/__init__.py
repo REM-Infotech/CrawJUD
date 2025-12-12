@@ -17,11 +17,13 @@ class Message(TypedDict, total=False):
 
     pid: str
     message: str
+    time_message: str
     message_type: MessageType
     status: StatusBot
     start_time: str
     row: int
     total: int
-    error_count: int
-    success_count: int
-    remaining_count: int
+    erros: int
+    sucessos: int
+    restantes: int
+    link: str

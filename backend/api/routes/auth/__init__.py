@@ -84,6 +84,17 @@ def login() -> Response:
             encoded_access_token=access_token,
         )
 
+        timezone = request.headers.get("TimeZone")
+
+        response.set_cookie(
+            "TimeZone",
+            timezone,
+            httponly=current_app.config.get("JWT_COOKIE_HTTPONLY", True),
+            samesite=current_app.config.get("JWT_COOKIE_SAMESITE", "Lax"),
+            secure=current_app.config.get("JWT_COOKIE_SECURE", False),
+            domain=current_app.config.get("JWT_COOKIE_DOMAIN"),
+        )
+
     except HTTPException as e:
         response = make_response(
             jsonify({
