@@ -44,6 +44,9 @@ class PjeProtocolo(FormBot):
     bot_id: str
     sid_filesocket: str
     xlsx: str
-    anexos: list[str]
+    cpf_cnpj_certificado: str
     certificado: str
     senha_certificado: str
+    kdbx: str
+    senha_kdbx: str
+    anexos: list[str]

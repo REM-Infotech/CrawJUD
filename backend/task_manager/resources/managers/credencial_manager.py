@@ -62,24 +62,24 @@ class CredencialManager:
         self._certificado_nome = self.bot.config.get("certificado")
         self._senha_certificado = config.get("senha_certificado")
 
-    @ClassProperty
+    @property
     def username(self) -> str:
         """Retorne o nome de usuário carregado."""
         return self._username
 
-    @ClassProperty
+    @property
     def password(self) -> str:
         """Retorne a senha carregada."""
         return self._password
 
-    @ClassProperty
+    @property
     def certificado(self) -> Path:
 
         if not self._certificado:
             path_execucao = self.bot.output_dir_path
             certificado_ = path_execucao.joinpath(self._certificado_nome)
 
-            if certificado_.exists():
+            if not certificado_.exists():
                 raise ArquivoNaoEncontradoError(
                     str(certificado_),
                     f'Arquivo "{certificado_.name}" não encontrado!',
@@ -100,7 +100,7 @@ class CredencialManager:
             path_execucao = self.bot.output_dir_path
             kdbx_ = path_execucao.joinpath(self._kdbx_nome)
 
-            if kdbx_.exists():
+            if not kdbx_.exists():
                 raise ArquivoNaoEncontradoError(
                     str(kdbx_),
                     f'Arquivo "{kdbx_.name}" não encontrado!',

@@ -100,7 +100,9 @@ class FormBot:
             Dict: Dicionário com os dados do formulário.
 
         """
-        data = {}
+        data = {
+            "credenciais": {},
+        }
 
         # Filtra atributos públicos e não métodos
         keys = list(

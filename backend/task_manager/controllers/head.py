@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from abc import abstractmethod
+from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
 from datetime import datetime
 from threading import Event
@@ -16,6 +17,7 @@ from clear import clear
 from dotenv import load_dotenv
 
 from backend.common.exceptions._fatal import FatalError
+from backend.common.exceptions._file import ArquivoNaoEncontradoError
 from backend.task_manager.constants import WORKDIR
 from backend.task_manager.decorators import SharedTask
 from backend.task_manager.resources.driver import BotDriver
@@ -45,6 +47,9 @@ TZ = ZoneInfo("America/Sao_Paulo")
 FORMAT_TIME = "%d-%m-%Y %H-%M-%S"
 
 logger = logging.getLogger(__name__)
+pool = ThreadPoolExecutor(1)
+
+futures_shutdown: list[Future[None]] = []
 
 
 class CrawJUD:
@@ -111,6 +116,7 @@ class CrawJUD:
 
         """
         self.config = config
+        credenciais = config.get("credenciais", {})
         self.bot_stopped = Event()
         self.print_message = PrintMessage(self)
         self.append_success = SaveSuccess(self)
@@ -121,11 +127,11 @@ class CrawJUD:
 
         self.print_message("Robô inicializado!", message_type="success")
 
-        if config.get("credenciais"):
-            self.credenciais.load_credenciais(
-                self.config.get("credenciais"),
-            )
-            if not self.auth():
+        self.credenciais.load_credenciais(credenciais)
+
+        if credenciais.get("username"):
+            auth_ = self.auth()
+            if auth_:
                 with suppress(Exception):
                     self.driver.quit()
 
@@ -167,6 +173,9 @@ class CrawJUD:
 
         """
         ...
+
+    @abstractmethod
+    def auth(self) -> None: ...
 
     @property
     def driver(self) -> WebDriver | Chrome:
@@ -246,6 +255,31 @@ class CrawJUD:
         return now_time.strftime(FORMAT_TIME)
 
 
+class BotUtil:  # noqa: D101
+    @staticmethod
+    def on_done(fut: Future[None]) -> None:
+        futures_shutdown.remove(fut)
+
+    @staticmethod
+    def create_thread_shutdown(bot: CrawJUD) -> None:
+
+        sleep(5)
+        future = pool.submit(bot.shutdown_all)
+        futures_shutdown.append(future)
+        future.add_done_callback(BotUtil.on_done)
+
+    @staticmethod
+    def logging_fatal_error(e: Exception, bot: CrawJUD) -> FatalError:
+        exc = FatalError(e)
+        if hasattr(bot, "print_message"):
+            bot.print_message(
+                message=f"Erro na execução do bot CrawJUD. {exc}",
+                message_type="error",
+            )
+        logger.exception("Erro na execução do bot CrawJUD: %s", exc)  # noqa: LOG004
+        return exc
+
+
 @SharedTask(name="crawjud")
 def start_bot(config: Dict) -> None:
     """Inicie o bot CrawJUD com a configuração fornecida.
@@ -266,7 +300,13 @@ def start_bot(config: Dict) -> None:
         bot = bot()
         bot.setup(config=config)
         bot.execution()
-        bot.shutdown_all()
+        BotUtil.create_thread_shutdown(bot)
+
+    except (ArquivoNaoEncontradoError, FatalError) as e:
+        exc = BotUtil.logging_fatal_error(e, bot)
+        BotUtil.create_thread_shutdown(bot)
+
+        raise exc from e
 
     except KeyError as e:
         clear()
@@ -274,32 +314,14 @@ def start_bot(config: Dict) -> None:
         class Dummy(CrawJUD): ...
 
         bot = Dummy().setup(config=config)
-
-        exc = FatalError(e)
-        bot.print_message(
-            message=f"Erro na execução do bot CrawJUD. {exc}",
-            message_type="error",
-        )
-
-        logger.exception("Erro na execução do bot CrawJUD: %s", exc)
-        sleep(5)
-        bot.shutdown_all()
+        exc = BotUtil.logging_fatal_error(e, bot)
+        BotUtil.create_thread_shutdown(bot)
         raise exc from e
 
     except Exception as e:
         clear()
 
-        exc = FatalError(e)
-
-        if hasattr(bot, "print_message"):
-            bot.print_message(
-                message=f"Erro na execução do bot CrawJUD. {exc}",
-                message_type="error",
-            )
-
-        logger.exception("Erro na execução do bot CrawJUD: %s", exc)
-
-        sleep(5)
-        bot.shutdown_all()
+        BotUtil.logging_fatal_error(e, bot)
+        BotUtil.create_thread_shutdown(bot)
 
         raise exc from e
