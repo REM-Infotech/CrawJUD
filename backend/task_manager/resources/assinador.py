@@ -148,10 +148,6 @@ class Assinador:
             senha_certificado (str | None): Senha do certificado digital.
 
         """
-        if environ.get("DEBUG_PJE", "0") == "1":
-            certificado = environ.get("CERTIFICADO")
-            senha_certificado = environ.get("SENHA_CERTIFICADO")
-
         senha_certificado = senha_certificado.encode()
         certificado = Path(certificado).read_bytes()
         self.certificado_carregado = load_pkcs12(certificado, senha_certificado)

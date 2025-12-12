@@ -25,7 +25,7 @@ class BotIterator:
         self._index = 0
 
         path_xlsx = bot.output_dir_path.joinpath(
-            formata_string(bot.planilha_xlsx),
+            formata_string(bot.xlsx),
         )
 
         if path_xlsx.exists():

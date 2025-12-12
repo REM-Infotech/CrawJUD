@@ -73,7 +73,7 @@ class FormBot:
                     "pid": pid_exec,
                     "bot_id": bot.Id,
                     "user_id": user.Id,
-                    "xlsx": kwargs.get("planilha_xlsx"),
+                    "xlsx": kwargs.get("xlsx"),
                     "tipo_notificacao": "start",
                 },
             )

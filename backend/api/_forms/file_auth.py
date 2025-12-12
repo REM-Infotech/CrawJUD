@@ -11,7 +11,7 @@ class FileAuth(FormBot):
         bot_id (str): Identificador do bot.
         sid_filesocket (str): ID da sessão do socket de arquivos.
         credencial (str): Credencial de acesso.
-        planilha_xlsx (str): Caminho da planilha Excel.
+        xlsx (str): Caminho da planilha Excel.
 
     """
 
@@ -28,7 +28,7 @@ class Pje(FormBot):
     Args:
         bot_id (str): Identificador do bot.
         sid_filesocket (str): ID da sessão do socket de arquivos.
-        planilha_xlsx (str): Caminho da planilha Excel.
+        xlsx (str): Caminho da planilha Excel.
         certificado (str): Caminho do certificado digital.
         senha_certificado (str): Senha do certificado digital.
 
@@ -39,7 +39,8 @@ class Pje(FormBot):
     bot_id: str
     sid_filesocket: str
     xlsx: str
+    cpf_cnpj_certificado: str
     certificado: str
     senha_certificado: str
-    kbdx: str
-    senha_kbdx: str
+    kdbx: str
+    senha_kdbx: str

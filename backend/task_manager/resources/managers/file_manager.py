@@ -63,7 +63,7 @@ class FileManager(MinioClient):
     def download_files(self) -> None:
         """Baixe arquivos do Minio para o diretório de saída do robô."""
         if self.bot.config.get("folder_objeto_minio"):
-            self.lista_arquivos = [self.bot.planilha_xlsx]
+            self.lista_arquivos = [self.bot.xlsx]
             if self.bot.anexos:
                 self.lista_arquivos.extend(self.bot.anexos)
 
@@ -76,12 +76,10 @@ class FileManager(MinioClient):
                     recursive=True,
                 ),
             )
-
-            filtered_files = list(filter(self.__filter_files, files_bucket))
             message = "Baixando arquivos"
             message_type = "log"
             self.bot.print_message(message=message, message_type=message_type)
-            for item in tqdm(filtered_files):
+            for item in tqdm(files_bucket):
                 file_name = Path(item.object_name).name
                 file_path = self.bot.output_dir_path.joinpath(file_name)
 

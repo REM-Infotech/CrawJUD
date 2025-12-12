@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from os import environ as env
+from pathlib import Path
 from typing import TYPE_CHECKING, TypedDict
 
 from dotenv import dotenv_values
@@ -71,23 +71,18 @@ class KeyStore(PyKeePass):
 
     def __init__(
         self,
-        arquivo_kbdx: str | None = None,
-        senha_kbdx: str | None = None,
+        arquivo_kdbx: str,
+        senha_kdbx: str,
     ) -> None:
         """Inicialize o KeyStore com o arquivo e senha do banco KeePass.
 
         Args:
-            arquivo_kbdx (str | None): Caminho do arquivo KeePass.
-            senha_kbdx (str | None): Senha do arquivo KeePass.
+            arquivo_kdbx (str | None): Caminho do arquivo KeePass.
+            senha_kdbx (str | None): Senha do arquivo KeePass.
 
         """
-        if not arquivo_kbdx:
-            arquivo_kbdx = env.get("KBDX_PATH")
-
-        if not senha_kbdx:
-            senha_kbdx = env.get("KBDX_PASSWORD")
-
-        super().__init__(filename=arquivo_kbdx, password=senha_kbdx)
+        arquivo = str(Path(arquivo_kdbx).resolve())
+        super().__init__(filename=arquivo, password=senha_kdbx)
 
     def find_entries(
         self,

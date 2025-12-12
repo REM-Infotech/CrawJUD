@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import datetime
 import traceback
 from contextlib import suppress
+from datetime import datetime
 from queue import Queue
 from threading import Thread
 from typing import TYPE_CHECKING, TypedDict

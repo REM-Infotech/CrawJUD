@@ -8,7 +8,6 @@ from contextlib import suppress
 from datetime import datetime
 from threading import Event
 from time import sleep
-from traceback import format_exception
 from typing import TYPE_CHECKING, ClassVar, Self
 from warnings import warn
 from zoneinfo import ZoneInfo
@@ -16,6 +15,7 @@ from zoneinfo import ZoneInfo
 from clear import clear
 from dotenv import load_dotenv
 
+from backend.task_manager.common.exceptions._fatal import FatalError
 from backend.task_manager.constants import WORKDIR
 from backend.task_manager.decorators import SharedTask
 from backend.task_manager.resources.driver import BotDriver
@@ -45,63 +45,6 @@ TZ = ZoneInfo("America/Sao_Paulo")
 FORMAT_TIME = "%d-%m-%Y %H-%M-%S"
 
 logger = logging.getLogger(__name__)
-
-
-class FatalError(Exception):
-    """Exceção fatal na execução do bot CrawJUD."""
-
-    message: ClassVar[str] = "Fatal error in CrawJUD bot execution."
-
-    def __init__(self, exc: Exception, *args: AnyType) -> None:
-        """Initialize FatalError with the given exception.
-
-        Args:
-            exc (Exception): The exception that caused the fatal error.
-            *args (AnyType): Additional arguments to pass to the base Exception.
-
-        """
-        # Store only the string representation to ensure picklability
-        self._exc_str = repr(exc)
-        self._exc_type = type(exc).__name__
-        self._exc_msg = str(exc)
-        self._traceback = "".join(format_exception(exc))
-        self._format()
-        super().__init__(*args)
-
-    def _format(self) -> None:
-        self.message = self._traceback
-
-    def __str__(self) -> str:
-        """Return the string representation of the FatalError."""
-        return self.message
-
-    def __repr__(self) -> str:
-        """Return the string representation of the FatalError for debugging."""
-        return f"FatalException(type={self._exc_type}, message={self._exc_msg})"
-
-    def __reduce__(self) -> tuple[type[Self], tuple[Exception]]:  # noqa: D105
-        # Provide a way for pickle to reconstruct the object
-        return (
-            self.__class__,
-            (Exception(self._exc_msg),),  # reconstruct with a generic Exception
-        )
-
-    def __getstate__(self) -> dict[str, AnyType]:  # noqa: D105
-        # Only store pickleable attributes
-        return {
-            "_exc_str": self._exc_str,
-            "_exc_type": self._exc_type,
-            "_exc_msg": self._exc_msg,
-            "_traceback": self._traceback,
-            "message": self.message,
-        }
-
-    def __setstate__(self, state: dict[str, AnyType]) -> None:  # noqa: D105
-        self._exc_str = state["_exc_str"]
-        self._exc_type = state["_exc_type"]
-        self._exc_msg = state["_exc_msg"]
-        self._traceback = state["_traceback"]
-        self.message = state["message"]
 
 
 class CrawJUD:
@@ -186,7 +129,7 @@ class CrawJUD:
                 with suppress(Exception):
                     self.driver.quit()
 
-        if config.get("planilha_xlsx"):
+        if config.get("xlsx"):
             self.file_manager.download_files()
             self.frame = BotIterator(self)
 
@@ -248,13 +191,13 @@ class CrawJUD:
         return out_dir
 
     @property
-    def planilha_xlsx(self) -> str:
+    def xlsx(self) -> str:
         """Retorne o caminho da planilha XLSX utilizada pelo bot."""
-        return self.config.get("planilha_xlsx")
+        return self.config.get("xlsx")
 
-    @planilha_xlsx.setter
-    def planilha_xlsx(self, val: str) -> None:
-        self.config.update({"planilha_xlsx": val})
+    @xlsx.setter
+    def xlsx(self, val: str) -> None:
+        self.config.update({"xlsx": val})
 
     @property
     def pid(self) -> str:

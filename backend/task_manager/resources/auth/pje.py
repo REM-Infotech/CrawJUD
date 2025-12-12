@@ -122,7 +122,10 @@ class AutenticadorPJe(AutenticadorBot):
         # enviar diretamente ao endpoint PJe (exemplo)
         uuid_tarefa = str(uuid4())
         desafio = random_base36()
-        assinador = Assinador()
+        assinador = Assinador(
+            self.credenciais.certificado,
+            self.credenciais.senha_certificado,
+        )
         conteudo_assinado = assinador.assinar_conteudo(desafio)
 
         base64_conteudo = conteudo_assinado.conteudo_assinado_base64
@@ -181,11 +184,8 @@ class AutenticadorPJe(AutenticadorBot):
         }
 
     def _get_otp_uri(self) -> str:
-        kp = KeyStore()
-        username = self.credenciais.username
-        if environ.get("DEBUG_PJE", "0") == "1":
-            username = environ.get("CPF")
-
+        kp = KeyStore(self.credenciais.kdbx, self.credenciais.senha_kdbx)
+        username = self.credenciais.cpf_cnpj_certificado
         entries = kp.find_entries({"username": username})
 
         if isinstance(entries, list):

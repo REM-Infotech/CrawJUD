@@ -10,7 +10,7 @@ class OnlyFile(FormBot):
     Args:
         bot_id (str): Identificador do bot.
         sid_filesocket (str): ID da sessão do socket de arquivos.
-        planilha_xlsx (str): Caminho da planilha Excel.
+        xlsx (str): Caminho da planilha Excel.
 
     """
 
