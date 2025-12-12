@@ -61,6 +61,16 @@ class MailTasks(BotTasks):
         user = cls.query_user(db, user_id)
         bot = cls.query_bot(db, bot_id)
 
+        celery.send_task(
+            "informacao_database",
+            kwargs={
+                "pid": pid,
+                "bot_id": bot.Id,
+                "user_id": user.Id,
+                "operacao": tipo_notificacao,
+            },
+        )
+
         msg = Message(
             subject="Notificação de Inicialização"
             if tipo_notificacao == "start"
@@ -83,15 +93,5 @@ class MailTasks(BotTasks):
         )
 
         mail.send(msg)
-
-        celery.send_task(
-            "informacao_database",
-            kwargs={
-                "pid": pid,
-                "bot_id": bot.Id,
-                "user_id": user.Id,
-                "operacao": tipo_notificacao,
-            },
-        )
 
         return "E-mail enviado com sucesso!"

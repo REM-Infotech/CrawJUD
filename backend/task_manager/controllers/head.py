@@ -315,13 +315,14 @@ def start_bot(config: Dict) -> None:
 
     """
     load_dotenv()
+
     try:
         bot_nome = f"{config['categoria']}_{config['sistema']}"
         bot = CrawJUD.bots.get(bot_nome)
-        bot = bot().setup(config=config)
 
+        bot = bot()
+        bot.setup(config=config)
         bot.execution()
-
         bot.shutdown_all()
 
     except KeyError as e:

@@ -46,6 +46,7 @@ def join_room_bot(data: dict[str, str]) -> list[str]:
     messages: list[str] = []
     temp_dir = Path(gettempdir()).joinpath("crawjud", "logs")
     log_file = temp_dir.joinpath(f"{data['room']}.log")
+    _str_dir = str(log_file)
     # Se o diretório e o arquivo de log existem, carrega as mensagens
     if temp_dir.exists() and log_file.exists():
         text_file = log_file.read_text(encoding="utf-8").replace("null", '""')
@@ -68,17 +69,18 @@ def log_bot(data: Message) -> None:
     temp_dir: Path = Path(gettempdir()).joinpath("crawjud", "logs")
     log_file: Path = temp_dir.joinpath(f"{data['pid']}.log")
 
-    with lock:
-        # Cria diretório e arquivo de log se não existirem
-        if not temp_dir.exists() or not log_file.exists():
-            temp_dir.mkdir(parents=True, exist_ok=True)
-            log_file.write_text(json.dumps([]), encoding="utf-8")
+    # Cria diretório e arquivo de log se não existirem
+    if not temp_dir.exists():
+        temp_dir.mkdir(parents=True, exist_ok=True)
 
-        # Lê mensagens existentes, adiciona nova e salva novamente
-        read_file: str = log_file.read_text(encoding="utf-8")
-        list_messages: list[Message] = json.loads(read_file)
-        list_messages.append(data)
-        log_file.write_text(json.dumps(list_messages), encoding="utf-8")
+    if not log_file.exists():
+        log_file.write_text(json.dumps([]), encoding="utf-8")
+
+    # Lê mensagens existentes, adiciona nova e salva novamente
+    read_file: str = log_file.read_text(encoding="utf-8")
+    list_messages: list[Message] = json.loads(read_file)
+    list_messages.append(data)
+    log_file.write_text(json.dumps(list_messages), encoding="utf-8")
 
 
 @io.on("bot_stop", namespace="/bot_logs")

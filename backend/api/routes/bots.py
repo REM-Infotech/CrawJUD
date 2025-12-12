@@ -178,7 +178,11 @@ def execucoes() -> Response:
     user: User = get_current_user()
 
     # Recupera execuções dos bots do usuário
-    execucao = user.execucoes
+    execucao = sorted(
+        user.execucoes,
+        key=lambda x: x.data_inicio,
+        reverse=True,
+    )
 
     # Define payload padrão caso não haja execuções
     payload = jsonify([

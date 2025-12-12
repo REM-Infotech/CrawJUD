@@ -40,5 +40,6 @@ class Pje(FormBot):
     sid_filesocket: str
     xlsx: str
     certificado: str
+    senha_certificado: str
     kbdx: str
     senha_kbdx: str

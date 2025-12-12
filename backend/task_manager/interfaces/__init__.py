@@ -37,6 +37,7 @@ class Message(TypedDict, total=False):
 
     pid: str
     message: str
+    time_message: str
     message_type: MessageType
     status: StatusBot
     start_time: str

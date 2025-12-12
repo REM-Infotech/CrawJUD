@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import datetime
 import traceback
 from contextlib import suppress
 from queue import Queue
 from threading import Thread
 from typing import TYPE_CHECKING, TypedDict
+from zoneinfo import ZoneInfo
 
 from clear import clear
 from dotenv import load_dotenv
@@ -17,13 +19,13 @@ from tqdm import tqdm
 from backend.task_manager.config import config
 from backend.task_manager.interfaces import Message
 from backend.task_manager.resources.iterators.queues import QueueIterator
-from backend.task_manager.types_app import MessageLog, MessageType
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from backend.api.types_app import AnyType
     from backend.task_manager.controllers.head import CrawJUD
+    from backend.task_manager.types_app import MessageType
 
 load_dotenv()
 
@@ -83,22 +85,21 @@ class PrintMessage:
             link (str): Link do resultado (apenas no fim da execução)
 
         """
-        mini_pid = self.bot.pid
+        _mini_pid = self.bot.pid
 
         if not row or row == 0:
             row = self.bot.row
 
         self.message = message
-        message = MessageLog(message).format(
-            mini_pid,
-            message_type,
-            row,
-        )
+        tz = ZoneInfo("America/Sao_Paulo")
+        # Obtém o horário atual formatado
+        time_ = datetime.now(tz=tz).strftime("%H:%M:%S")
 
         msg = Message(
             pid=self.bot.pid,
             row=row,
             message=str(message),
+            time_message=time_,
             message_type=message_type,
             status="Em Execução",
             total=self.bot.total_rows,
