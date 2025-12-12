@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
-from backend.task_manager.common.exceptions import ExecutionError
+from backend.common.exceptions import ExecutionError
 from backend.task_manager.controllers.head import CrawJUD
 
 cookieaceito = []

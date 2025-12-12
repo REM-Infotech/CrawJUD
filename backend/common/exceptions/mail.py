@@ -1,6 +1,6 @@
 """Exception classes for mail-related errors."""
 
-from backend.task_manager.common.exceptions import BaseExceptionCeleryAppError
+from backend.common.exceptions import BaseExceptionCeleryAppError
 
 
 class MailError(BaseExceptionCeleryAppError):

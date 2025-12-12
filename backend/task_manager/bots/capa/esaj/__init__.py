@@ -12,8 +12,8 @@ from typing import TYPE_CHECKING, ClassVar
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.common import raise_execution_error
-from backend.task_manager.common.exceptions import ExecutionError
+from backend.common import raise_execution_error
+from backend.common.exceptions import ExecutionError
 
 from ._1 import PrimeiraInstancia
 from ._2 import SegundaInstancia

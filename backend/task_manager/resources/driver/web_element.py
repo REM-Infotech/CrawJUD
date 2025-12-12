@@ -17,7 +17,7 @@ from selenium.webdriver.remote.command import Command
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import Select
 
-from backend.task_manager.common.raises import raise_execution_error
+from backend.common.raises import raise_execution_error
 
 if TYPE_CHECKING:
     from selenium.webdriver.remote.webdriver import WebDriver

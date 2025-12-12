@@ -15,7 +15,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 
-from backend.task_manager.common.exceptions import ExecutionError
+from backend.common.exceptions import ExecutionError
 from backend.task_manager.controllers.projudi import ProjudiBot
 from backend.task_manager.resources.elements import projudi as el
 

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, ClassVar
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.common import raise_execution_error
+from backend.common import raise_execution_error
 from backend.task_manager.controllers.elaw import ElawBot
 from backend.task_manager.resources.elements.elaw import AtualizaFase as Element
 

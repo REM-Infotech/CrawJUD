@@ -1,4 +1,4 @@
-from backend.task_manager.common.exceptions import BaseCrawJUDError
+from backend.common.exceptions import BaseCrawJUDError
 
 type AnyType = any
 

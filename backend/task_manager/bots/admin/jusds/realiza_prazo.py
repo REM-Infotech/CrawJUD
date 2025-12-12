@@ -16,7 +16,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 from tqdm import tqdm
 
-from backend.task_manager.common.exceptions import ExecutionError
+from backend.common.exceptions import ExecutionError
 from backend.task_manager.resources.elements import jusds as el
 from backend.task_manager.resources.formatadores import formata_string
 

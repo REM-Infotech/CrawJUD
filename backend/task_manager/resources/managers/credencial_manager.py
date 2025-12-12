@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from backend.task_manager.common.exceptions._file import (
+from backend.common.exceptions._file import (
     ArquivoNaoEncontradoError,
 )
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import traceback
 
-from backend.task_manager.common.exceptions import BaseCrawJUDError
+from backend.common.exceptions import BaseCrawJUDError
 
 
 class ElawError(BaseCrawJUDError):

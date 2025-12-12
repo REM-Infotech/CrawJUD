@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, ClassVar
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.common.raises import raise_execution_error
+from backend.common.raises import raise_execution_error
 from backend.task_manager.controllers import ElawBot
 from backend.task_manager.resources.elements.elaw import (
     SolicitaPagamento as Element,

@@ -14,7 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-from backend.task_manager.common.raises import raise_execution_error
+from backend.common.raises import raise_execution_error
 from backend.task_manager.constants.data._bots.cidades import cidades_amazonas
 from backend.task_manager.controllers.head import CrawJUD
 from backend.task_manager.resources.auth import AutenticadorElaw

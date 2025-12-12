@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import ClassVar, TypedDict
 
-from backend.task_manager.common import raise_password_token
-from backend.task_manager.common.exceptions import ExecutionError, FileError
+from backend.common import raise_password_token
+from backend.common.exceptions import ExecutionError, FileError
 from backend.task_manager.controllers import PJeBot
 from backend.task_manager.controllers.projudi import ProjudiBot
 from backend.task_manager.interfaces import BotData, DataSucesso

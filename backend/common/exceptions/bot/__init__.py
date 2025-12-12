@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from backend.task_manager.common.exceptions import (
+from backend.common.exceptions import (
     BaseCrawJUDError as BaseCrawJUDError,
 )
-from backend.task_manager.common.exceptions import formata_msg as formata_msg
+from backend.common.exceptions import formata_msg as formata_msg
 
 MessageError = "Erro ao executar operaçao: "
 

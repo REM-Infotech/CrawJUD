@@ -9,7 +9,7 @@ from pathlib import Path
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
-from backend.task_manager.common.exceptions import ExecutionError
+from backend.common.exceptions import ExecutionError
 from backend.task_manager.controllers.projudi import ProjudiBot
 from backend.task_manager.resources.driver.web_element import (
     WebElementBot as WebElement,

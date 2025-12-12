@@ -12,7 +12,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.common.exceptions import ExecutionError
+from backend.common.exceptions import ExecutionError
 from backend.task_manager.controllers.elaw import ElawBot
 from backend.task_manager.resources.elements import elaw as el
 

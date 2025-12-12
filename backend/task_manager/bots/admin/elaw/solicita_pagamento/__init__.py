@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import traceback
 
-from backend.task_manager.common.exceptions import ExecutionError
-from backend.task_manager.common.raises import raise_execution_error
+from backend.common.exceptions import ExecutionError
+from backend.common.raises import raise_execution_error
 from backend.task_manager.resources.formatadores import (
     formata_string as formata_string,
 )

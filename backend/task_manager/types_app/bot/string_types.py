@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Literal, Self
 from zoneinfo import ZoneInfo
 
-from backend.task_manager.common.raises import value_error
+from backend.common.raises import value_error
 from backend.task_manager.constants import PADRAO_CNJ
 
 if TYPE_CHECKING:

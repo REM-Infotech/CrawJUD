@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TypedDict
 
-from backend.task_manager.common.exceptions.validacao import (
+from backend.common.exceptions.validacao import (
     ValidacaoStringError,
 )
 from backend.task_manager.types_app.bot import ProcessoCNJ

@@ -23,7 +23,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-from backend.task_manager.common import auth_error
+from backend.common import auth_error
 from backend.task_manager.constants import NO_CONTENT_STATUS
 from backend.task_manager.constants.pje import ENDPOINT_DESAFIO
 from backend.task_manager.resources.assinador import Assinador

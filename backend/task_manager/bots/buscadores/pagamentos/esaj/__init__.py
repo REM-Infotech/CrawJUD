@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.common.exceptions import ExecutionError
+from backend.common.exceptions import ExecutionError
 from backend.task_manager.controllers.esaj import ESajBot
 from backend.task_manager.resources.elements import esaj as el
 
