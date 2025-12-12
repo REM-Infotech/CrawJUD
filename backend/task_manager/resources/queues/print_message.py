@@ -93,7 +93,7 @@ class PrintMessage:
         self.message = message
         tz = ZoneInfo("America/Sao_Paulo")
         # Obtém o horário atual formatado
-        time_ = datetime.now(tz=tz).strftime("%H:%M:%S")
+        time_ = datetime.now(tz=tz).strftime("%H:%M:%S:%z")
 
         msg = Message(
             pid=self.bot.pid,

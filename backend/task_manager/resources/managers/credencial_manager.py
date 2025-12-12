@@ -9,27 +9,11 @@ from backend.common.exceptions._file import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from pathlib import Path
 
     from backend.task_manager.controllers.head import CrawJUD
 
 type AnyType = any
-
-
-class ClassProperty:
-    """Implemente um descriptor para criar propriedades de classe.
-
-    Args:
-        func (Callable): Função que será usada como propriedade de classe.
-
-    """
-
-    def __init__(self, func: Callable) -> None:  # noqa: D107
-        self.func = func
-
-    def __get__[T](self, instance: AnyType, owner: AnyType) -> T:  # noqa: D105
-        return self.func(owner)
 
 
 class CredencialManager:
@@ -58,9 +42,9 @@ class CredencialManager:
         self._kdbx_nome = self.bot.config.get("kdbx")
         self._senha_kdbx = self.bot.config.get("senha_kdbx")
 
-        self._cpf_cnpj_certificado = self.bot.config.get("cpf_cnpj_certificado")
         self._certificado_nome = self.bot.config.get("certificado")
-        self._senha_certificado = config.get("senha_certificado")
+        self._cpf_cnpj_certificado = self.bot.config.get("cpf_cnpj_certificado")
+        self._senha_certificado = self.bot.config.get("senha_certificado")
 
     @property
     def username(self) -> str:
@@ -89,11 +73,11 @@ class CredencialManager:
 
         return self._certificado
 
-    @ClassProperty
+    @property
     def senha_certificado(self) -> str:
         return self._senha_certificado
 
-    @ClassProperty
+    @property
     def kdbx(self) -> Path:
 
         if not self._kdbx:
@@ -110,10 +94,10 @@ class CredencialManager:
 
         return self._kdbx
 
-    @ClassProperty
+    @property
     def senha_kdbx(self) -> str:
         return self._senha_kdbx
 
-    @ClassProperty
+    @property
     def cpf_cnpj_certificado(self) -> str:
         return self._cpf_cnpj_certificado
