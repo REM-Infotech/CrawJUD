@@ -9,14 +9,23 @@ class FatalError(Exception):
 
     message: ClassVar[str] = "Fatal error in CrawJUD bot execution."
 
-    def __init__(self, exc: Exception, *args: AnyType) -> None:
+    def __init__(
+        self,
+        exc: Exception,
+        *args: AnyType,
+        msg: str | None = None,
+    ) -> None:
         """Initialize FatalError with the given exception.
 
         Args:
             exc (Exception): The exception that caused the fatal error.
+            msg: Message (Optional)
             *args (AnyType): Additional arguments to pass to the base Exception.
 
         """
+        if msg:
+            self._msg = msg
+
         # Store only the string representation to ensure picklability
         self._exc_str = repr(exc)
         self._exc_type = type(exc).__name__

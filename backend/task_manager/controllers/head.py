@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo
 from clear import clear
 from dotenv import load_dotenv
 
-from backend.task_manager.common.exceptions._fatal import FatalError
+from backend.common.exceptions._fatal import FatalError
 from backend.task_manager.constants import WORKDIR
 from backend.task_manager.decorators import SharedTask
 from backend.task_manager.resources.driver import BotDriver

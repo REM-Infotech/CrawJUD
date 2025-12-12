@@ -9,7 +9,8 @@ from flask_jwt_extended import get_current_user
 
 from backend.api.extensions import celery
 from backend.api.models import Bots, LicenseUser, User, db
-from backend.api.resources import camel_to_snake
+from backend.api.resources import camel_to_snake, formata_string
+from backend.common.exceptions._fatal import FatalError
 
 if TYPE_CHECKING:
     from backend.api.types_app import Dict
@@ -63,6 +64,16 @@ class FormBot:
             kwargs["sistema"] = bot.sistema.lower()
             kwargs["categoria"] = bot.categoria.lower()
 
+            keyword_args = list(kwargs.items())
+
+            for k, v in keyword_args:
+                if k in ["xlsx", "anexos", "kdbx", "certificado"]:
+                    if isinstance(v, list):
+                        kwargs.update({k: [formata_string(i) for i in v]})
+                        continue
+
+                    kwargs.update({k: formata_string(v)})
+
             # Envia tarefa principal
             celery.send_task("crawjud", kwargs={"config": kwargs})
 
@@ -79,7 +90,8 @@ class FormBot:
             )
         except Exception as e:
             # Loga a exceção para depuração
-            _exc = "\n".join(traceback.format_exception(e))
+            exc = "\n".join(traceback.format_exception(e))
+            raise FatalError(e, msg=exc) from e
 
     def to_dict(self) -> Dict:
         """Converta os atributos do formulário em um dicionário serializável.
