@@ -67,8 +67,11 @@ def loukup_strcurrentformattime(str_dt: str) -> str:
     for pattern, fmt in TIME_PATTERNS:
         if re.match(pattern, str_dt):
             with suppress(ValueError):
-                return datetime.strptime(str_dt, fmt).replace(
+                strp_dt = datetime.strptime(str_dt, fmt)  # noqa: DTZ007
+
+                return strp_dt.replace(
                     tzinfo=ZoneInfo("America/Sao_Paulo"),
+                    hour=strp_dt.hour - 1,
                 )
 
     raise_value_error()
@@ -87,11 +90,12 @@ def update_timezone(dt: datetime | str) -> str:
         info.region = info.region.replace(" ", "_")
         info.city = info.city.replace(" ", "_")
 
-        client_timezone = f"{info.region}/{info.city}"
+        client_timezone = f"America/{info.city}"
 
     if isinstance(dt, str):
         dt = loukup_strcurrentformattime(dt)
 
+    dt: datetime = dt.replace(hour=dt.hour - 1)
     tz = ZoneInfo(client_timezone)
     dt_aware = dt.replace(tzinfo=tz)
     return dt_aware.strftime("%H:%M:%S")
