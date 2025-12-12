@@ -20,10 +20,10 @@ class ClassProperty:
 
     """
 
-    def __init__(self, func: Callable) -> None:
+    def __init__(self, func: Callable) -> None:  # noqa: D107
         self.func = func
 
-    def __get__[T](self, instance: AnyType, owner: AnyType) -> T:
+    def __get__[T](self, instance: AnyType, owner: AnyType) -> T:  # noqa: D105
         return self.func(owner)
 
 
