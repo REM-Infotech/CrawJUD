@@ -8,8 +8,8 @@ from importlib import import_module
 from typing import TYPE_CHECKING
 
 from celery import shared_task
+from flask import current_app
 
-from backend.task_manager import flaskapp as flaskapp
 from backend.task_manager.base import FlaskTask
 
 if TYPE_CHECKING:
@@ -99,9 +99,11 @@ class SharedClassMethodTask:
         _arg = args
         is_async = iscoroutine(self._fn)
         cls = import_class(self._path_cls)
-        with flaskapp.app_context():
+        from backend.api import app
+
+        with app.app_context():
             if self.has_app:
-                kwargs.update({"app": flaskapp})
+                kwargs.update({"app": current_app})
 
             if is_async:
                 return asyncio.run(

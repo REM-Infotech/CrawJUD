@@ -7,7 +7,7 @@ paginação e integração com Flask-SQLAlchemy.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, ClassVar, Self, cast
+from typing import TYPE_CHECKING, ClassVar, Self, TypeVar, cast
 
 from flask import abort, current_app
 from flask_sqlalchemy.pagination import Pagination as FSAPagination
@@ -21,10 +21,10 @@ from sqlalchemy.sql._typing import (
     _ColumnsClauseArgument,
 )
 
-from backend.types_app import AnyType, T
+T = TypeVar("T")
+type AnyType = any
 
 _Entities = _ColumnsClauseArgument[T] | Sequence[_ColumnsClauseArgument[T]]
-
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy

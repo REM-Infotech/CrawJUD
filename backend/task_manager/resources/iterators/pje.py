@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING, TypedDict
 from backend.common.exceptions.validacao import (
     ValidacaoStringError,
 )
-from backend.types_app.bot import ProcessoCNJ
 
 if TYPE_CHECKING:
     from backend.interfaces import BotData
     from backend.task_manager.controllers.pje import PJeBot
+    from backend.types_app.bot import ProcessoCNJ
 
 
 class DictSeparaRegiao(TypedDict):
@@ -42,7 +42,7 @@ class RegioesIterator[T: BotData]:
     """
 
     def __init__(self, bot: PJeBot) -> None:
-        """Inicialize o iterador de regiões com dados do bot e processos separados.
+        """Inicialize o iterador de regiões.
 
         Args:
             bot (PJeBot): Instância do bot para acessar métodos e dados.
@@ -94,10 +94,12 @@ class RegioesIterator[T: BotData]:
         """Separa os processos por região a partir do número do processo.
 
         Returns:
-            dict[str, list[BotData] | dict[str, int]]: Dicionário com as regiões e a
-            posição de cada processo.
+            dict[str, list[BotData] | dict[str, int]]: Dicionário com as
+            regiões e a posição de cada processo.
 
         """
+        from backend.types_app.bot import ProcessoCNJ
+
         regioes_dict: dict[str, list[BotData]] = {}
         position_process: dict[str, int] = {}
 
@@ -121,7 +123,6 @@ class RegioesIterator[T: BotData]:
                     regioes_dict[regiao] = [item]
                     continue
 
-                # Caso a região já exista, adiciona o item à lista correspondente
                 regioes_dict[regiao].append(item)
 
             except ValidacaoStringError:

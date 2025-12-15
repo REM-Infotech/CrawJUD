@@ -8,12 +8,11 @@ from dynaconf import FlaskDynaconf
 from backend import _hook
 from backend.task_manager.base import FlaskTask
 from backend.task_manager.config import CeleryConfig, config
-from backend.task_manager.extensions import flaskapp
 
 __all__ = ["_hook"]
 
 
-celery_app = Celery(flaskapp.name, task_cls=FlaskTask)
+celery_app = Celery(__name__, task_cls=FlaskTask)
 
 
 def make_celery() -> Celery:
@@ -23,6 +22,8 @@ def make_celery() -> Celery:
         Celery: Configured Celery instance.
 
     """
+    from backend.api import app as flaskapp
+
     FlaskDynaconf(
         app=flaskapp,
         instance_relative_config=True,
