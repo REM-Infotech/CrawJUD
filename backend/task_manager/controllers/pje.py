@@ -25,8 +25,12 @@ load_dotenv()
 class PJeBot(CrawJUD):
     """Classe de controle para robôs do PJe."""
 
+    _regiao: ClassVar[int] = 1
+
     download_file: FileDownloader
     posicoes_processos: ClassVar[Dict] = {}
+
+    auth: AutenticadorPJe
 
     def __init__(self) -> None:
         """Inicialize o robô PJe com autenticação e busca."""

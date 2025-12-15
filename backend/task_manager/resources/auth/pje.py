@@ -62,7 +62,7 @@ class AutenticadorPJe(AutenticadorBot):
     @property
     def regiao(self) -> str:
         """Retorne a região do bot PJe."""
-        return self.bot.regiao
+        return str(self.bot.regiao)
 
     def __init__(self, bot: PJeBot) -> None:
         """Inicialize o autenticador PJe com certificado e chave.
@@ -108,7 +108,6 @@ class AutenticadorPJe(AutenticadorBot):
             TimeoutException,
             UnexpectedAlertPresentException,
             requests.RequestException,
-            Exception,
         ) as e:
             exc = "\n".join(traceback.format_exception(e))
             self.print_message(
