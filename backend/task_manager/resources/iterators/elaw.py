@@ -8,11 +8,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Self
 
-from backend.task_manager.interfaces.elaw.main import ElawData
+from backend.interfaces.elaw.main import ElawData
 
 if TYPE_CHECKING:
+    from backend.interfaces import BotData
     from backend.task_manager.controllers.elaw import ElawBot
-    from backend.task_manager.interfaces import BotData
 
 
 class ElawIterator:

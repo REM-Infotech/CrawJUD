@@ -2,11 +2,11 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.controllers.projudi import ProjudiBot
-from backend.task_manager.interfaces.projudi import (
+from backend.interfaces.projudi import (
     PartesProjudiDict,
     RepresentantesProjudiDict,
 )
+from backend.task_manager.controllers.projudi import ProjudiBot
 from backend.task_manager.resources.elements import projudi as el
 
 

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from openpyxl import Workbook
 
-    from backend.task_manager.interfaces import DataSave
+    from backend.interfaces import DataSave
 
 
 class FileOperator:

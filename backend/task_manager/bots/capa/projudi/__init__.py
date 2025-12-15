@@ -17,7 +17,7 @@ from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common import raise_execution_error
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.interfaces.projudi import CapaProjudiDict
+from backend.interfaces.projudi import CapaProjudiDict
 
 from ._2 import SegundaInstancia
 from .primeira import PrimeiraInstancia

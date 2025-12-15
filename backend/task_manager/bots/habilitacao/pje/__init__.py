@@ -4,9 +4,9 @@ from typing import ClassVar, TypedDict
 
 from backend.common import raise_password_token
 from backend.common.exceptions import ExecutionError, FileError
+from backend.interfaces import BotData, DataSucesso
 from backend.task_manager.controllers import PJeBot
 from backend.task_manager.controllers.projudi import ProjudiBot
-from backend.task_manager.interfaces import BotData, DataSucesso
 from backend.task_manager.resources import RegioesIterator
 from backend.task_manager.resources.driver.web_element import WebElementBot
 from backend.task_manager.resources.elements import projudi as el

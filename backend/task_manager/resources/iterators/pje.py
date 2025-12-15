@@ -10,8 +10,8 @@ from backend.common.exceptions.validacao import (
 from backend.types_app.bot import ProcessoCNJ
 
 if TYPE_CHECKING:
+    from backend.interfaces import BotData
     from backend.task_manager.controllers.pje import PJeBot
-    from backend.task_manager.interfaces import BotData
 
 
 class DictSeparaRegiao(TypedDict):

@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from pandas import DataFrame
 
-from backend.task_manager.interfaces import DataSave
+from backend.interfaces import DataSave
 from backend.task_manager.resources.iterators.queues import QueueIterator
 from backend.task_manager.resources.queues.file_operation.main import (
     FileOperator,

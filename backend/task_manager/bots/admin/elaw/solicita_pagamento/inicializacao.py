@@ -22,7 +22,7 @@ from backend.task_manager.resources.elements.elaw import (
 from .properties import Geral
 
 if TYPE_CHECKING:
-    from backend.task_manager.interfaces.elaw.pagamentos import (
+    from backend.interfaces.elaw.pagamentos import (
         ISolicitacaoPagamentos,
     )
     from backend.task_manager.resources.driver import (

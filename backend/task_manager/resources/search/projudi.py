@@ -24,8 +24,8 @@ from backend.task_manager.resources.elements import projudi as el
 from backend.task_manager.resources.search.main import SearchBot
 
 if TYPE_CHECKING:
+    from backend.interfaces import BotData
     from backend.task_manager.controllers.projudi import ProjudiBot
-    from backend.task_manager.interfaces import BotData
     from backend.task_manager.resources.driver.web_element import WebElementBot
 
 

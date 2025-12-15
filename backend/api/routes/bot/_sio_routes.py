@@ -18,7 +18,7 @@ from IP2Location import IP2Location
 from backend.api.extensions import io
 
 if TYPE_CHECKING:
-    from backend.api.interfaces import Message
+    from backend.interfaces import Message
     from backend.types_app import AnyType
 import re
 

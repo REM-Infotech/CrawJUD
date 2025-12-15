@@ -20,7 +20,7 @@ from backend.task_manager.resources.elements.elaw import (
 )
 
 if TYPE_CHECKING:
-    from backend.task_manager.interfaces.elaw.pagamentos import (
+    from backend.interfaces.elaw.pagamentos import (
         CondenacaoDataType,
         CustasDataType,
         ISolicitacaoPagamentos,

@@ -13,18 +13,18 @@ from tqdm import tqdm
 from backend.common.exceptions import (
     ExecutionError as ExecutionError,
 )
-from backend.task_manager.bots.capa.pje._timeline import TimeLinePJe
-from backend.task_manager.controllers.pje import PJeBot
-from backend.task_manager.interfaces.pje import (
+from backend.interfaces.pje import (
     CapaPJe,
 )
+from backend.task_manager.bots.capa.pje._timeline import TimeLinePJe
+from backend.task_manager.controllers.pje import PJeBot
 from backend.task_manager.resources import RegioesIterator
 from backend.task_manager.resources.queues.file_downloader import FileDownloader
 
 if TYPE_CHECKING:
     from queue import Queue
 
-    from backend.task_manager.interfaces import BotData
+    from backend.interfaces import BotData
     from backend.types_app import AnyType as AnyType
     from backend.types_app import Dict
 

@@ -16,8 +16,8 @@ from socketio import Client
 from socketio.exceptions import BadNamespaceError
 from tqdm import tqdm
 
+from backend.interfaces import Message
 from backend.task_manager.config import config
-from backend.task_manager.interfaces import Message
 from backend.task_manager.resources.iterators.queues import QueueIterator
 
 if TYPE_CHECKING:

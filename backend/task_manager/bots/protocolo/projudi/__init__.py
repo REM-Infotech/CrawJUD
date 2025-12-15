@@ -20,8 +20,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common import raise_password_token
 from backend.common.exceptions import ExecutionError, FileError
+from backend.interfaces import DataSucesso
 from backend.task_manager.controllers.projudi import ProjudiBot
-from backend.task_manager.interfaces import DataSucesso
 from backend.task_manager.resources.elements import projudi as el
 from backend.task_manager.resources.formatadores import formata_string
 

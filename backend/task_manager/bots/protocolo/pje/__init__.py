@@ -19,7 +19,7 @@ from httpx import Client
 from .habilitacao import HabilitiacaoPJe
 
 if TYPE_CHECKING:
-    from backend.task_manager.interfaces import BotData
+    from backend.interfaces import BotData
 
 dotenv.load_dotenv()
 

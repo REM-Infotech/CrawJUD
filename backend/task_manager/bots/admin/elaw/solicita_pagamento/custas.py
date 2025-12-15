@@ -10,7 +10,7 @@ from __future__ import annotations
 import traceback
 
 from backend.common.raises import raise_execution_error
-from backend.task_manager.interfaces.elaw.main import ElawData
+from backend.interfaces.elaw.main import ElawData
 from backend.task_manager.resources.elements.elaw import PgtoCustas as Element
 
 from .inicializacao import Inicializacao

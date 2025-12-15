@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Self
 
 from pandas import read_excel
 
-from backend.task_manager.interfaces import BotData
+from backend.interfaces import BotData
 from backend.task_manager.resources.formatadores import (
     format_data,
     format_float,
