@@ -190,17 +190,16 @@ class BotNS(Namespace):
         temp_dir = Path(gettempdir()).joinpath("crawjud", "logs")
         log_file = temp_dir.joinpath(f"{data['room']}.log")
         _str_dir = str(log_file)
-        now = datetime.now(tz=ZoneInfo(load_timezone()))
+        now = datetime.now(ZoneInfo(load_timezone()))
 
         def map_messages(msg: Message) -> Message:
-
             updt = update_timezone(msg["time_message"])
             updated = updt.replace(
                 day=now.day,
                 month=now.month,
                 year=now.year,
             )
-            msg["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
+            msg["time_message"] = updated.strftime("%H:%M:%S")
             return msg
 
         # Se o diretório e o arquivo de log existem, carrega as mensagens
