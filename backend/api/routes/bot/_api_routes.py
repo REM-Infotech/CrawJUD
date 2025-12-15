@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import traceback
 from base64 import b64encode
-from datetime import datetime
 from pathlib import Path
 from tempfile import gettempdir
 from typing import TYPE_CHECKING
@@ -18,7 +17,6 @@ from flask import (
 )
 from flask.wrappers import Response
 from flask_jwt_extended import (
-    get_current_user,
     jwt_required,
 )
 
@@ -29,7 +27,6 @@ from backend.api.resources import gerar_id
 
 if TYPE_CHECKING:
     from backend.api.extensions._minio import Minio
-    from backend.api.models import User
     from backend.types_app import Sistemas
     from backend.types_app.responses import (
         PayloadDownloadExecucao,
@@ -37,14 +34,6 @@ if TYPE_CHECKING:
     )
 
 bots = Blueprint("bots", __name__, url_prefix="/bot")
-
-
-def format_time(val: datetime | None) -> str | None:
-    """Formata data/hora para string legível ou retorne valor original."""
-    if val and isinstance(val, datetime):
-        return val.strftime("%d/%m/%Y, %H:%M:%S:%z")
-
-    return val
 
 
 def is_sistema(valor: Sistemas) -> bool:
@@ -99,53 +88,6 @@ def run_bot(sistema: Sistemas) -> Response:
             _exc = "\n".join(traceback.format_exception(e))
 
     return make_response(jsonify(payload), code)
-
-
-@bots.get("/execucoes")
-@jwt_required()
-def execucoes() -> Response:
-    """Lista execuções dos bots do usuário autenticado.
-
-    Returns:
-        Response: Resposta HTTP com execuções dos bots.
-
-    """
-    # Obtém o usuário autenticado
-    user: User = get_current_user()
-
-    # Recupera execuções dos bots do usuário
-    execucao = sorted(
-        user.execucoes,
-        key=lambda x: x.data_inicio,
-        reverse=True,
-    )
-
-    # Define payload padrão caso não haja execuções
-    payload = jsonify([
-        {
-            "id": 0,
-            "bot": "vazio",
-            "pid": "vazio",
-            "status": "vazio",
-            "data_inicio": "vazio",
-            "data_fim": "vazio",
-        },
-    ])
-    if execucao:
-        # Retorna lista de execuções se houver
-        payload = jsonify([
-            {
-                "id": item.Id,
-                "bot": item.bot.display_name,
-                "pid": item.pid,
-                "status": item.status,
-                "data_inicio": format_time(item.data_inicio),
-                "data_fim": format_time(item.data_fim),
-            }
-            for item in execucao
-        ])
-
-    return make_response(payload, 200)
 
 
 @bots.get("/execucoes/<string:pid>/download")

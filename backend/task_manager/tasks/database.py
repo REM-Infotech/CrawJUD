@@ -61,12 +61,13 @@ class DatabaseTasks(BotTasks):
         user = cls.query_user(db, user_id)
         bot = cls.query_bot(db, bot_id)
 
+        now = datetime.now(tz=TIMEZONE)
         if operacao == "start":
             # Cria uma nova execução do bot
             execucao = ExecucoesBot(
                 pid=pid,
                 status="Em Execução",
-                data_inicio=datetime.now(tz=TIMEZONE),
+                data_inicio=now,
             )
             # Relaciona execução ao bot e usuário
             bot.execucoes.append(execucao)
@@ -79,7 +80,7 @@ class DatabaseTasks(BotTasks):
             execucao = cls.query_execucao(db, pid)
             if execucao:
                 execucao.status = "Finalizado"
-                execucao.data_fim = datetime.now(tz=TIMEZONE)
+                execucao.data_fim = now
                 db.session.commit()
 
         return "Operação de banco de dados concluída com sucesso!"

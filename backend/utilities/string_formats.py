@@ -27,6 +27,15 @@ TIME_PATTERNS = [
 ]
 
 
+def format_time(val: datetime | None) -> str | None:
+    """Formata data/hora para string legível ou retorne valor original."""
+    if val and isinstance(val, datetime):
+        val.replace(tzinfo=ZoneInfo("America/Sao_Paulo"))
+        return update_timezone(val).strftime("%d/%m/%Y, %H:%M:%S:%z")
+
+    return val
+
+
 def get_ip2location_instance() -> IP2Location:
     """Obtenha uma instância do banco de dados IP2Location.
 
@@ -88,7 +97,7 @@ def load_timezone() -> str:
     return f"America/{info.city}"
 
 
-def update_timezone(dt: datetime | str) -> str:
+def update_timezone(dt: datetime | str) -> datetime:
     """Atualize o horário informado para o fuso horário do cliente.
 
     Args:
@@ -103,8 +112,4 @@ def update_timezone(dt: datetime | str) -> str:
         if isinstance(dt, str):
             dt = detect_datetime_format(dt)
 
-        return (
-            dt.replace(hour=dt.hour - 1)
-            .replace(tzinfo=ZoneInfo(client_timezone))
-            .strftime("%H:%M:%S")
-        )
+        return dt.replace(hour=dt.hour - 1).replace(tzinfo=ZoneInfo(client_timezone))

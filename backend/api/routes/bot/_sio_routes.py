@@ -10,12 +10,13 @@ from tempfile import gettempdir
 from threading import Lock
 from typing import TYPE_CHECKING, Literal, TypedDict
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
 from flask_jwt_extended import get_current_user, jwt_required
 from flask_socketio import Namespace, join_room
 
 from backend.api.extensions import io
-from backend.utilities import update_timezone
+from backend.utilities import format_time, load_timezone, update_timezone
 
 if TYPE_CHECKING:
     from backend.api.models import User
@@ -54,16 +55,64 @@ class CredenciaisSelect(TypedDict):
     text: str
 
 
+class Execucao(TypedDict):
+    Id: 0
+    bot: str
+    pid: str
+    status: str
+    data_inicio: str
+    data_fim: str
+
+
 class BotNS(Namespace):
     def __init__(self) -> None:
         super().__init__(namespace="/bot")
 
     @jwt_required()
+    def on_listagem_execucoes(self) -> list[Execucao]:
+        """Lista execuções dos bots do usuário autenticado."""
+        # Obtém o usuário autenticado
+        user: User = get_current_user()
+
+        # Recupera execuções dos bots do usuário
+        execucao = user.execucoes
+        if execucao:
+            execucao = list(execucao)
+            execucao.sort(key=lambda x: x.data_inicio, reverse=True)
+
+        # Define payload padrão caso não haja execuções
+        payload = [
+            Execucao(
+                Id=0,
+                bot="vazio",
+                pid="vazio",
+                status="vazio",
+                data_inicio="vazio",
+                data_fim="vazio",
+            ),
+        ]
+        if execucao:
+            # Retorna lista de execuções se houver
+            payload = [
+                Execucao(
+                    Id=item.Id,
+                    bot=item.bot.display_name,
+                    pid=item.pid,
+                    status=item.status,
+                    data_inicio=format_time(item.data_inicio),
+                    data_fim=format_time(item.data_fim),
+                )
+                for item in execucao
+            ]
+
+        return payload
+
+    @jwt_required()
     def on_logbot(self, data: Message) -> None:
         """Log bot."""
         with lock:
-            strp_dt = datetime.strptime(data.get("time_message"), "%H:%M:%S:%z")
-            data["time_message"] = update_timezone(strp_dt)
+            updated = update_timezone(data["time_message"])
+            data["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
             # Define diretório temporário para logs
             temp_dir: Path = Path(gettempdir()).joinpath("crawjud", "logs")
             log_file: Path = temp_dir.joinpath(f"{data['pid']}.log")
@@ -141,9 +190,17 @@ class BotNS(Namespace):
         temp_dir = Path(gettempdir()).joinpath("crawjud", "logs")
         log_file = temp_dir.joinpath(f"{data['room']}.log")
         _str_dir = str(log_file)
+        now = datetime.now(tz=ZoneInfo(load_timezone()))
 
         def map_messages(msg: Message) -> Message:
-            msg["time_message"] = update_timezone(msg["time_message"])
+
+            updt = update_timezone(msg["time_message"])
+            updated = updt.replace(
+                day=now.day,
+                month=now.month,
+                year=now.year,
+            )
+            msg["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
             return msg
 
         # Se o diretório e o arquivo de log existem, carrega as mensagens
