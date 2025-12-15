@@ -5,6 +5,8 @@ Este módulo define rotas básicas e integra blueprints de autenticação e bots
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flask import (
     Flask,
     Response,
@@ -14,7 +16,10 @@ from flask import (
 from backend.api import app
 from backend.api.routes import handlers
 from backend.api.routes.auth import auth
-from backend.api.routes.bot import bots
+from backend.api.routes.bot import BotNS, bots
+
+if TYPE_CHECKING:
+    from flask_socketio import SocketIO
 
 __all__ = ["handlers"]
 
@@ -23,6 +28,10 @@ def register_routes(app: Flask) -> None:
     blueprints = [auth, bots]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+
+    sio: SocketIO = app.extensions["socketio"]
+
+    sio.on_namespace(BotNS())
 
 
 @app.after_request

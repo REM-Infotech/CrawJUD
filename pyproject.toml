@@ -20,6 +20,7 @@ dependencies = [
     "httpx>=0.28.1",
     "hvac>=2.3.0",
     "hypercorn>=0.17.3",
+    "inquirer>=3.4.1",
     "ip2location>=8.11.0",
     "jpype1>=1.6.0",
     "lxml>=6.0.2",

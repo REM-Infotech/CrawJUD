@@ -73,10 +73,13 @@ class Capa(PJeBot):
         with client_context as client, thread_pool as pool:
             futures: list[Future[None]] = []
             for item in data:
+                if self.bot_stopped.is_set():
+                    break
+
                 futures.append(
                     pool.submit(self.queue, item=item, client=client),
                 )
-                sleep(10)
+                sleep(5)
 
     def queue(self, item: BotData, client: Client) -> None:
         """Enfileire e processe um processo judicial PJE.

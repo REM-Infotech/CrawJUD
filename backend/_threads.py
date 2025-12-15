@@ -26,5 +26,10 @@ def _api() -> None:
 def _celery_worker() -> None:
     from backend.task_manager import app as celery_app
 
+    celery_app.conf.update(
+        worker_hijack_root_logger=False,
+        CELERY_REDIRECT_STDOUTS=False,
+    )
+
     worker = Worker(app=celery_app, loglevel="INFO")
     worker.start()

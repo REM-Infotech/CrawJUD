@@ -11,13 +11,15 @@ from threading import Thread
 from ._threads import _api, _celery_worker
 
 
-def _start_backend() -> None:
+def _start_backend() -> dict[str, list[Thread]]:
 
     api_ = Thread(target=_api, daemon=True)
     celery_ = Thread(target=_celery_worker, daemon=True)
 
     api_.start()
     celery_.start()
+
+    return {"threads": [api_, celery_]}
 
 
 __all__ = ["_start_backend"]

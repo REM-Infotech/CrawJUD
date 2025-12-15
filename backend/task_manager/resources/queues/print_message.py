@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
+import sys
 import traceback
+from base64 import b64decode
 from contextlib import suppress
 from datetime import datetime
 from queue import Queue
@@ -12,6 +15,7 @@ from zoneinfo import ZoneInfo
 
 from clear import clear
 from dotenv import load_dotenv
+from requests import Session
 from socketio import Client
 from socketio.exceptions import BadNamespaceError
 from tqdm import tqdm
@@ -174,17 +178,24 @@ class PrintMessage:
 
         """
         socketio_server = config.get("API_URL")
-        sio = Client()
+
+        cookies = json.loads(b64decode(self.bot.config.get("cookies")).decode())
+        session = Session()
+        session.headers.update({
+            "Authorization": f"Bearer {cookies['access_token_cookie']}",
+        })
+
+        sio = Client(http_session=session)
         sio.on(
             "bot_stop",
             self.set_event,
-            namespace="/bot_logs",
+            namespace="/bot",
         )
-        sio.connect(url=socketio_server, namespaces=["/bot_logs"])
+        sio.connect(url=socketio_server, namespaces=["/bot"])
         sio.emit(
             "join_room",
             data={"room": self.bot.pid},
-            namespace="/bot_logs",
+            namespace="/bot",
         )
 
         for data in QueueIterator[Message](self.queue_print_bot):
@@ -198,23 +209,21 @@ class PrintMessage:
                     except BadNamespaceError:
                         sio.connect(
                             url=socketio_server,
-                            namespaces=["/bot_logs"],
+                            namespaces=["/bot"],
                         )
                         self.emit_message(data, sio)
 
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001
                         clear()
-
-                        exc = "\n".join(traceback.format_exception(e))
-                        print(exc)
-                        to_write = exc
+                        to_write = "\n".join(traceback.format_exception(e))
+                        tqdm.write(to_write, file=sys.stdout)
 
                     with self.file_log.open(mode=mode, encoding="utf-8") as fp:
                         tqdm.write(to_write, file=fp)
 
     def emit_message(self, data: Message, sio: Client) -> None:
-        sio.emit("logbot", data=data, namespace="/bot_logs")
-        print(data["message"])
+        sio.emit("logbot", data=data, namespace="/bot")
+        tqdm.write(str(data["message"]), file=sys.stdout)
 
     def set_event(self, *args: AnyType, **kwargs: AnyType) -> None:
         """Evento de parada do robô.

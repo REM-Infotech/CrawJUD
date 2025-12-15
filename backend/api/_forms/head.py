@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import traceback
+from base64 import b64encode
 from typing import TYPE_CHECKING, ClassVar, Self
 
 from flask import request
@@ -80,6 +81,13 @@ class FormBot:
                     kwargs.update({k: formata_string(v)})
 
             # Envia tarefa principal
+            cookies = request.cookies.to_dict(flat=True)
+            cookies = json.dumps(request.cookies.to_dict()).encode()
+
+            kwargs.update(
+                {"cookies": b64encode(cookies).decode()},
+            )
+
             celery.send_task("crawjud", kwargs={"config": kwargs})
 
             # Notifica o usuário sobre o início da execução
