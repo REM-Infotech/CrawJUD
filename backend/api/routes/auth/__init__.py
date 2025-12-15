@@ -86,7 +86,7 @@ def login() -> Response:
             encoded_access_token=access_token,
         )
 
-        timezone = data.get("timezone")
+        timezone = data.get("appzon")
         if timezone and timezone in available_timezones():
             # Sanitize the timezone value before setting it as a cookie
             safe_timezone = quote(timezone, safe="")
