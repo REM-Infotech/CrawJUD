@@ -16,6 +16,7 @@ from flask import (
     request,
 )
 from urllib.parse import quote
+import pytz
 from flask_jwt_extended import (
     create_access_token,
     set_access_cookies,
@@ -86,7 +87,7 @@ def login() -> Response:
         )
 
         timezone = data.get("timezone")
-        if timezone:
+        if timezone and timezone in pytz.all_timezones:
             # Sanitize the timezone value before setting it as a cookie
             safe_timezone = quote(timezone, safe="")
             response.set_cookie(
