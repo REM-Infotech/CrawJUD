@@ -5,6 +5,8 @@ from __future__ import annotations
 import traceback
 from contextlib import suppress
 from typing import TYPE_CHECKING
+from urllib.parse import quote
+from zoneinfo import available_timezones
 
 from flask import (
     Blueprint,
@@ -15,8 +17,6 @@ from flask import (
     make_response,
     request,
 )
-from urllib.parse import quote
-import pytz
 from flask_jwt_extended import (
     create_access_token,
     set_access_cookies,
@@ -87,7 +87,7 @@ def login() -> Response:
         )
 
         timezone = data.get("timezone")
-        if timezone and timezone in pytz.all_timezones:
+        if timezone and timezone in available_timezones():
             # Sanitize the timezone value before setting it as a cookie
             safe_timezone = quote(timezone, safe="")
             response.set_cookie(
@@ -109,7 +109,7 @@ def login() -> Response:
             e.code,
         )
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         _exc = traceback.format_exception(e)
         abort(500)
 
