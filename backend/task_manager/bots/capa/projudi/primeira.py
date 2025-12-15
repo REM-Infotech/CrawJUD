@@ -17,7 +17,7 @@ from backend.task_manager.interfaces.projudi import (
 from backend.task_manager.resources.elements import projudi as el
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import Dict
+    from backend.types_app import Dict
 
 
 class PrimeiraInstancia(ProjudiBot):

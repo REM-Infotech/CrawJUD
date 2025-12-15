@@ -10,7 +10,7 @@ from backend.api.extensions import io
 from backend.api.routes.handlers.filehandler.upload import uploader
 
 if TYPE_CHECKING:
-    from backend.api.types_app import AnyType
+    from backend.types_app import AnyType
 
 
 @io.on("add_file", namespace="/files")

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from backend.task_manager.controllers.head import CrawJUD
     from backend.task_manager.interfaces import BotData
     from backend.task_manager.resources.queues.print_message import PrintMessage
-    from backend.task_manager.types_app import Dict
+    from backend.types_app import Dict
 
 
 class SearchBot:

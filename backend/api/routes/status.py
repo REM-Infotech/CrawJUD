@@ -19,7 +19,7 @@ from backend.api.extensions import db
 from backend.api.routes import handlers
 
 if TYPE_CHECKING:
-    from backend.api.types_app import HealtCheck
+    from backend.types_app import HealtCheck
 
 
 __all__ = ["handlers"]

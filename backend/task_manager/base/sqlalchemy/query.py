@@ -21,7 +21,7 @@ from sqlalchemy.sql._typing import (
     _ColumnsClauseArgument,
 )
 
-from backend.task_manager.types_app import AnyType, T
+from backend.types_app import AnyType, T
 
 _Entities = _ColumnsClauseArgument[T] | Sequence[_ColumnsClauseArgument[T]]
 

@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 from backend.task_manager.constants.data._bots.cidades import cidades_amazonas
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import AnyType, Dict
+    from backend.types_app import AnyType, Dict
 
 
 class ElawData(UserDict):

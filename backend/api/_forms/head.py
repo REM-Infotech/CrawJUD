@@ -13,7 +13,7 @@ from backend.api.resources import camel_to_snake, formata_string
 from backend.common.exceptions._fatal import FatalError
 
 if TYPE_CHECKING:
-    from backend.api.types_app import Dict
+    from backend.types_app import Dict
 
 
 class FormBot:

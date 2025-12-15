@@ -11,7 +11,7 @@ from passlib.context import CryptContext
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from backend.api.config import settings
-from backend.api.types_app import AnyType as AnyType
+from backend.types_app import AnyType as AnyType
 
 # Instancia a aplicação Flask
 app: Flask = Flask(__name__)

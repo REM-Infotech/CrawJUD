@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from backend.task_manager.resources.search.main import SearchBot
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import AnyType
+    from backend.types_app import AnyType
 
 
 class SearhEsaj(SearchBot):

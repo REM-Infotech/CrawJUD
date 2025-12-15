@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, TypedDict
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import (
+    from backend.types_app import (
         MessageType,
         PolosProcessuais,
         StatusBot,

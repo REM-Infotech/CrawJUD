@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol
 
-from backend.task_manager.types_app import AnyType, P
+from backend.types_app import AnyType, P
 
 if TYPE_CHECKING:
     from celery import Celery

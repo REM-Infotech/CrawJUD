@@ -15,7 +15,7 @@ from pandas import Timestamp
 from werkzeug.utils import secure_filename
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import AnyType
+    from backend.types_app import AnyType
 
 
 def formata_string(string: str) -> str:

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, TypedDict
 from backend.common.exceptions.validacao import (
     ValidacaoStringError,
 )
-from backend.task_manager.types_app.bot import ProcessoCNJ
+from backend.types_app.bot import ProcessoCNJ
 
 if TYPE_CHECKING:
     from backend.task_manager.controllers.pje import PJeBot

@@ -15,7 +15,7 @@ from sqlalchemy.sql._typing import (
     _ColumnsClauseArgument,
 )
 
-from backend.api.types_app import AnyType, T
+from backend.types_app import AnyType, T
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy

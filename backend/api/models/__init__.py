@@ -15,7 +15,7 @@ from ._jwt import TokenBlocklist
 if TYPE_CHECKING:
     from flask import Flask
 
-    from backend.api.types_app import Dict
+    from backend.types_app import Dict
 
 __all__ = [
     "Bots",

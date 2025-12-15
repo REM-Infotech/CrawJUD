@@ -17,7 +17,7 @@ from backend.task_manager.resources import camel_to_snake
 from .query import Query, QueryProperty
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import AnyType
+    from backend.types_app import AnyType
 
 
 class FSAProperty:

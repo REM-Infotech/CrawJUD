@@ -12,7 +12,7 @@ from backend.api.resources import camel_to_snake
 from ._query import Query, QueryProperty
 
 if TYPE_CHECKING:
-    from backend.api.types_app import AnyType
+    from backend.types_app import AnyType
 
 
 class FSAProperty:

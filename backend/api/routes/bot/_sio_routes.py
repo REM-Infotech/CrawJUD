@@ -19,7 +19,7 @@ from backend.api.extensions import io
 
 if TYPE_CHECKING:
     from backend.api.interfaces import Message
-    from backend.api.types_app import AnyType
+    from backend.types_app import AnyType
 import re
 
 lock = Lock()

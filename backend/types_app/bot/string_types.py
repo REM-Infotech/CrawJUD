@@ -13,7 +13,8 @@ from backend.common.raises import value_error
 from backend.task_manager.constants import PADRAO_CNJ
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import AnyType
+    from backend.types_app import AnyType
+
 
 type MessageType = Literal["info", "log", "error", "warning", "success"]
 

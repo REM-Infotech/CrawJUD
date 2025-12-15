@@ -30,8 +30,8 @@ from backend.api.resources import gerar_id
 if TYPE_CHECKING:
     from backend.api.extensions._minio import Minio
     from backend.api.models import User
-    from backend.api.types_app import Sistemas
-    from backend.task_manager.types_app.responses import (
+    from backend.types_app import Sistemas
+    from backend.types_app.responses import (
         PayloadDownloadExecucao,
         Response,
     )

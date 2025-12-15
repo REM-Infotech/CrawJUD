@@ -25,8 +25,8 @@ if TYPE_CHECKING:
     from queue import Queue
 
     from backend.task_manager.interfaces import BotData
-    from backend.task_manager.types_app import AnyType as AnyType
-    from backend.task_manager.types_app import Dict
+    from backend.types_app import AnyType as AnyType
+    from backend.types_app import Dict
 
 
 class ArgumentosPJeCapa(TypedDict):
@@ -85,71 +85,70 @@ class Capa(PJeBot):
             client (Client): Cliente HTTP autenticado.
 
         """
+
+        processo = item["NUMERO_PROCESSO"]
+        pos_processo = self.posicoes_processos[processo]
+        termos: str = item.get("TERMOS", "")
+        if not termos:
+            return
+
+        row = int(pos_processo) + 1
         if not self.bot_stopped.is_set():
             sleep(0.5)
-            row = int(
-                self.posicoes_processos[item["NUMERO_PROCESSO"]] + 1,
-            )
-            processo = item["NUMERO_PROCESSO"]
+
             try:
                 resultados = self.search(
                     data=item,
                     row=row,
                     client=client,
                 )
-                if not resultados:
-                    return
-
-                self.print_message(
-                    message="Processo encontrado!",
-                    message_type="info",
-                    row=row,
-                )
-
-                capa = self.capa_processual(
-                    result=resultados["data_request"],
-                )
-                id_processo = resultados["id_processo"]
-                timeline = TimeLinePJe.load(
-                    processo=processo,
-                    cliente=client,
-                    id_processo=id_processo,
-                    regiao=self.regiao,
-                    bot=self,
-                )
-
-                for file in timeline.documentos:
-                    if not any(
-                        [
-                            "acórdão" in file["tipo"].lower(),
-                            "acordao" in file["tipo"].lower(),
-                            "acordo" in file["tipo"].lower(),
-                            "sentença" in file["tipo"].lower(),
-                        ],
-                    ):
-                        continue
-
-                    timeline.baixar_documento(
-                        bot=self,
-                        documento=file,
-                        grau="1",
-                        inclur_assinatura=True,
+                if resultados:
+                    self.print_message(
+                        message="Processo encontrado!",
+                        message_type="info",
+                        row=row,
                     )
 
-                sleep(0.5)
+                    id_processo = resultados["id_processo"]
+                    data_ = resultados["data_request"]
 
-                self.append_success(
-                    worksheet="Resultados",
-                    data_save=[capa],
-                )
+                    termos: list[str] = (
+                        termos.split(",") if ", " in termos else [termos]
+                    )
 
-                message_type = "success"
-                message = "Execução Efetuada com sucesso!"
-                self.print_message(
-                    message=message,
-                    message_type=message_type,
-                    row=row,
-                )
+                    capa = self.capa_processual(result=data_)
+                    timeline = TimeLinePJe.load(
+                        processo=processo,
+                        cliente=client,
+                        id_processo=id_processo,
+                        regiao=self.regiao,
+                        bot=self,
+                    )
+
+                    for file in timeline.documentos:
+                        if any(
+                            termo.lower() in file["tipo"].lower()
+                            for termo in termos
+                        ):
+                            timeline.baixar_documento(
+                                bot=self,
+                                documento=file,
+                                grau="1",
+                                inclur_assinatura=True,
+                            )
+
+                        self.append_success(
+                            worksheet="Resultados",
+                            data_save=[capa],
+                        )
+
+                        return
+
+                    type_ = "success"
+                    msg_ = "Execução Efetuada com sucesso!"
+                    self.print_message(msg_, type_, row)
+                    item.update({"MENSAGEM_ERRO": msg_})
+                    self.append_error(data_save=item)
 
             except Exception as e:
                 exc = "\n".join(traceback.format_exception(e))

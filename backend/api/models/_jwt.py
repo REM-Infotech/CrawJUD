@@ -16,7 +16,7 @@ from backend.api.extensions import db, jwt
 from ._users import User
 
 if TYPE_CHECKING:
-    from backend.api.types_app import AnyType
+    from backend.types_app import AnyType
 
 
 @jwt.user_identity_loader

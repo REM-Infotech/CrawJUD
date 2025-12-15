@@ -16,8 +16,8 @@ if TYPE_CHECKING:
     from backend.task_manager.resources.queues.file_downloader import (
         FileDownloader,
     )
-    from backend.task_manager.types_app import Dict
-    from backend.task_manager.types_app.bot import ProcessoCNJ
+    from backend.types_app import Dict
+    from backend.types_app.bot import ProcessoCNJ
 
 load_dotenv()
 

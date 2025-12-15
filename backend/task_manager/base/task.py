@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from celery import Task
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import AnyType
+    from backend.types_app import AnyType
 
 
 class FlaskTask(Task):

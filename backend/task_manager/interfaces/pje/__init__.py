@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, TypedDict
 from .worksheet import CapaPJe
 
 if TYPE_CHECKING:
-    from backend.task_manager.types_app import Dict
+    from backend.types_app import Dict
 
 
 class DictResults(TypedDict):

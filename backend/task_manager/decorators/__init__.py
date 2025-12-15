@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from backend.task_manager.proto import CeleryTask
-    from backend.task_manager.types_app import AnyType, P
+    from backend.types_app import AnyType, P
 
 
 def import_class(path: str) -> object:

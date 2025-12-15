@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypedDict
 
 if TYPE_CHECKING:
-    from backend.api.types_app import MessageType, StatusBot
+    from backend.types_app import MessageType, StatusBot
 
 
 class Message(TypedDict, total=False):

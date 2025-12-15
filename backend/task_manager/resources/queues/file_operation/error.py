@@ -18,7 +18,7 @@ from backend.task_manager.resources.queues.file_operation.main import (
 
 if TYPE_CHECKING:
     from backend.task_manager.controllers.head import CrawJUD
-    from backend.task_manager.types_app import Dict
+    from backend.types_app import Dict
 
 DATASAVE = []
 

@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.remote.webdriver import WebDriver
     from seleniumwire.webdriver import Chrome
 
-    from backend.task_manager.types_app import AnyType
+    from backend.types_app import AnyType
 
 
 class RectWebElement(TypedDict):
