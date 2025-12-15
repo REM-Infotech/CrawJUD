@@ -57,12 +57,17 @@ class FormBot:
             # Converte os dados do formulário para dicionário
 
             kwargs = self.to_dict()
-            kwargs["pid"] = pid_exec
             # Busca o bot no banco de dados
             bot = db.session.query(Bots).filter(Bots.Id == self.bot_id).first()
             user: User = get_current_user()
-            kwargs["sistema"] = bot.sistema.lower()
-            kwargs["categoria"] = bot.categoria.lower()
+
+            kwargs.update({
+                "pid": pid_exec,
+                "bot_id": bot.Id,
+                "user_id": user.Id,
+                "sistema": bot.sistema.lower(),
+                "categoria": bot.categoria.lower(),
+            })
 
             keyword_args = list(kwargs.items())
 
@@ -118,7 +123,8 @@ class FormBot:
             if key == "credencial":
                 # Busca credencial do usuário logado
                 user: User = get_current_user()
-                # Acessa 'credenciais' antes de fechar a sessão para evitar DetachedInstanceError
+                # Acessa 'credenciais' antes de fechar a sessão
+                # para evitar DetachedInstanceError
                 lic = (
                     db.session.query(LicenseUser)
                     .select_from(User)

@@ -65,6 +65,9 @@ class CrawJUD:
         """Retorne o nome do bot CrawJUD."""
 
     def shutdown_all(self) -> None:
+
+        from backend.task_manager import celery_app as app
+
         if hasattr(self, "append_success"):
             with suppress(Exception):
                 self.append_success.queue_save.shutdown()
@@ -79,6 +82,10 @@ class CrawJUD:
                 if window_handles:
                     self.driver.delete_all_cookies()
                     self.driver.quit()
+
+        kw = self.config
+        kw["operacao"] = "stop"
+        app.send_task("notifica_usuario", kwargs=kw)
 
     @classmethod
     def __subclasshook__(cls, *args: AnyType, **kwargs: AnyType) -> None:
@@ -320,7 +327,7 @@ def start_bot(config: Dict) -> None:
     except Exception as e:
         clear()
 
-        BotUtil.logging_fatal_error(e, bot)
+        exc = BotUtil.logging_fatal_error(e, bot)
         BotUtil.create_thread_shutdown(bot)
 
         raise exc from e

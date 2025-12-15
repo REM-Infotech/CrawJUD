@@ -13,6 +13,7 @@ from tqdm import tqdm
 from backend.common.exceptions import (
     ExecutionError as ExecutionError,
 )
+from backend.common.exceptions._fatal import FatalError
 from backend.interfaces.pje import (
     CapaPJe,
 )
@@ -88,7 +89,7 @@ class Capa(PJeBot):
 
         processo = item["NUMERO_PROCESSO"]
         pos_processo = self.posicoes_processos[processo]
-        termos: str = item.get("TERMOS", "")
+        termos: str = item.get("TERMOS", "SENTENÇA,ACÓRDAO,LIMINAR")
         if not termos:
             return
 
@@ -112,9 +113,7 @@ class Capa(PJeBot):
                     id_processo = resultados["id_processo"]
                     data_ = resultados["data_request"]
 
-                    termos: list[str] = (
-                        termos.split(",") if ", " in termos else [termos]
-                    )
+                    termos: list[str] = termos.split(",") if ", " in termos else [termos]
 
                     capa = self.capa_processual(result=data_)
                     timeline = TimeLinePJe.load(
@@ -127,8 +126,7 @@ class Capa(PJeBot):
 
                     for file in timeline.documentos:
                         if any(
-                            termo.lower() in file["tipo"].lower()
-                            for termo in termos
+                            termo.lower() in file["tipo"].lower() for termo in termos
                         ):
                             timeline.baixar_documento(
                                 bot=self,
@@ -159,6 +157,8 @@ class Capa(PJeBot):
                     row=row,
                 )
 
+                raise FatalError(e) from e
+
     def capa_processual(self, result: Dict) -> CapaPJe:
         """Gere a capa processual do processo judicial PJE.
 
@@ -169,7 +169,9 @@ class Capa(PJeBot):
             CapaPJe: Dados da capa processual gerados.
 
         """
-        link_consulta = f"https://pje.trt{self.regiao}.jus.br/pjekz/processo/{result['id']}/detalhe"
+        link_consulta = (
+            f"https://pje.trt{self.regiao}.jus.br/pjekz/processo/{result['id']}/detalhe"
+        )
         return CapaPJe(
             ID_PJE=result["id"],
             LINK_CONSULTA=link_consulta,

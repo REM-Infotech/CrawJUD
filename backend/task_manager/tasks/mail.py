@@ -5,12 +5,14 @@ Este pacote lida com templates e envio de e-mails para eventos de tarefas.
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Literal
 
 from flask import Flask
 from flask_mail import Message
 
 from backend.api.models import User
+from backend.common.exceptions._fatal import FatalError
 from backend.task_manager.decorators import (
     SharedClassMethodTask as SharedClassMethodTask,
 )
@@ -20,6 +22,10 @@ if TYPE_CHECKING:
     from celery import Celery
     from flask import Flask
     from flask_mail import Mail
+
+
+type AnyType = any
+logger = logging.getLogger(__name__)
 
 
 class MailTasks(BotTasks):
@@ -38,6 +44,7 @@ class MailTasks(BotTasks):
         user_id: int,
         tipo_notificacao: Literal["start", "stop"],
         xlsx: str | None = None,
+        **kwargs: str | AnyType,
     ) -> Literal["E-mail enviado com sucesso!"]:
         """Envie notificação de início de tarefa por e-mail.
 
@@ -48,7 +55,7 @@ class MailTasks(BotTasks):
             user_id (int): ID do usuário.
             xlsx (str | None): Caminho do arquivo XLSX (opcional).
             tipo_notificacao (Literal["start", "stop"]): Tipo de notificação.
-
+            **kwargs: str | Any
         Returns:
             str: Mensagem de sucesso do envio do e-mail.
 
@@ -71,27 +78,33 @@ class MailTasks(BotTasks):
             },
         )
 
-        msg = Message(
-            subject="Notificação de Inicialização"
-            if tipo_notificacao == "start"
-            else "Notificação de Parada",
-            sender=mail.default_sender,
-            recipients=[user.email],
-        )
+        try:
+            msg = Message(
+                subject="Notificação de Inicialização"
+                if tipo_notificacao == "start"
+                else "Notificação de Parada",
+                sender=mail.default_sender,
+                recipients=[user.email],
+            )
 
-        if not user.admin:
-            email_admin = db.session.query(User).filter(User.admin).all()
-            msg.cc = [email.email for email in email_admin[:3]]
+            if not user.admin:
+                email_admin = db.session.query(User).filter(User.admin).all()
+                msg.cc = [email.email for email in email_admin[:3]]
 
-        template = cls.notificacoes.get(tipo_notificacao)
-        msg.html = template.render(
-            display_name=bot.display_name,
-            pid=pid,
-            xlsx=xlsx,
-            url_web=url_web,
-            username=user.nome_usuario,
-        )
+            template = cls.notificacoes.get(tipo_notificacao)
+            msg.html = template.render(
+                display_name=bot.display_name,
+                pid=pid,
+                xlsx=xlsx,
+                url_web=url_web,
+                username=user.nome_usuario,
+            )
 
-        mail.send(msg)
+            mail.send(msg)
+
+        except Exception as e:
+            exc = FatalError(e)
+            logger.exception("Erro de operação %r", repr(exc))
+            raise exc from e
 
         return "E-mail enviado com sucesso!"
