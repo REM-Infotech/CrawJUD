@@ -86,13 +86,11 @@ def login() -> Response:
             encoded_access_token=access_token,
         )
 
-        timezone = data.get("appzon")
-        if timezone and timezone in available_timezones():
-            # Sanitize the timezone value before setting it as a cookie
-            safe_timezone = quote(timezone, safe="")
+        timezone = quote(data.get("timezone"))
+        if timezone in available_timezones():
             response.set_cookie(
                 "TimeZone",
-                safe_timezone,
+                timezone,
                 httponly=current_app.config.get("JWT_COOKIE_HTTPONLY", True),
                 samesite=current_app.config.get("JWT_COOKIE_SAMESITE", "Lax"),
                 secure=current_app.config.get("JWT_COOKIE_SECURE", False),
