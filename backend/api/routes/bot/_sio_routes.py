@@ -81,16 +81,8 @@ class BotNS(Namespace):
             execucao.sort(key=lambda x: x.data_inicio, reverse=True)
 
         # Define payload padrão caso não haja execuções
-        payload = [
-            Execucao(
-                Id=0,
-                bot="vazio",
-                pid="vazio",
-                status="vazio",
-                data_inicio="vazio",
-                data_fim="vazio",
-            ),
-        ]
+        payload: list[Execucao] = []
+
         if execucao:
             # Retorna lista de execuções se houver
             payload = [
