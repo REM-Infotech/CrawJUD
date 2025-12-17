@@ -15,6 +15,7 @@ from socketio.redis_manager import RedisManager
 from backend.api.base import Model, Query
 from backend.api.base._tst import CustomPattern
 from backend.api.extensions._minio import Minio
+from backend.utilities.keystore import FlaskKeepass
 
 if TYPE_CHECKING:
     from dynaconf.contrib import DynaconfConfig
@@ -27,6 +28,7 @@ mail = Mail()
 io = SocketIO()
 cors = CORS()
 storage = Minio()
+keepass = FlaskKeepass()
 
 __all__ = ["CustomPattern", "cors", "db", "jwt", "mail", "start_extensions"]
 
@@ -34,6 +36,7 @@ __all__ = ["CustomPattern", "cors", "db", "jwt", "mail", "start_extensions"]
 def start_extensions(app: Flask) -> None:
     """Inicializa as extensões do Flask."""
     with app.app_context():
+        keepass.init_app(app)
         db.init_app(app)
         jwt.init_app(app)
         mail.init_app(app)
