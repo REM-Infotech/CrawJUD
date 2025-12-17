@@ -18,10 +18,12 @@ from backend.api.routes import handlers
 from backend.api.routes.auth import auth
 from backend.api.routes.bot import BotNS, bots
 
+from . import status
+
 if TYPE_CHECKING:
     from flask_socketio import SocketIO
 
-__all__ = ["handlers"]
+__all__ = ["handlers", "status"]
 
 
 def register_routes(app: Flask) -> None:

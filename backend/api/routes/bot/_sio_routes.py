@@ -242,6 +242,6 @@ class BotNS(Namespace):
         return list_credentials
 
     @jwt_required()
-    def on_connected(self, *args: AnyType, **kwargs: AnyType) -> None:
+    def on_connect(self, *args: AnyType, **kwargs: AnyType) -> None:
         """Log bot."""
         self.seed = str(uuid4())
