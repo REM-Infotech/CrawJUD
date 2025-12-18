@@ -9,12 +9,12 @@ from pathlib import Path
 from tempfile import gettempdir
 from threading import Lock
 from typing import TYPE_CHECKING, Literal, TypedDict
-from uuid import uuid4
 from zoneinfo import ZoneInfo
 
-from flask_jwt_extended import get_current_user, jwt_required
+from flask_jwt_extended import get_current_user
 from flask_socketio import Namespace, join_room
 
+from backend.api.decorators import jwt_sio_required
 from backend.api.extensions import io
 from backend.utilities import format_time, load_timezone, update_timezone
 
@@ -68,7 +68,7 @@ class BotNS(Namespace):
     def __init__(self) -> None:
         super().__init__(namespace="/bot")
 
-    @jwt_required()
+    @jwt_sio_required
     def on_listagem_execucoes(self) -> list[Execucao]:
         """Lista execuções dos bots do usuário autenticado."""
         # Obtém o usuário autenticado
@@ -99,7 +99,7 @@ class BotNS(Namespace):
 
         return payload
 
-    @jwt_required()
+    @jwt_sio_required
     def on_logbot(self, data: Message) -> None:
         """Log bot."""
         with lock:
@@ -128,7 +128,7 @@ class BotNS(Namespace):
                 namespace="/bot",
             )
 
-    @jwt_required()
+    @jwt_sio_required
     def on_listagem(self, *args: AnyType, **kwargs: AnyType) -> list[BotInfo]:
         """Lista todos os bots disponíveis para o usuário autenticado.
 
@@ -152,7 +152,7 @@ class BotNS(Namespace):
             ],
         }
 
-    @jwt_required()
+    @jwt_sio_required
     def on_bot_stop(self, data: dict[str, str]) -> None:
         """Registre parada do bot e salve log.
 
@@ -163,7 +163,7 @@ class BotNS(Namespace):
         # Emite evento de parada do bot para a sala correspondente
         io.emit("bot_stop", room=data["pid"], namespace="/bot")
 
-    @jwt_required()
+    @jwt_sio_required
     def on_join_room(self, data: dict[str, str]) -> list[str]:
         """Adicione usuário à sala e retorne logs.
 
@@ -203,7 +203,7 @@ class BotNS(Namespace):
 
         return [map_messages(msg) for msg in messages]
 
-    @jwt_required()
+    @jwt_sio_required
     def on_provide_credentials(
         self,
         data: dict[Literal["sistema"], Sistemas],
@@ -241,7 +241,10 @@ class BotNS(Namespace):
 
         return list_credentials
 
-    @jwt_required()
+    @jwt_sio_required
     def on_connect(self, *args: AnyType, **kwargs: AnyType) -> None:
         """Log bot."""
-        self.seed = str(uuid4())
+
+    @jwt_sio_required
+    def on_disconnect(self, *args: AnyType, **kwargs: AnyType) -> None:
+        """Log bot."""

@@ -40,3 +40,5 @@ class CeleryConfig:
         for k, v in list(values.items()):
             if str(k).isupper():
                 setattr(self, k.lower(), v)
+
+        self.worker_hijack_root_logger = False

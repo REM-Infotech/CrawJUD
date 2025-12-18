@@ -27,6 +27,9 @@ __all__ = [
 ]
 
 
+parent_path = Path(__file__).parent.resolve()
+
+
 class DictUsers(TypedDict):
     id: int
     login: str
@@ -48,9 +51,7 @@ def init_database(app: Flask) -> None:
         db.create_all()
 
         user = (
-            db.session.query(User)
-            .filter_by(login=app.config["ROOT_USERNAME"])
-            .first()
+            db.session.query(User).filter_by(login=app.config["ROOT_USERNAME"]).first()
         )
 
         if not user:
@@ -80,7 +81,7 @@ def init_database(app: Flask) -> None:
 
 def create_bots(app: Flask) -> None:
     with app.app_context():
-        path_export = Path(__file__).parent.joinpath("export.json")
+        path_export = parent_path.joinpath("export.json")
 
         lic = (
             db.session.query(LicenseUser)
@@ -94,9 +95,7 @@ def create_bots(app: Flask) -> None:
             list_bot_add = [
                 Bots(**bot)
                 for bot in list_data
-                if not db.session.query(Bots)
-                .filter(Bots.Id == bot["Id"])
-                .first()
+                if not db.session.query(Bots).filter(Bots.Id == bot["Id"]).first()
             ]
 
             lic.bots.extend(list_bot_add)
@@ -106,9 +105,7 @@ def create_bots(app: Flask) -> None:
 
 
 def load_credentials(app: Flask) -> None:
-    path_credentials = Path(__file__).parent.joinpath(
-        "credentials.json",
-    )
+    path_credentials = parent_path.joinpath("credentials.json")
 
     if path_credentials.exists():
         with (
@@ -150,9 +147,7 @@ def import_users(app: Flask) -> None:
             list_users: list[User] = []
             for user in users:
                 existing_user = (
-                    db.session.query(User)
-                    .filter(User.login == user["login"])
-                    .first()
+                    db.session.query(User).filter(User.login == user["login"]).first()
                 )
 
                 if not existing_user:

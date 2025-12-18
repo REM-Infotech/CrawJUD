@@ -32,6 +32,11 @@ def make_celery() -> Celery:
     )
 
     celery_app.config_from_object(CeleryConfig(flaskapp.config))
+
+    celery_app.conf.update(
+        worker_hijack_root_logger=False,
+        worker_redirect_stdouts=False,
+    )
     celery_app.set_default()
     flaskapp.extensions["celery"] = celery_app
 

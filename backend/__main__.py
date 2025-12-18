@@ -2,14 +2,31 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+import logging
 
 from backend import _start_backend
+from backend.config._log import CustomLog
 
-if TYPE_CHECKING:
-    from threading import Thread
+_defaultFormatter = logging.Formatter()  # noqa: N816
+
+type AnyType = any
+
+
+class CustomStreamHandler(logging.StreamHandler):  # noqa: D101
+    def format(self, record: logging.LogRecord) -> str:
+        return _defaultFormatter.format(record)
+
+    def emit(self, record: logging.LogRecord) -> None:
+        msg = self.format(record)
+        print(name_record=record.name, *(msg,))  # noqa: B026, T201
+
 
 if __name__ == "__main__":
-    _threads: dict[Literal["threads"], list[Thread]] = _start_backend()
-    while True:
-        ...
+    with CustomLog.print_replacer():
+        _start_backend()
+
+        if not logging.root.handlers:
+            logging.basicConfig(handlers=[CustomStreamHandler()])
+
+        while True:
+            ...

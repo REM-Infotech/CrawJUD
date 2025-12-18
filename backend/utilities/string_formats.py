@@ -15,6 +15,7 @@ T_PATERN2 = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}$"
 
 TIME_PATTERNS = [
     (r"^\d{2}:\d{2}:\d{2}:\d{6}[+-]\d{4}$", "%H:%M:%S:%f%z"),
+    (r"^\d{2}:\d{2}:\d{2}:[+-]\d{4}$", "%H:%M:%S:%z"),
     (r"^\d{2}:\d{2}:\d{2}[+-]\d{4}$", "%H:%M:%S%z"),
     (r"^\d{2}:\d{2}:\d{2}:\d{6}$", "%H:%M:%S:%f"),
     (r"^\d{2}:\d{2}:\d{2}$", "%H:%M:%S"),
@@ -62,9 +63,7 @@ def detect_datetime_format(str_dt: str) -> datetime:
     """
 
     def raise_value_error() -> None:
-        raise ValueError(
-            message=f"Formato de data/hora inválido: {str_dt}",
-        )
+        raise ValueError(f"Formato de data/hora inválido: {str_dt}")  # noqa: EM102, TRY003
 
     for pattern, fmt in TIME_PATTERNS:
         if re.match(pattern, str_dt):
@@ -75,6 +74,10 @@ def detect_datetime_format(str_dt: str) -> datetime:
                     tzinfo=ZoneInfo("America/Sao_Paulo"),
                     hour=strp_dt.hour - 1,
                 )
+
+        elif " (LMT)" in str_dt:
+            str_dt = str_dt.replace(" (LMT)", "")
+            return detect_datetime_format(str_dt)
 
     raise_value_error()
     return None

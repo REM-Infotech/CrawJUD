@@ -143,7 +143,6 @@ class FlaskKeepass(PyKeePass):
 _ctx_current_db = ContextVar(
     "current_keepass_db",
     default=None,
-    type=FlaskKeepass | None,
 )
 
 

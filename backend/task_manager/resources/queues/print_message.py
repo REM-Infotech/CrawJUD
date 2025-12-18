@@ -191,14 +191,17 @@ class PrintMessage:
             self.set_event,
             namespace="/bot",
         )
-        sio.connect(url=socketio_server, namespaces=["/bot"])
-        sio.emit(
-            "join_room",
-            data={"room": self.bot.pid},
-            namespace="/bot",
-        )
 
         for data in QueueIterator[Message](self.queue_print_bot):
+            with suppress(Exception):
+                if not sio.connected:
+                    sio.connect(url=socketio_server, namespaces=["/bot"])
+                    sio.emit(
+                        "join_room",
+                        data={"room": self.bot.pid},
+                        namespace="/bot",
+                    )
+
             if data:
                 with suppress(Exception):
                     to_write = data["message"]

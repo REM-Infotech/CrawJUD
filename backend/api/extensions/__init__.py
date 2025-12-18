@@ -36,8 +36,9 @@ __all__ = ["CustomPattern", "cors", "db", "jwt", "mail", "start_extensions"]
 def start_extensions(app: Flask) -> None:
     """Inicializa as extensões do Flask."""
     with app.app_context():
-        keepass.init_app(app)
-        db.init_app(app)
+        if not app.extensions.get("sqlalchemy"):
+            db.init_app(app)
+
         jwt.init_app(app)
         mail.init_app(app)
         io.init_app(
@@ -50,7 +51,6 @@ def start_extensions(app: Flask) -> None:
         cors.init_app(
             app,
             supports_credentials=True,
-            transports=["websocket"],
         )
         storage.init_app(app)
 
@@ -61,3 +61,8 @@ def start_extensions(app: Flask) -> None:
                         setattr(self, k, v)
 
         celery.config_from_object(CeleryConfig(app.config))
+        celery.conf.update(
+            worker_hijack_root_logger=False,
+            worker_redirect_stdouts=False,
+            worker_redirect_stdouts_level="CRITICAL",
+        )

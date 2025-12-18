@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 from clear import clear
 from dotenv import load_dotenv
 
+from backend.common.exceptions import StartError
 from backend.common.exceptions._fatal import FatalError
 from backend.common.exceptions._file import ArquivoNaoEncontradoError
 from backend.task_manager.constants import WORKDIR
@@ -84,7 +85,7 @@ class CrawJUD:
                     self.driver.quit()
 
         kw = self.config
-        kw["operacao"] = "stop"
+        kw["tipo_notificacao"] = "stop"
         app.send_task("notifica_usuario", kwargs=kw)
 
     @classmethod
@@ -137,9 +138,11 @@ class CrawJUD:
 
         if credenciais.get("username"):
             auth_ = self.auth()
-            if auth_:
+            if not auth_:
                 with suppress(Exception):
                     self.driver.quit()
+
+                raise StartError(message="Falha na autenticação do bot CrawJUD.")
 
         if config.get("xlsx"):
             self.file_manager.download_files()
