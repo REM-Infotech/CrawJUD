@@ -133,9 +133,7 @@ def load_credentials(app: Flask) -> None:
 
 
 def import_users(app: Flask) -> None:
-    path_users = Path(__file__).parent.joinpath(
-        "users_202511251518.json",
-    )
+    path_users = parent_path.joinpath("users_202511251518.json")
 
     if path_users.exists():
         users: list[DictUsers] = json.loads(

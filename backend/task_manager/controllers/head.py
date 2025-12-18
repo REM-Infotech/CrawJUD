@@ -77,13 +77,6 @@ class CrawJUD:
             with suppress(Exception):
                 self.append_error.queue_save.shutdown()
 
-        if hasattr(self, "driver"):
-            with suppress(Exception):
-                window_handles = self.driver.window_handles
-                if window_handles:
-                    self.driver.delete_all_cookies()
-                    self.driver.quit()
-
         kw = self.config
         kw["tipo_notificacao"] = "stop"
         app.send_task("notifica_usuario", kwargs=kw)

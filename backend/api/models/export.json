@@ -137,6 +137,14 @@
   },
   {
     "Id": 18,
+    "display_name": "JUSDS - PROVISIONAMENTO",
+    "sistema": "JUSDS",
+    "categoria": "PROVISAO",
+    "configuracao_form": "file_auth",
+    "descricao": "Realiza provisionamento de valores no sistema JUSDS."
+  },
+  {
+    "Id": 19,
     "display_name": "CSI - Download Documentos",
     "sistema": "CSI",
     "categoria": "DOWNLOAD_DOCUMENTO",
@@ -144,7 +152,7 @@
     "descricao": "Realiza download de documentos no sistema CSI."
   },
   {
-    "Id": 19,
+    "Id": 20,
     "display_name": "ELAW - DOWNLOAD ARQ.",
     "sistema": "ELAW",
     "categoria": "DOWNLOAD",
@@ -152,7 +160,7 @@
     "descricao": "Realiza download de documentos no sistema ELAW."
   },
   {
-    "Id": 20,
+    "Id": 21,
     "display_name": "ELAW - PAGAMENTOS",
     "sistema": "ELAW",
     "categoria": "SOLICITA_PAGAMENTO",
@@ -160,7 +168,7 @@
     "descricao": "Solicita pagamentos no sistema ELAW."
   },
   {
-    "Id": 21,
+    "Id": 22,
     "display_name": "ELAW - CADASTRO",
     "sistema": "ELAW",
     "categoria": "CADASTRO",
@@ -168,7 +176,7 @@
     "descricao": "Realiza cadastro de processos no sistema ELAW."
   },
   {
-    "Id": 22,
+    "Id": 23,
     "display_name": "ELAW - PROVISIONAMENTO",
     "sistema": "ELAW",
     "categoria": "PROVISAO",
@@ -176,7 +184,7 @@
     "descricao": "Realiza provisionamento de valores no sistema ELAW."
   },
   {
-    "Id": 23,
+    "Id": 24,
     "display_name": "ELAW - ANDAMENTOS",
     "sistema": "ELAW",
     "categoria": "ANDAMENT",
@@ -184,7 +192,7 @@
     "descricao": "Insere andamentos processuais no sistema ELAW."
   },
   {
-    "Id": 24,
+    "Id": 25,
     "display_name": "ELAW - ATUALIZA FASE",
     "sistema": "ELAW",
     "categoria": "ATUALIZA_FASE",
