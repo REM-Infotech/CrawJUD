@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 
 from backend import _start_backend
-from backend.config._log import CustomLog
 
 _defaultFormatter = logging.Formatter()  # noqa: N816
 
@@ -22,11 +21,7 @@ class CustomStreamHandler(logging.StreamHandler):  # noqa: D101
 
 
 if __name__ == "__main__":
-    with CustomLog.print_replacer():
-        _start_backend()
+    _start_backend()
 
-        if not logging.root.handlers:
-            logging.basicConfig(handlers=[CustomStreamHandler()])
-
-        while True:
-            ...
+    while True:
+        ...
