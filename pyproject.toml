@@ -17,6 +17,7 @@ dependencies = [
     "flask-mail>=0.10.0",
     "flask-socketio>=5.5.1",
     "flask-sqlalchemy>=3.1.1",
+    "greenlet>=3.3.0",
     "httpx>=0.28.1",
     "hvac>=2.3.0",
     "hypercorn>=0.17.3",
