@@ -3,8 +3,13 @@ from flask_socketio import Namespace
 
 class CredenciaisRobosNS(Namespace):
     def __init__(self) -> None:
-        super().__init__("/admin/credenciais")
+        self._namespace = "/admin/credenciais"
+        super().__init__(self._namespace)
+
+    def on_disconnect(self) -> None:
+
+        return ""
 
     def on_connect(self) -> None:
 
-        print("ok")  # noqa: T201
+        return ""

@@ -26,6 +26,25 @@ if TYPE_CHECKING:
 
 __all__ = ["handlers", "status"]
 
+values = dict(handlers: Annotated = []
+    app: Quart = None
+    host: str = "localhost"
+    port: int = 5000
+    debug: bool = False
+    allow_unsafe_werkzeug: bool = False
+    use_reloader: bool = False
+    extra_files: List[str] = []
+    reloader_options: Dict[str, Any] = {}
+    server_options: Dict[str, Any] = {}
+    launch_mode: str = "uvicorn"
+    server: ASyncServerType = None
+    namespace_handlers: List[Any] = []
+    exception_handlers: Dict[str, Any] = {}
+    default_exception_handler: Any = None
+    manage_session: bool = True
+    log_config: Dict[str, Any] = {}
+    log_level: int = 20  # Default to logging.INFO
+)
 
 def register_routes(app: Flask) -> None:
     blueprints = [auth, bots]
@@ -34,8 +53,9 @@ def register_routes(app: Flask) -> None:
 
     sio: SocketIO = app.extensions["socketio"]
 
-    sio.on_namespace(BotNS())
-    sio.on_namespace(CredenciaisRobosNS())
+    with app.app_context():
+        sio.on_namespace(BotNS())
+        sio.on_namespace(CredenciaisRobosNS())
 
 
 @app.after_request
