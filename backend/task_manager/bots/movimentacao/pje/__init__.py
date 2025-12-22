@@ -63,7 +63,7 @@ class Movimentacao(PJeBot):
         """
         cookies = self.auth.get_cookies()
         client_context = Client(cookies=cookies)
-        thread_pool = ThreadPoolExecutor(4)
+        thread_pool = ThreadPoolExecutor(1)
 
         with client_context as client, thread_pool as pool:
             futures: list[Future[None]] = []
@@ -109,7 +109,9 @@ class Movimentacao(PJeBot):
                     data_ = resultados["data_request"]
 
                     termos: list[str] = (
-                        termos.split(",") if ", " in termos else [termos]
+                        termos.replace(", ", ",").split(",")
+                        if ", " in termos
+                        else [termos]
                     )
 
                     capa = self.capa_processual(result=data_)
@@ -121,17 +123,22 @@ class Movimentacao(PJeBot):
                         bot=self,
                     )
 
-                    for file in timeline.documentos:
-                        if any(
-                            termo.lower() in file["tipo"].lower()
-                            for termo in termos
-                        ):
-                            timeline.baixar_documento(
-                                bot=self,
-                                documento=file,
-                                grau="1",
-                                inclur_assinatura=True,
-                            )
+                    arquivos = list(
+                        filter(
+                            lambda file: any(
+                                termo.lower() in file["tipo"].lower() for termo in termos
+                            ),
+                            timeline.documentos,
+                        ),
+                    )
+
+                    for file in arquivos:
+                        timeline.baixar_documento(
+                            bot=self,
+                            documento=file,
+                            grau="1",
+                            inclur_assinatura=True,
+                        )
 
                         self.append_success(
                             worksheet="Resultados",
@@ -166,7 +173,9 @@ class Movimentacao(PJeBot):
             CapaPJe: Dados da capa processual gerados.
 
         """
-        link_consulta = f"https://pje.trt{self.regiao}.jus.br/pjekz/processo/{result['id']}/detalhe"
+        link_consulta = (
+            f"https://pje.trt{self.regiao}.jus.br/pjekz/processo/{result['id']}/detalhe"
+        )
         return CapaPJe(
             ID_PJE=result["id"],
             LINK_CONSULTA=link_consulta,
