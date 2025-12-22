@@ -47,8 +47,6 @@ def start_extensions(app: Flask) -> None:
             async_mode="threading",
             cors_allowed_origins="*",
             client_manager=RedisManager(app.config["BROKER_URL"]),
-            logger=True,
-            engineio_logger=True,
         )
         cors.init_app(
             app,

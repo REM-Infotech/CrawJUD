@@ -15,9 +15,9 @@ from flask import (
 
 from backend.api import app
 from backend.api.routes import handlers
+from backend.api.routes.admin import NamespaceAdminCrawJUD
 from backend.api.routes.auth import auth
 from backend.api.routes.bot import BotNS, bots
-from backend.api.routes.credentials import CredenciaisRobosNS
 
 from . import status
 
@@ -36,7 +36,7 @@ def register_routes(app: Flask) -> None:
 
     with app.app_context():
         sio.on_namespace(BotNS())
-        sio.on_namespace(CredenciaisRobosNS())
+        sio.on_namespace(NamespaceAdminCrawJUD())
 
 
 @app.after_request

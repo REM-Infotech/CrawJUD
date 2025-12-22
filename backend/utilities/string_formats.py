@@ -72,7 +72,7 @@ def detect_datetime_format(str_dt: str) -> datetime:
 
                 return strp_dt.replace(
                     tzinfo=ZoneInfo("America/Sao_Paulo"),
-                    hour=strp_dt.hour - 1,
+                    hour=strp_dt.hour,
                 )
 
         elif " (LMT)" in str_dt:
@@ -115,4 +115,4 @@ def update_timezone(dt: datetime | str) -> datetime:
         if isinstance(dt, str):
             dt = detect_datetime_format(dt)
 
-        return dt.replace(hour=dt.hour - 1).replace(tzinfo=ZoneInfo(client_timezone))
+        return dt.replace(hour=dt.hour).replace(tzinfo=ZoneInfo(client_timezone))

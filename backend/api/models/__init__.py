@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from flask import Flask
 
     from backend.types_app import Dict
+    from backend.types_app.payloads import SystemBots
 
 __all__ = [
     "Bots",
@@ -31,7 +32,7 @@ parent_path = Path(__file__).parent.resolve()
 
 
 class DictUsers(TypedDict):
-    id: int
+    Id: int
     login: str
     nome_usuario: str
     email: str
@@ -42,6 +43,15 @@ class DictUsers(TypedDict):
     filename: str
     blob_doc: bytes
     licenseus_id: int
+
+
+class DictCredencial(TypedDict):
+    Id: 8
+    nome_credencial: str
+    system: SystemBots
+    login_method: str
+    login: str
+    password: str
 
 
 def init_database(app: Flask) -> None:
@@ -108,16 +118,13 @@ def load_credentials(app: Flask) -> None:
     path_credentials = parent_path.joinpath("credentials.json")
 
     if path_credentials.exists():
-        with (
-            app.app_context(),
-            path_credentials.open("r", encoding="utf-8") as fp,
-        ):
+        list_data: list[DictCredencial] = json.loads(path_credentials.read_text())
+        with app.app_context():
             lic = (
                 db.session.query(LicenseUser)
                 .filter(LicenseUser.Nome == "Root License")
                 .first()
             )
-            list_data: list[Dict] = json.load(fp)
 
             list_cred_add = [
                 CredenciaisRobo(**cred)
@@ -136,13 +143,13 @@ def import_users(app: Flask) -> None:
     path_users = parent_path.joinpath("users_202511251518.json")
 
     if path_users.exists():
-        users: list[DictUsers] = json.loads(
-            path_users.read_text(encoding="utf-8"),
-        )["users"]
-
         with app.app_context():
+            text_users = path_users.read_text(encoding="utf-8")
+            users: list[DictUsers] = json.loads(text_users)
+
             license_ = db.session.query(LicenseUser).first()
             list_users: list[User] = []
+
             for user in users:
                 existing_user = (
                     db.session.query(User).filter(User.login == user["login"]).first()
