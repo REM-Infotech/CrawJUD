@@ -63,7 +63,7 @@ class Movimentacao(PJeBot):
         """
         cookies = self.auth.get_cookies()
         client_context = Client(cookies=cookies)
-        thread_pool = ThreadPoolExecutor(1)
+        thread_pool = ThreadPoolExecutor(4)
 
         with client_context as client, thread_pool as pool:
             futures: list[Future[None]] = []
