@@ -69,8 +69,11 @@ class CredenciaisRobo(db.Model):
         nullable=False,
     )
     sistema: str = Column("sistema", String(length=64), nullable=False)
-    login: str = Column("login", String(length=64))
-    password: str = Column("senha", String(length=64), nullable=False)
-
+    login_metodo: str = Column(
+        "metodo_login",
+        String(length=12),
+        default="pw",
+        nullable=False,
+    )
     license_id: int = Column(Integer, db.ForeignKey("licencas.id"))
     license_: Mapped[LicenseUser] = rel(back_populates="credenciais")

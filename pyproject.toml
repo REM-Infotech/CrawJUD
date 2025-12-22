@@ -14,10 +14,10 @@ dependencies = [
     "flask>=3.1.2",
     "flask-cors>=6.0.1",
     "flask-jwt-extended>=4.7.1",
+    "flask-keepass",
     "flask-mail>=0.10.0",
     "flask-socketio>=5.5.1",
     "flask-sqlalchemy>=3.1.1",
-    "greenlet>=3.3.0",
     "httpx>=0.28.1",
     "hvac>=2.3.0",
     "hypercorn>=0.17.3",
@@ -61,3 +61,6 @@ dev = [
     "pyarmor-man>=0.2",
     "pyinstaller>=6.16.0",
 ]
+
+[tool.uv.sources]
+flask-keepass = { git = "https://github.com/Robotz213/Flask-Keepass.git" }

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from celery import Celery
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_keepass import KeepassManager
 from flask_mail import Mail
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
@@ -15,7 +16,6 @@ from socketio.redis_manager import RedisManager
 from backend.api.base import Model, Query
 from backend.api.base._tst import CustomPattern
 from backend.api.extensions._minio import Minio
-from backend.utilities.keystore import FlaskKeepass
 
 if TYPE_CHECKING:
     from dynaconf.contrib import DynaconfConfig
@@ -28,7 +28,7 @@ mail = Mail()
 io = SocketIO()
 cors = CORS()
 storage = Minio()
-keepass = FlaskKeepass()
+keepass = KeepassManager()
 
 __all__ = ["CustomPattern", "cors", "db", "jwt", "mail", "start_extensions"]
 
