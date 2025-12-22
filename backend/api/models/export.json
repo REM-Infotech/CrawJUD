@@ -84,7 +84,7 @@
     "display_name": "PJE - CAPA",
     "sistema": "PJE",
     "categoria": "CAPA",
-    "configuracao_form": "pje",
+    "configuracao_form": "file_auth",
     "descricao": "Extrai a capa do processo e exporta os dados em planilha."
   },
   {
@@ -92,7 +92,7 @@
     "display_name": "PJE - MOVIMENTAÇÕES",
     "sistema": "PJE",
     "categoria": "MOVIMENTACAO",
-    "configuracao_form": "pje",
+    "configuracao_form": "file_auth",
     "descricao": "Extrai movimentações processuais e exporta em planilha."
   },
   {
@@ -100,7 +100,7 @@
     "display_name": "PJE - PROTOCOLO",
     "sistema": "PJE",
     "categoria": "PROTOCOLO",
-    "configuracao_form": "pje_protocolo",
+    "configuracao_form": "multiple_files",
     "descricao": "Realiza peticionamento em lote de processos."
   },
   {
@@ -108,7 +108,7 @@
     "display_name": "PJE - HABILITAÇÃO",
     "sistema": "PJE",
     "categoria": "HABILITACAO",
-    "configuracao_form": "pje_protocolo",
+    "configuracao_form": "multiple_files",
     "descricao": "Realiza habilitação em lote de processos."
   },
   {

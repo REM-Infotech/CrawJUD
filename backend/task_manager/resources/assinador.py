@@ -84,7 +84,7 @@ class ConteudoAssinado:
         certificado: PKCS12Certificate,
         cadeia: list[PKCS12Certificate],
     ) -> None:
-        """Inicializa o ConteudoAssinado com o conteúdo assinado, certificado e cadeia de certificados.
+        """Inicializa o ConteudoAssinado.
 
         Parameters
         ----------
@@ -196,10 +196,7 @@ class Assinador:
     def cadeia(self) -> list[PKCS12Certificate]:
         chain = [self.certficado]
         chain.extend(
-            [
-                cert.certificate
-                for cert in self.certificado_carregado.additional_certs
-            ],
+            [cert.certificate for cert in self.certificado_carregado.additional_certs],
         )
         return chain
 

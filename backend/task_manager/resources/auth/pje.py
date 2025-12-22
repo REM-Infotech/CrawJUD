@@ -123,7 +123,7 @@ class AutenticadorPJe(AutenticadorBot):
         desafio = random_base36()
         assinador = Assinador(
             self.credenciais.certificado,
-            self.credenciais.senha_certificado,
+            self.credenciais.password,
         )
         conteudo_assinado = assinador.assinar_conteudo(desafio)
 
@@ -147,8 +147,7 @@ class AutenticadorPJe(AutenticadorBot):
         self.driver.execute_script("document.forms[0].submit()")
 
     def _desafio_duplo_fator(self) -> None:
-        otp_uri = self._get_otp_uri()
-        otp = str(pyotp.parse_uri(uri=otp_uri).now())
+        otp = str(pyotp.parse_uri(uri=self.credenciais.otp).now())
 
         input_otp: WebElementBot = WebDriverWait(self.driver, 60).until(
             ec.presence_of_element_located((
@@ -177,10 +176,7 @@ class AutenticadorPJe(AutenticadorBot):
 
     def _cookie_to_dict(self) -> dict[str, str]:
         cookies_driver = self.driver.get_cookies()
-        return {
-            str(cookie["name"]): str(cookie["value"])
-            for cookie in cookies_driver
-        }
+        return {str(cookie["name"]): str(cookie["value"]) for cookie in cookies_driver}
 
     def _get_otp_uri(self) -> str:
         kp = KeyStore(self.credenciais.kdbx, self.credenciais.senha_kdbx)

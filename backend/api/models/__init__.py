@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, TypedDict, cast
 from uuid import uuid4
 
 from backend.api.extensions import db
@@ -16,6 +16,7 @@ from ._jwt import TokenBlocklist
 if TYPE_CHECKING:
     from flask import Flask
     from flask_keepass import KeepassManager
+    from pykeepass import Group
 
     from backend.types_app import Dict
     from backend.types_app.payloads import SystemBots
@@ -136,42 +137,52 @@ def load_credentials(app: Flask) -> None:
 
             list_cred_add: list[CredenciaisRobo] = []
             for sistema in sistemas:
-                group = keepass.add_group(
-                    destination_group=keepass.root_group,
-                    group_name=sistema.upper(),
+                group = cast(
+                    "Group",
+                    keepass.find_groups(name=sistema.upper(), first=True),
                 )
+                if not group:
+                    group = keepass.add_group(
+                        destination_group=keepass.root_group,
+                        group_name=sistema.upper(),
+                    )
+
                 filtered_list: list[DictCredencial] = list(
                     filter(lambda x: x["sistema"] == str(sistema), list_data),
                 )
                 for item in filtered_list:
-                    rastreio = str(uuid4())
-
-                    entry_ = keepass.find_entries(
+                    entry = keepass.find_entries(
                         title=item["nome_credencial"],
                         first=True,
                     )
-                    if entry_:
-                        continue
 
-                    entry = keepass.add_entry(
-                        destination_group=group,
-                        title=item["nome_credencial"],
-                        username=item["login"],
-                        password=item["password"],
-                        tags=[item["login_metodo"]],
-                        notes=rastreio,
-                    )
+                    rastreio = entry.notes
+                    if not entry:
+                        rastreio = str(uuid4())
+                        entry = keepass.add_entry(
+                            destination_group=group,
+                            title=item["nome_credencial"],
+                            username=item["login"],
+                            password=item["password"],
+                            tags=[item["login_metodo"]],
+                            notes=rastreio,
+                        )
+
+                    if item.get("otp"):
+                        entry.otp = item.get("otp")
 
                     if item.get("certificado"):
                         path_cert = Path(item.get("certificado"))
                         attachment_name = path_cert.name
-                        attachment_data = path_cert.read_bytes()
 
-                        binary_id = keepass.add_binary(attachment_data)
-                        entry.add_attachment(
-                            id=binary_id,
-                            filename=attachment_name,
-                        )
+                        if not keepass.find_attachments(filename=attachment_name):
+                            attachment_data = path_cert.read_bytes()
+
+                            binary_id = keepass.add_binary(attachment_data)
+                            entry.add_attachment(
+                                id=binary_id,
+                                filename=attachment_name,
+                            )
 
                     list_cred_add.append(
                         CredenciaisRobo(

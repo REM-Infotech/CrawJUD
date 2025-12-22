@@ -27,7 +27,6 @@ def make_celery() -> Celery:
     FlaskDynaconf(
         app=flaskapp,
         instance_relative_config=True,
-        extensions_list="EXTENSIONS",
         dynaconf_instance=config,
     )
 
