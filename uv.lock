@@ -705,8 +705,8 @@ wheels = [
 
 [[package]]
 name = "flask-keepass"
-version = "0.1.0.post1"
-source = { git = "https://github.com/Robotz213/Flask-Keepass.git#b71833925a7323ea6a8d204b6b3f2b92474ff903" }
+version = "0.1.0.post3"
+source = { git = "https://github.com/Robotz213/Flask-Keepass.git#9679c8613e44e9e949de79a6e90cdc8783aa20d9" }
 dependencies = [
     { name = "flask" },
     { name = "pykeepass" },

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from celery import Celery
@@ -52,7 +53,12 @@ def start_extensions(app: Flask) -> None:
             app,
             supports_credentials=True,
         )
+
         storage.init_app(app)
+
+        Path(app.config["KEEPASS_FILENAME"]).parent.mkdir(parents=True, exist_ok=True)
+
+        keepass.init_app(app)
 
         class CeleryConfig:
             def __init__(self, values: DynaconfConfig) -> None:

@@ -75,5 +75,6 @@ class CredenciaisRobo(db.Model):
         default="pw",
         nullable=False,
     )
+    rastreio: str = Column("rastreio", String(length=64), nullable=False)
     license_id: int = Column(Integer, db.ForeignKey("licencas.id"))
     license_: Mapped[LicenseUser] = rel(back_populates="credenciais")

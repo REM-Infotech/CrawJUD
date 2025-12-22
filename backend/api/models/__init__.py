@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import TYPE_CHECKING, TypedDict
+from uuid import uuid4
 
 from backend.api.extensions import db
 from backend.api.models._bot import Bots, CredenciaisRobo, ExecucoesBot
@@ -14,6 +15,7 @@ from ._jwt import TokenBlocklist
 
 if TYPE_CHECKING:
     from flask import Flask
+    from flask_keepass import KeepassManager
 
     from backend.types_app import Dict
     from backend.types_app.payloads import SystemBots
@@ -49,7 +51,7 @@ class DictCredencial(TypedDict):
     Id: 8
     nome_credencial: str
     system: SystemBots
-    login_method: str
+    login_metodo: str
     login: str
     password: str
 
@@ -126,17 +128,65 @@ def load_credentials(app: Flask) -> None:
                 .first()
             )
 
-            list_cred_add = [
-                CredenciaisRobo(**cred)
-                for cred in list_data
-                if not db.session.query(CredenciaisRobo)
-                .filter(CredenciaisRobo.Id == cred["Id"])
-                .first()
-            ]
+            keepass: KeepassManager = app.extensions["keepass"]
+
+            sistemas = {}
+            for item in list_data:
+                sistemas[item["sistema"]] = sistemas.get(item["sistema"], 0) + 1
+
+            list_cred_add: list[CredenciaisRobo] = []
+            for sistema in sistemas:
+                group = keepass.add_group(
+                    destination_group=keepass.root_group,
+                    group_name=sistema.upper(),
+                )
+                filtered_list: list[DictCredencial] = list(
+                    filter(lambda x: x["sistema"] == str(sistema), list_data),
+                )
+                for item in filtered_list:
+                    rastreio = str(uuid4())
+
+                    entry_ = keepass.find_entries(
+                        title=item["nome_credencial"],
+                        first=True,
+                    )
+                    if entry_:
+                        continue
+
+                    entry = keepass.add_entry(
+                        destination_group=group,
+                        title=item["nome_credencial"],
+                        username=item["login"],
+                        password=item["password"],
+                        tags=[item["login_metodo"]],
+                        notes=rastreio,
+                    )
+
+                    if item.get("certificado"):
+                        path_cert = Path(item.get("certificado"))
+                        attachment_name = path_cert.name
+                        attachment_data = path_cert.read_bytes()
+
+                        binary_id = keepass.add_binary(attachment_data)
+                        entry.add_attachment(
+                            id=binary_id,
+                            filename=attachment_name,
+                        )
+
+                    list_cred_add.append(
+                        CredenciaisRobo(
+                            nome_credencial=item["nome_credencial"],
+                            sistema=sistema.upper(),
+                            login_metodo=item["login_metodo"],
+                            rastreio=rastreio,
+                        ),
+                    )
 
             lic.credenciais.extend(list_cred_add)
             db.session.add_all(list_cred_add)
             db.session.commit()
+
+            keepass.save()
 
 
 def import_users(app: Flask) -> None:
