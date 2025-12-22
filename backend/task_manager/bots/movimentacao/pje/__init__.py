@@ -61,9 +61,10 @@ class Movimentacao(PJeBot):
             data (list[BotData]): Lista de dados dos processos.
 
         """
+        sleep(5)
         cookies = self.auth.get_cookies()
         client_context = Client(cookies=cookies)
-        thread_pool = ThreadPoolExecutor(4)
+        thread_pool = ThreadPoolExecutor(4, thread_name_prefix=self.__class__.__name__)
 
         with client_context as client, thread_pool as pool:
             futures: list[Future[None]] = []

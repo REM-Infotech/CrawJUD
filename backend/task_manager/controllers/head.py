@@ -129,7 +129,7 @@ class CrawJUD:
 
         self.credenciais.load_credenciais(credenciais)
 
-        if credenciais.get("username"):
+        if credenciais.get("username") and config.get("sistema").upper() != "PJE":
             auth_ = self.auth()
             if not auth_:
                 with suppress(Exception):
