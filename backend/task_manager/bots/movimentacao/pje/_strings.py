@@ -29,7 +29,7 @@ class LinkPJe(UserString):
 
 
 class NomeDocumentoPJe(UserString):
-    NOME_DOCUMENTO = "{ANO} - {TIPO} - {PROCESSO} - {TITULO} - {PID}.pdf"
+    NOME_DOCUMENTO = "{ANO} - {TIPO} - {PROCESSO} - {TITULO} - {PID} - {ID_UNICO}.pdf"
 
     def __init__(self, tl: TimeLinePJe, documento: DocumentoPJe) -> None:
         ano = datetime.now(tz=TZ_SAO_PAULO).strftime("%Y")
@@ -43,6 +43,7 @@ class NomeDocumentoPJe(UserString):
             "tipo": tipo,
             "processo": tl.processo,
             "titulo": titulo_formatado,
+            "id_unico": documento["codigoDocumento"],
             "pid": tl.bot.pid,
         }
         if titulo == tipo:

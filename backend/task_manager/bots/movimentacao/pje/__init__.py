@@ -45,7 +45,7 @@ class Movimentacao(PJeBot):
 
     def execution(self) -> None:
         self.download_file = FileDownloader()
-        self.semaforo = Semaphore(1)
+        self.semaforo = Semaphore(2)
 
         generator_regioes = RegioesIterator[ArgumentosPJeCapa](bot=self)
         self.total_rows = len(self.posicoes_processos)
@@ -67,7 +67,6 @@ class Movimentacao(PJeBot):
             data (list[BotData]): Lista de dados dos processos.
 
         """
-        sleep(5)
         cookies = self.auth.get_cookies()
 
         url = f"https://pje.trt{self.regiao}.jus.br/pjekz"
@@ -105,7 +104,7 @@ class Movimentacao(PJeBot):
             if self.bot_stopped.is_set() or not termos:
                 return
 
-            sleep(1.5)
+            sleep(2.5)
 
             try:
                 kw = {"data": item, "row": row, "client": client}
@@ -117,7 +116,7 @@ class Movimentacao(PJeBot):
                         row=row,
                     )
 
-                    sleep(1.5)
+                    sleep(2.5)
                     kw_tl = self.kw_timeline(resultados, item, client)
                     timeline = TimeLinePJe.load(**kw_tl)
 
@@ -125,14 +124,16 @@ class Movimentacao(PJeBot):
                     arquivos = self.filtrar_arquivos(timeline, termos)
                     capa = self.capa_processual(result=resultados["data_request"])
 
-                    sleep(1.5)
+                    sleep(2.5)
 
                     for file in arquivos:
                         kw_dw = {
                             "documento": file,
                             "grau": "1",
                             "inclur_assinatura": True,
+                            "row": row,
                         }
+
                         timeline.baixar_documento(**kw_dw)
 
                     if len(arquivos) == 0:
@@ -147,7 +148,7 @@ class Movimentacao(PJeBot):
                         data_save=[capa],
                     )
 
-                    sleep(1.5)
+                    sleep(2.5)
 
             except Exception as e:
                 exc = "\n".join(traceback.format_exception(e))

@@ -16,6 +16,10 @@ if TYPE_CHECKING:
 type AnyType = Any
 
 
+BUFFER_1MB = 1024 * 1024
+CHUNK_8MB = 8192 * 1024
+
+
 class TimeLinePJe:
     documentos: list[DocumentoPJe]
 
@@ -78,6 +82,7 @@ class TimeLinePJe:
         self,
         documento: DocumentoPJe,
         grau: str = 1,
+        row: int = 0,
         *,
         incluir_capa: bool = False,
         inclur_assinatura: bool = False,
@@ -100,14 +105,28 @@ class TimeLinePJe:
         d = documento["id"]
         link = str(LinkPJe(r, p, query, f"documentos/id/{d}/conteudo"))
 
+        stream_kw = {
+            "method": "GET",
+            "url": link,
+        }
+
         out_dir = bot.output_dir_path
         nome_arquivo = str(NomeDocumentoPJe(tl=self, documento=documento))
         caminho_arquivo = out_dir.joinpath(self.processo, nome_arquivo)
 
         caminho_arquivo.parent.mkdir(exist_ok=True, parents=True)
 
-        bot.download_file(
-            file=str(caminho_arquivo),
-            link=link,
-            cookies=self.cliente.cookies,
-        )
+        msg_ = f'Baixando arquivo "{nome_arquivo}"'
+        type_ = "log"
+        self.bot.print_message(msg_, type_, row)
+
+        with (
+            self.cliente.stream(**stream_kw) as stream,
+            caminho_arquivo.open("wb", buffering=BUFFER_1MB) as fp,
+        ):
+            for chunk in stream.iter_bytes(chunk_size=CHUNK_8MB):
+                fp.write(chunk)
+
+        msg_ = f'Arquivo "{nome_arquivo}" baixado com sucesso!'
+        type_ = "info"
+        self.bot.print_message(msg_, type_, row)
