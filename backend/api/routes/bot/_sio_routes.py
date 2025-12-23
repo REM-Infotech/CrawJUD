@@ -98,31 +98,30 @@ class BotNS(Namespace):
     @jwt_sio_required
     def on_logbot(self, data: Message) -> None:
         """Log bot."""
-        with lock:
-            updated = update_timezone(data["time_message"])
-            data["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
-            # Define diretório temporário para logs
-            # temp_dir: Path = Path(gettempdir()).joinpath("crawjud", "logs") noqa: ERA001  # noqa: E501
-            # log_file: Path = temp_dir.joinpath(f"{data['pid']}.log") noqa: ERA001  # noqa: E501
-            # # Cria diretório e arquivo de log se não existirem
-            # if not temp_dir.exists():
-            #     temp_dir.mkdir(parents=True, exist_ok=True) noqa: ERA001
+        updated = update_timezone(data["time_message"])
+        data["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
+        # Define diretório temporário para logs
+        # temp_dir: Path = Path(gettempdir()).joinpath("crawjud", "logs") noqa: ERA001  # noqa: E501
+        # log_file: Path = temp_dir.joinpath(f"{data['pid']}.log") noqa: ERA001  # noqa: E501
+        # # Cria diretório e arquivo de log se não existirem
+        # if not temp_dir.exists():
+        #     temp_dir.mkdir(parents=True, exist_ok=True) noqa: ERA001
 
-            # if not log_file.exists():
-            #     log_file.write_text(json.dumps([]), encoding="utf-8") noqa: ERA001  # noqa: E501
+        # if not log_file.exists():
+        #     log_file.write_text(json.dumps([]), encoding="utf-8") noqa: ERA001  # noqa: E501
 
-            # # Lê mensagens existentes, adiciona nova e salva novamente
-            # read_file: str = log_file.read_text(encoding="utf-8") noqa: ERA001
-            # list_messages: list[Message] = json.loads(read_file) noqa: ERA001
-            # list_messages.append(data) noqa: ERA001
-            # log_file.write_text(json.dumps(list_messages), encoding="utf-8") noqa: ERA001  # noqa: E501
+        # # Lê mensagens existentes, adiciona nova e salva novamente
+        # read_file: str = log_file.read_text(encoding="utf-8") noqa: ERA001
+        # list_messages: list[Message] = json.loads(read_file) noqa: ERA001
+        # list_messages.append(data) noqa: ERA001
+        # log_file.write_text(json.dumps(list_messages), encoding="utf-8") noqa: ERA001  # noqa: E501
 
-            io.emit(
-                "logbot",
-                data=data,
-                room=data["pid"],
-                namespace="/bot",
-            )
+        io.emit(
+            "logbot",
+            data=data,
+            room=data["pid"],
+            namespace="/bot",
+        )
 
     @jwt_sio_required
     def on_listagem(self, *args: AnyType, **kwargs: AnyType) -> list[BotInfo]:
