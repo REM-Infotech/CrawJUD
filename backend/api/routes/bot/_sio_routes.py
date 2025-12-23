@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import json
+from contextlib import suppress
 from datetime import datetime
-from threading import Lock
+from pathlib import Path
+from tempfile import gettempdir
+from threading import Semaphore
 from typing import TYPE_CHECKING, Literal, TypedDict
 from zoneinfo import ZoneInfo
 
@@ -20,8 +24,8 @@ if TYPE_CHECKING:
     from backend.interfaces.payloads import BotInfo
     from backend.types_app import AnyType, Sistemas
 
-lock = Lock()
-
+semaphore = Semaphore(1)
+semaphore2 = Semaphore(1)
 
 SISTEMAS: set[Sistemas] = {
     "PROJUDI",
@@ -101,20 +105,22 @@ class BotNS(Namespace):
         updated = update_timezone(data["time_message"])
         data["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
         # Define diretório temporário para logs
-        # temp_dir: Path = Path(gettempdir()).joinpath("crawjud", "logs") noqa: ERA001  # noqa: E501
-        # log_file: Path = temp_dir.joinpath(f"{data['pid']}.log") noqa: ERA001  # noqa: E501
-        # # Cria diretório e arquivo de log se não existirem
-        # if not temp_dir.exists():
-        #     temp_dir.mkdir(parents=True, exist_ok=True) noqa: ERA001
 
-        # if not log_file.exists():
-        #     log_file.write_text(json.dumps([]), encoding="utf-8") noqa: ERA001  # noqa: E501
+        with semaphore2:
+            temp_dir: Path = Path(gettempdir()).joinpath("crawjud", "logs")
+            log_file: Path = temp_dir.joinpath(f"{data['pid']}.log")
+            # Cria diretório e arquivo de log se não existirem
+            if not temp_dir.exists():
+                temp_dir.mkdir(parents=True, exist_ok=True)
 
-        # # Lê mensagens existentes, adiciona nova e salva novamente
-        # read_file: str = log_file.read_text(encoding="utf-8") noqa: ERA001
-        # list_messages: list[Message] = json.loads(read_file) noqa: ERA001
-        # list_messages.append(data) noqa: ERA001
-        # log_file.write_text(json.dumps(list_messages), encoding="utf-8") noqa: ERA001  # noqa: E501
+            if not log_file.exists():
+                log_file.write_text(json.dumps([]), encoding="utf-8")
+
+            # Lê mensagens existentes, adiciona nova e salva novamente
+            read_file: str = log_file.read_text(encoding="utf-8")
+            list_messages: list[Message] = json.loads(read_file)
+            list_messages.append(data)
+            log_file.write_text(json.dumps(list_messages), encoding="utf-8")
 
         io.emit(
             "logbot",
@@ -169,32 +175,33 @@ class BotNS(Namespace):
             list[str]: Lista de mensagens do log.
 
         """
-        # Adiciona o usuário à sala especificada
-        join_room(data["room"])
+        with semaphore:
+            # Adiciona o usuário à sala especificada
+            join_room(data["room"])
 
-        # Inicializa a lista de mensagens
-        messages: list[Message] = []
-        # temp_dir = Path(gettempdir()).joinpath("crawjud", "logs") noqa: ERA001  # noqa: E501
-        # log_file = temp_dir.joinpath(f"{data['room']}.log") noqa: ERA001
-        # _str_dir = str(log_file) noqa: ERA001
-        now = datetime.now(ZoneInfo(load_timezone()))
+            # Inicializa a lista de mensagens
+            messages: list[Message] = []
+            temp_dir = Path(gettempdir()).joinpath("crawjud", "logs")
+            log_file = temp_dir.joinpath(f"{data['room']}.log")
+            _str_dir = str(log_file)
+            now = datetime.now(ZoneInfo(load_timezone()))
 
-        def map_messages(msg: Message) -> Message:
-            updt = update_timezone(msg["time_message"])
-            updated = updt.replace(
-                day=now.day,
-                month=now.month,
-                year=now.year,
-            )
-            msg["time_message"] = updated.strftime("%H:%M:%S")
-            return msg
+            def map_messages(msg: Message) -> Message:
+                updt = update_timezone(msg["time_message"])
+                updated = updt.replace(
+                    day=now.day,
+                    month=now.month,
+                    year=now.year,
+                )
+                msg["time_message"] = updated.strftime("%H:%M:%S")
+                return msg
 
-        # # Se o diretório e o arquivo de log existem, carrega as mensagens
-        # if temp_dir.exists() and log_file.exists():
-        #     text_file = log_file.read_text(encoding="utf-8").replace("null", '""') noqa: ERA001  # noqa: E501
+            # # Se o diretório e o arquivo de log existem, carrega as mensagens
+            if temp_dir.exists() and log_file.exists():
+                text_file = log_file.read_text(encoding="utf-8").replace("null", '""')
 
-        #     with suppress(json.JSONDecodeError):
-        #         messages.extend(json.loads(text_file)) noqa: ERA001
+                with suppress(json.JSONDecodeError):
+                    messages.extend(json.loads(text_file))
 
         return [map_messages(msg) for msg in messages]
 
