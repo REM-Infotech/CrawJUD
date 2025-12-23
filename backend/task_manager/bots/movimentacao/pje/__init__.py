@@ -45,7 +45,7 @@ class Movimentacao(PJeBot):
 
     def execution(self) -> None:
         self.download_file = FileDownloader()
-        self.semaforo = Semaphore(2)
+        self.semaforo = Semaphore(1)
 
         generator_regioes = RegioesIterator[ArgumentosPJeCapa](bot=self)
         self.total_rows = len(self.posicoes_processos)
@@ -97,14 +97,13 @@ class Movimentacao(PJeBot):
 
         """
         with self.semaforo:
+            sleep(0.5)
             processo = item["NUMERO_PROCESSO"]
             pos_processo = self.posicoes_processos[processo]
             termos: str = item.get("TERMOS", "")
             row = int(pos_processo) + 1
             if self.bot_stopped.is_set() or not termos:
                 return
-
-            sleep(2.5)
 
             try:
                 kw = {"data": item, "row": row, "client": client}
@@ -124,8 +123,6 @@ class Movimentacao(PJeBot):
                     arquivos = self.filtrar_arquivos(timeline, termos)
                     capa = self.capa_processual(result=resultados["data_request"])
 
-                    sleep(2.5)
-
                     for file in arquivos:
                         kw_dw = {
                             "documento": file,
@@ -133,7 +130,7 @@ class Movimentacao(PJeBot):
                             "inclur_assinatura": True,
                             "row": row,
                         }
-
+                        sleep(1.5)
                         timeline.baixar_documento(**kw_dw)
 
                     if len(arquivos) == 0:
@@ -147,8 +144,6 @@ class Movimentacao(PJeBot):
                         worksheet="Resultados",
                         data_save=[capa],
                     )
-
-                    sleep(2.5)
 
             except Exception as e:
                 exc = "\n".join(traceback.format_exception(e))
