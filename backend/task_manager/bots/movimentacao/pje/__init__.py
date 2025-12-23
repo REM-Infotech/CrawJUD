@@ -3,7 +3,6 @@ from __future__ import annotations
 import traceback
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
-from threading import Semaphore
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar, TypedDict
 
@@ -45,7 +44,6 @@ class Movimentacao(PJeBot):
 
     def execution(self) -> None:
         self.download_file = FileDownloader()
-        self.semaforo = Semaphore(1)
 
         generator_regioes = RegioesIterator[ArgumentosPJeCapa](bot=self)
         self.total_rows = len(self.posicoes_processos)
@@ -80,7 +78,7 @@ class Movimentacao(PJeBot):
         client_context = Client(cookies=cookies, headers=headers)
 
         thread_pool = ThreadPoolExecutor(
-            max_workers=4,
+            max_workers=2,
             thread_name_prefix=f"Fila região {self.regiao}",
         )
 
@@ -99,64 +97,63 @@ class Movimentacao(PJeBot):
             client (Client): Cliente HTTP autenticado.
 
         """
-        with self.semaforo:
-            sleep(0.5)
-            processo = item["NUMERO_PROCESSO"]
-            pos_processo = self.posicoes_processos[processo]
-            termos: str = item.get("TERMOS", "")
-            row = int(pos_processo) + 1
-            if self.bot_stopped.is_set() or not termos:
-                return
+        sleep(2.5)
+        processo = item["NUMERO_PROCESSO"]
+        pos_processo = self.posicoes_processos[processo]
+        termos: str = item.get("TERMOS", "")
+        row = int(pos_processo) + 1
+        if self.bot_stopped.is_set() or not termos:
+            return
 
-            try:
-                kw = {"data": item, "row": row, "client": client}
-                resultados = self.search(**kw)
-                if resultados:
-                    self.print_message(
-                        message="Processo encontrado!",
-                        message_type="info",
-                        row=row,
-                    )
-
-                    sleep(2.5)
-                    kw_tl = self.kw_timeline(resultados, item, client)
-                    timeline = TimeLinePJe.load(**kw_tl)
-
-                    termos: list[str] = self.formata_termos(termos)
-                    arquivos = self.filtrar_arquivos(timeline, termos)
-                    capa = self.capa_processual(result=resultados["data_request"])
-
-                    for file in arquivos:
-                        kw_dw = {
-                            "documento": file,
-                            "grau": "1",
-                            "inclur_assinatura": True,
-                            "row": row,
-                        }
-                        sleep(1.5)
-                        timeline.baixar_documento(**kw_dw)
-
-                    if len(arquivos) == 0:
-                        self.salva_erro(row=row, item=item)
-                        return
-
-                    type_ = "success"
-                    msg_ = "Execução Efetuada com sucesso!"
-                    self.print_message(msg_, type_, row)
-                    self.append_success(
-                        worksheet="Resultados",
-                        data_save=[capa],
-                    )
-
-            except Exception as e:
-                exc = "\n".join(traceback.format_exception(e))
-                tqdm.write(exc)
+        try:
+            kw = {"data": item, "row": row, "client": client}
+            resultados = self.search(**kw)
+            if resultados:
                 self.print_message(
-                    message="Erro ao extrair informações do processo",
-                    message_type="error",
+                    message="Processo encontrado!",
+                    message_type="info",
                     row=row,
                 )
-                raise
+
+                sleep(2.5)
+                kw_tl = self.kw_timeline(resultados, item, client)
+                timeline = TimeLinePJe.load(**kw_tl)
+
+                termos: list[str] = self.formata_termos(termos)
+                arquivos = self.filtrar_arquivos(timeline, termos)
+                capa = self.capa_processual(result=resultados["data_request"])
+
+                for file in arquivos:
+                    kw_dw = {
+                        "documento": file,
+                        "grau": "1",
+                        "inclur_assinatura": True,
+                        "row": row,
+                    }
+                    sleep(1.5)
+                    timeline.baixar_documento(**kw_dw)
+
+                if len(arquivos) == 0:
+                    self.salva_erro(row=row, item=item)
+                    return
+
+                type_ = "success"
+                msg_ = "Execução Efetuada com sucesso!"
+                self.print_message(msg_, type_, row)
+                self.append_success(
+                    worksheet="Resultados",
+                    data_save=[capa],
+                )
+
+        except Exception as e:
+            exc = "\n".join(traceback.format_exception(e))
+            tqdm.write(exc)
+            self.print_message(
+                message="Erro ao extrair informações do processo",
+                message_type="error",
+                row=row,
+            )
+            raise
 
     def kw_timeline(self, result: DictResults, item: BotData, client: Client) -> dict:
 
