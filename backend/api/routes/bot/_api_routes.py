@@ -85,7 +85,8 @@ def run_bot(sistema: Sistemas) -> Response:
             code = 200
 
         except Exception as e:  # noqa: BLE001
-            _exc = "\n".join(traceback.format_exception(e))
+            _exc = "\n".join(traceback.format_exception(e))  # noqa: RUF052
+            print(_exc)  # noqa: T201
 
     return make_response(jsonify(payload), code)
 
