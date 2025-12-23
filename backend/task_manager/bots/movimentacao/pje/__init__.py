@@ -60,6 +60,9 @@ class Movimentacao(PJeBot):
 
         self.finalizar_execucao()
 
+        while self.download_file.queue.is_shutdown():
+            ...
+
     def queue_regiao(self, data: list[BotData]) -> None:
         """Enfileire processos judiciais para processamento.
 
