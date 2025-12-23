@@ -1,67 +1,19 @@
 from __future__ import annotations
 
-from collections import UserString
 from contextlib import suppress
-from datetime import datetime
-from typing import TYPE_CHECKING, Any, Literal, Self, cast
-from zoneinfo import ZoneInfo
+from typing import TYPE_CHECKING, Any, Self, cast
+
+from ._strings import LinkPJe, NomeDocumentoPJe
 
 if TYPE_CHECKING:
     from httpx import Client
 
-    from backend.task_manager.bots.capa.pje._dicionarios import DocumentoPJe
     from backend.task_manager.controllers import PJeBot
 
+    from ._dicionarios import DocumentoPJe
+
+
 type AnyType = Any
-
-
-TZ_SAO_PAULO = ZoneInfo("America/Sao_Paulo")
-
-type ReprLinkTimeline = Literal[
-    "LinkPJe<https://pje.trt{regiao}.jus.br/pje-comum-api/api/processos/id/{id_proc}/{endpoint}?{query}>"
-]
-
-
-class LinkPJe(UserString):
-    def __init__(
-        self,
-        regiao: str,
-        id_proc: str,
-        query: dict,
-        endpoint: str,
-    ) -> None:
-        seq = f"https://pje.trt{regiao}.jus.br/pje-comum-api/api/processos/id/{id_proc}/{endpoint}?{query}"
-        super().__init__(seq)
-
-    def __repr__(self) -> ReprLinkTimeline:
-        return f"<LinkPJe({self.data})>"
-
-
-class NomeDocumentoPJe(UserString):
-    NOME_DOCUMENTO = "{ANO} - {TIPO} - {PROCESSO} - {TITULO} - {PID}.pdf"
-
-    def __init__(self, tl: TimeLinePJe, documento: DocumentoPJe) -> None:
-        ano = datetime.now(tz=TZ_SAO_PAULO).strftime("%Y")
-        tipo = documento["tipo"]
-        titulo = documento["titulo"]
-        splited_titulo = (
-            titulo.split(" - ")[1:] if " - " in titulo else [titulo]
-        )
-        titulo_formatado = " ".join([i.capitalize() for i in splited_titulo])
-
-        seq_dict = {
-            "ano": ano,
-            "tipo": tipo,
-            "processo": tl.processo,
-            "titulo": titulo_formatado,
-            "pid": tl.bot.pid,
-        }
-        if titulo == tipo:
-            seq_dict.pop("titulo")
-
-        seq = f"{' - '.join(seq_dict.values())}.pdf"
-
-        super().__init__(seq)
 
 
 class TimeLinePJe:
@@ -124,13 +76,14 @@ class TimeLinePJe:
 
     def baixar_documento(
         self,
-        bot: PJeBot,
         documento: DocumentoPJe,
         grau: str = 1,
         *,
         incluir_capa: bool = False,
         inclur_assinatura: bool = False,
-    ) -> bytes:
+    ) -> None:
+
+        bot = self.bot
         query = "&".join([
             f"grau={grau}",
             "=".join(["incluirCapa", str(incluir_capa).lower()]),

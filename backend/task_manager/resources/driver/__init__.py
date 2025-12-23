@@ -8,6 +8,7 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
+from seleniumwire.webdriver import Chrome as SeleniumWireChrome
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
@@ -66,9 +67,13 @@ class BotDriver:
             cache_manager=cache_manager,
         )
         service = Service(executable_path=driver_manager.install())
-        self.driver = Chrome(options=options, service=service)
+        if bot.config.get("sistema").upper() != "PJE":
+            self.driver = Chrome(options=options, service=service)
+
+        elif bot.config.get("sistema").upper() == "PJE":
+            self.driver = SeleniumWireChrome(options=options, service=service)
 
         webelement = WebElementBot.set_driver(self.driver)
 
-        self.driver._web_element_cls = webelement
+        self.driver._web_element_cls = webelement  # noqa: SLF001
         self.wait = WebDriverWait(self.driver, 30)
