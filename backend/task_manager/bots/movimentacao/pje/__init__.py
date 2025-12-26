@@ -97,7 +97,7 @@ class Movimentacao(PJeBot):
         termos: str = item.get("TERMOS", "")
         row = int(pos_processo) + 1
         self._is_grau_list = False
-        if not termos:
+        if self.bot_stopped.is_set() or not termos:
             return
 
         try:
@@ -159,6 +159,9 @@ class Movimentacao(PJeBot):
             capa = self.capa_processual(result=resultados["data_request"])
 
             for file in arquivos:
+                if self.bot_stopped.is_set():
+                    break
+
                 kw_dw = {
                     "documento": file,
                     "grau": grau,
