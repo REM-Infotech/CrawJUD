@@ -15,6 +15,9 @@ from clear import clear
 from dotenv import dotenv_values
 from typer import Typer
 
+from backend.api import create_app
+from backend.task_manager import app as celery_app
+
 if TYPE_CHECKING:
     from flask_socketio import SocketIO
 
@@ -27,7 +30,6 @@ app = Typer()
 
 @app.command(name="api")
 def _api() -> None:
-    from backend.api import create_app
     from backend.api import routes as routes
 
     flaskapp = create_app()
@@ -39,7 +41,6 @@ def _api() -> None:
 
 @app.command(name="celery")
 def _celery_worker() -> None:
-    from backend.task_manager import app as celery_app
 
     celery_app.conf.update(
         worker_hijack_root_logger=False,
