@@ -192,6 +192,8 @@ class PrintMessage:
             namespace="/bot",
         )
 
+        self.sio = sio
+
         for data in QueueIterator[Message](self.queue_print_bot):
             with suppress(Exception):
                 if not sio.connected:
@@ -236,4 +238,27 @@ class PrintMessage:
             **kwargs (AnyType): Argumentos nomeados.
 
         """
+        tz = ZoneInfo("America/Sao_Paulo")
+        time_ = datetime.now(tz=tz).strftime("%H:%M:%S:%z")
+
+        message = "Encerrando execução..."
+        message_type = "warning"
+
+        self.emit_message(
+            Message(
+                pid=self.bot.pid,
+                row=0,
+                message=str(message),
+                time_message=time_,
+                message_type="info",
+                status="Em Execução",
+                total=self.bot.total_rows,
+                sucessos=self.calc_success(message_type),
+                erros=self.calc_error(message_type),
+                restantes=self.calc_remaining(message_type),
+                link="",
+            ),
+            self.sio,
+        )
+
         self.bot.bot_stopped.set()
