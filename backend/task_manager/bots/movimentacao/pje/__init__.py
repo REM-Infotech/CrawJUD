@@ -133,7 +133,7 @@ class Movimentacao(PJeBot):
         termos: list[str],
         grau: str,
     ) -> None:
-        sleep(2.5)
+        sleep(1.5)
         kw = {"data": item, "row": row, "client": client}
         resultados = self.search(**kw)
         if resultados:
@@ -158,6 +158,7 @@ class Movimentacao(PJeBot):
                     "row": row,
                 }
                 timeline.baixar_documento(**kw_dw)
+                sleep(1.5)
 
             if len(arquivos) == 0:
                 self.salva_erro(row=row, item=item)
