@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 from threading import Thread
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NoReturn
 
 from celery.apps.worker import Worker
 from clear import clear
@@ -28,7 +28,6 @@ clear()
 app = Typer()
 
 
-@app.command(name="api")
 def _api() -> None:
     from backend.api import routes as routes
 
@@ -39,7 +38,6 @@ def _api() -> None:
     io.run(flaskapp, host="localhost", port=port, allow_unsafe_werkzeug=True)
 
 
-@app.command(name="celery")
 def _celery_worker() -> None:
 
     celery_app.conf.update(
@@ -55,6 +53,26 @@ def _celery_worker() -> None:
     )
 
     worker.start()
+
+
+@app.command(name="api")
+def _thread_api() -> NoReturn:
+
+    api_ = Thread(target=_api, daemon=True)
+    api_.start()
+
+    while True:
+        ...
+
+
+@app.command(name="celery")
+def _thread_celery() -> NoReturn:
+
+    celery_ = Thread(target=_celery_worker, daemon=True)
+    celery_.start()
+
+    while True:
+        ...
 
 
 def _start_backend() -> None:
