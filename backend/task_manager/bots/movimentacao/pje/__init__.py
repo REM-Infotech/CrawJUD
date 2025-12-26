@@ -12,13 +12,15 @@ from tqdm import tqdm
 from backend.interfaces.pje import CapaPJe, DictResults
 from backend.task_manager.controllers.pje import PJeBot
 from backend.task_manager.resources import RegioesIterator
+from backend.task_manager.resources.driver import BotDriver
 
 from ._timeline import TimeLinePJe
 
 if TYPE_CHECKING:
     from queue import Queue
 
-    from backend.types_app import AnyType as AnyType
+    from seleniumwire.webdriver import Chrome
+
     from backend.types_app import Dict
 
     from ._dicionarios import DocumentoPJe
@@ -33,9 +35,11 @@ class PJeMovimentacao(TypedDict):
 class Movimentacao(PJeBot):
     queue_files: Queue
     name: ClassVar[str] = "movimentacao_pje"
+    driver: Chrome
 
     def execution(self) -> None:
 
+        self.driver.quit()
         generator_regioes = RegioesIterator[PJeMovimentacao](bot=self)
         self.total_rows = len(self.posicoes_processos)
 
@@ -45,6 +49,8 @@ class Movimentacao(PJeBot):
         )
 
         for data_regiao in generator_regioes:
+            self.bot_driver = BotDriver(self)
+
             if self.bot_stopped.is_set():
                 break
 
@@ -69,6 +75,7 @@ class Movimentacao(PJeBot):
         cookies = self.auth.get_cookies()
         headers = dict(list(headers_)[-1].headers.items())
         client_context = Client(cookies=cookies, headers=headers)
+        self.driver.quit()
 
         with client_context as client:
             for item in data:

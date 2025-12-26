@@ -10,6 +10,7 @@ from contextlib import suppress
 from datetime import datetime
 from queue import Queue
 from threading import Thread
+from time import sleep
 from typing import TYPE_CHECKING, TypedDict
 from zoneinfo import ZoneInfo
 
@@ -203,6 +204,7 @@ class PrintMessage:
                     )
 
             if data:
+                sleep(1.5)
                 with suppress(Exception):
                     to_write = data["message"]
                     mode = "a" if self.file_log.exists() else "w"
@@ -223,6 +225,8 @@ class PrintMessage:
 
                     with self.file_log.open(mode=mode, encoding="utf-8") as fp:
                         tqdm.write(to_write, file=fp)
+
+                sleep(1.5)
 
     def emit_message(self, data: Message, sio: Client) -> None:
         sio.emit("logbot", data=data, namespace="/bot")
