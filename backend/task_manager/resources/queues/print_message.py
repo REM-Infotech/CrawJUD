@@ -36,7 +36,7 @@ load_dotenv()
 MSG_ROBO_INICIADO = "Robô inicializado!"
 MSG_FIM_EXECUCAO = "Fim da execução"
 MSG_ARQUIVO_BAIXADO = "Arquivo baixado com sucesso!"
-MSG_EXECUCAO_SUCESSO = "Execução Efetuada com sucesso!"
+MSG_EXECUCAO_SUCESSO = "Execução efetuada com sucesso!"
 
 
 class Count(TypedDict):

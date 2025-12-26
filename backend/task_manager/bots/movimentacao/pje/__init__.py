@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import traceback
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
 from time import sleep
-from typing import TYPE_CHECKING, ClassVar, TypedDict
+from typing import TYPE_CHECKING, ClassVar
 
 from httpx import Client
 from tqdm import tqdm
@@ -14,6 +14,7 @@ from backend.task_manager.controllers.pje import PJeBot
 from backend.task_manager.resources import RegioesIterator
 from backend.task_manager.resources.driver import BotDriver
 
+from ._dicionarios import PJeMovimentacao
 from ._timeline import TimeLinePJe
 
 if TYPE_CHECKING:
@@ -26,10 +27,8 @@ if TYPE_CHECKING:
     from ._dicionarios import DocumentoPJe
 
 
-class PJeMovimentacao(TypedDict):
-    NUMERO_PROCESSO: str
-    GRAU: str
-    REGIAO: str
+THREAD_PREFIX = "Fila região {regiao}"
+WORKERS_QTD = 4
 
 
 class Movimentacao(PJeBot):
@@ -42,11 +41,6 @@ class Movimentacao(PJeBot):
         self.driver.quit()
         generator_regioes = RegioesIterator[PJeMovimentacao](bot=self)
         self.total_rows = len(self.posicoes_processos)
-
-        _thread_pool = ThreadPoolExecutor(
-            max_workers=2,
-            thread_name_prefix=f"Fila região {self.regiao}",
-        )
 
         for data_regiao in generator_regioes:
             self.bot_driver = BotDriver(self)
@@ -70,6 +64,7 @@ class Movimentacao(PJeBot):
         cookies = self.auth.get_cookies()
 
         url = f"https://pje.trt{self.regiao}.jus.br/pjekz"
+
         requests = self.driver.requests
         headers_ = filter(lambda x: x.url.startswith(url), requests)
         cookies = self.auth.get_cookies()
@@ -77,12 +72,17 @@ class Movimentacao(PJeBot):
         client_context = Client(cookies=cookies, headers=headers)
         self.driver.quit()
 
-        with client_context as client:
+        executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)
+
+        with client_context as client, executor as pool:
+            futures: list[Future[None]] = []
             for item in data:
                 if self.bot_stopped.is_set():
                     break
 
-                self.queue(item, client=client)
+                futures.append(pool.submit(self.queue, item=item, client=client))
+
+            _results = [future.result() for future in futures]
 
     def queue(self, item: PJeMovimentacao, client: Client) -> None:
         """Enfileire e processe um processo judicial PJE.
@@ -151,6 +151,7 @@ class Movimentacao(PJeBot):
             )
 
             kw_tl = self.kw_timeline(resultados, item, client)
+            sleep(2.5)
             timeline = TimeLinePJe.load(**kw_tl)
 
             termos: list[str] = self.formata_termos(termos)
@@ -165,15 +166,16 @@ class Movimentacao(PJeBot):
                     "row": row,
                 }
                 timeline.baixar_documento(**kw_dw)
-                sleep(1.5)
+                sleep(0.5)
 
             if len(arquivos) == 0:
                 self.salva_erro(row=row, item=item)
                 sleep(2.5)
                 return
 
+            sleep(0.5)
             type_ = "success"
-            msg_ = "Execução Efetuada com sucesso!"
+            msg_ = "Execução efetuada com sucesso!"
             self.print_message(msg_, type_, row)
             self.append_success(
                 worksheet="Resultados",
