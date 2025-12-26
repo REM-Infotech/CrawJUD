@@ -88,6 +88,11 @@ class TimeLinePJe:
         inclur_assinatura: bool = False,
     ) -> None:
 
+        nome_arquivo = str(NomeDocumentoPJe(tl=self, documento=documento))
+        msg_ = f'Baixando arquivo "{nome_arquivo}"'
+        type_ = "log"
+        self.bot.print_message(msg_, type_, row)
+
         bot = self.bot
         query = "&".join([
             f"grau={grau}",
@@ -111,14 +116,10 @@ class TimeLinePJe:
         }
 
         out_dir = bot.output_dir_path
-        nome_arquivo = str(NomeDocumentoPJe(tl=self, documento=documento))
+
         caminho_arquivo = out_dir.joinpath(self.processo, nome_arquivo)
 
         caminho_arquivo.parent.mkdir(exist_ok=True, parents=True)
-
-        msg_ = f'Baixando arquivo "{nome_arquivo}"'
-        type_ = "log"
-        self.bot.print_message(msg_, type_, row)
 
         with (
             self.cliente.stream(**stream_kw) as stream,

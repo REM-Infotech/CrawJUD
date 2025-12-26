@@ -26,7 +26,7 @@ class PJeBot(CrawJUD):
     """Classe de controle para robôs do PJe."""
 
     _regiao: ClassVar[int] = 1
-
+    _is_grau_list: ClassVar[bool] = False
     download_file: FileDownloader
     posicoes_processos: ClassVar[Dict] = {}
 

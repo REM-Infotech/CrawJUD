@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import traceback
-from concurrent.futures import Future, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar, TypedDict
@@ -39,23 +39,18 @@ class Movimentacao(PJeBot):
         generator_regioes = RegioesIterator[PJeMovimentacao](bot=self)
         self.total_rows = len(self.posicoes_processos)
 
-        thread_pool = ThreadPoolExecutor(
+        _thread_pool = ThreadPoolExecutor(
             max_workers=2,
             thread_name_prefix=f"Fila região {self.regiao}",
         )
 
-        with thread_pool as pool:
-            futures: list[Future[None]] = []
-            for data_regiao in generator_regioes:
-                if self.bot_stopped.is_set():
-                    break
+        for data_regiao in generator_regioes:
+            if self.bot_stopped.is_set():
+                break
 
-                with suppress(Exception):
-                    if self.auth():
-                        futures.append(pool.submit(self.queue_regiao, data=data_regiao))
-                        sleep(10)
-
-            _results = [future.result() for future in futures]
+            with suppress(Exception):
+                if self.auth():
+                    self.queue_regiao(data=data_regiao)
 
         self.finalizar_execucao()
 
@@ -77,6 +72,9 @@ class Movimentacao(PJeBot):
 
         with client_context as client:
             for item in data:
+                if self.bot_stopped.is_set():
+                    break
+
                 self.queue(item, client=client)
 
     def queue(self, item: PJeMovimentacao, client: Client) -> None:
@@ -87,53 +85,34 @@ class Movimentacao(PJeBot):
             client (Client): Cliente HTTP autenticado.
 
         """
-        sleep(2.5)
         processo = item["NUMERO_PROCESSO"]
         pos_processo = self.posicoes_processos[processo]
         termos: str = item.get("TERMOS", "")
         row = int(pos_processo) + 1
-        if self.bot_stopped.is_set() or not termos:
+        self._is_grau_list = False
+        if not termos:
             return
 
         try:
-            kw = {"data": item, "row": row, "client": client}
-            resultados = self.search(**kw)
-            if resultados:
-                self.print_message(
-                    message="Processo encontrado!",
-                    message_type="info",
-                    row=row,
-                )
+            grau = str(item.get("GRAU", "1"))
+            kw = {"item": item, "row": row, "client": client, "termos": termos}
 
-                sleep(2.5)
-                kw_tl = self.kw_timeline(resultados, item, client)
-                timeline = TimeLinePJe.load(**kw_tl)
+            if "," in grau:
+                grau = grau.replace(" ", "").split(",")
+                self._is_grau_list = True
+                for g in grau:
+                    msg_ = f"Buscando proceso na {g}a instância"
+                    m_type = "log"
+                    kw.update({"grau": g})
+                    self.print_message(msg_, m_type, row)
 
-                termos: list[str] = self.formata_termos(termos)
-                arquivos = self.filtrar_arquivos(timeline, termos)
-                capa = self.capa_processual(result=resultados["data_request"])
+                    client.headers.update({"X-Grau-Instancia": g})
 
-                for file in arquivos:
-                    kw_dw = {
-                        "documento": file,
-                        "grau": "1",
-                        "inclur_assinatura": True,
-                        "row": row,
-                    }
-                    sleep(1.5)
-                    timeline.baixar_documento(**kw_dw)
+                    self.extrair_processo(**kw)
+                return
 
-                if len(arquivos) == 0:
-                    self.salva_erro(row=row, item=item)
-                    return
-
-                type_ = "success"
-                msg_ = "Execução Efetuada com sucesso!"
-                self.print_message(msg_, type_, row)
-                self.append_success(
-                    worksheet="Resultados",
-                    data_save=[capa],
-                )
+            client.headers.update({"x-grau-instancia": grau})
+            self.extrair_processo(**kw)
 
         except Exception as e:
             exc = "\n".join(traceback.format_exception(e))
@@ -144,6 +123,53 @@ class Movimentacao(PJeBot):
                 row=row,
             )
             raise
+
+    def extrair_processo(
+        self,
+        item: PJeMovimentacao,
+        row: int,
+        client: Client,
+        termos: list[str],
+        grau: str,
+    ) -> None:
+        sleep(2.5)
+        kw = {"data": item, "row": row, "client": client}
+        resultados = self.search(**kw)
+        if resultados:
+            self.print_message(
+                message="Processo encontrado!",
+                message_type="info",
+                row=row,
+            )
+
+            kw_tl = self.kw_timeline(resultados, item, client)
+            timeline = TimeLinePJe.load(**kw_tl)
+
+            termos: list[str] = self.formata_termos(termos)
+            arquivos = self.filtrar_arquivos(timeline, termos)
+            capa = self.capa_processual(result=resultados["data_request"])
+
+            for file in arquivos:
+                kw_dw = {
+                    "documento": file,
+                    "grau": grau,
+                    "inclur_assinatura": True,
+                    "row": row,
+                }
+                timeline.baixar_documento(**kw_dw)
+
+            if len(arquivos) == 0:
+                self.salva_erro(row=row, item=item)
+                sleep(2.5)
+                return
+
+            type_ = "success"
+            msg_ = "Execução Efetuada com sucesso!"
+            self.print_message(msg_, type_, row)
+            self.append_success(
+                worksheet="Resultados",
+                data_save=[capa],
+            )
 
     def kw_timeline(
         self,

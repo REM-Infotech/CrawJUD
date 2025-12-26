@@ -18,6 +18,7 @@ from backend.task_manager.resources.search.main import SearchBot
 if TYPE_CHECKING:
     from httpx import Client, Response
 
+    from backend.interfaces import BotData
     from backend.task_manager.controllers import PJeBot
 
 
@@ -43,9 +44,13 @@ class PjeSeach(SearchBot):
     def regiao(self) -> str:
         return self.bot.regiao
 
+    @property
+    def is_grau_list(self) -> bool:
+        return self.bot._is_grau_list  # noqa: SLF001
+
     def __call__(
         self,
-        data: dict,
+        data: BotData,
         row: int,
         client: Client,
     ) -> DictResults | None:
@@ -81,11 +86,7 @@ class PjeSeach(SearchBot):
         id_processo = self._format_response_pje(response).get("id", "")
 
         if not id_processo:
-            self.print_message(
-                message="Nenhum processo encontrado",
-                message_type="error",
-                row=row,
-            )
+            self._print_processo_nao_encontrado(row=row)
             return None
 
         url_ = el.LINK_CONSULTA_PROCESSO.format(
@@ -95,11 +96,7 @@ class PjeSeach(SearchBot):
         result = client.get(url=url_)
 
         if result.status_code != HTTP_OK_STATUS:
-            self.print_message(
-                message="Nenhum processo encontrado",
-                message_type="error",
-                row=row,
-            )
+            self._print_processo_nao_encontrado(row=row)
             return None
 
         return DictResults(
@@ -116,3 +113,12 @@ class PjeSeach(SearchBot):
             return data_request
 
         return {}
+
+    def _print_processo_nao_encontrado(self, row: int) -> None:
+
+        msg_type = "error" if not self.is_grau_list else "info"
+        self.print_message(
+            message="Nenhum processo encontrado",
+            message_type=msg_type,
+            row=row,
+        )
