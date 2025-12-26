@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
 load_dotenv()
 
+
 MSG_ROBO_INICIADO = "Robô inicializado!"
 MSG_FIM_EXECUCAO = "Fim da execução"
 MSG_ARQUIVO_BAIXADO = "Arquivo baixado com sucesso!"
@@ -170,6 +171,10 @@ class PrintMessage:
 
         return self.bot.remaining
 
+    def _call_set_event(self) -> None:
+
+        self.set_event()
+
     def print_msg(self) -> None:
         """Envie mensagens de log para o servidor via socket.
 
@@ -188,7 +193,7 @@ class PrintMessage:
         sio = Client(http_session=session)
         sio.on(
             "bot_stop",
-            self.set_event,
+            self._call_set_event,
             namespace="/bot",
         )
 

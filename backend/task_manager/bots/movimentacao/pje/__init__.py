@@ -71,18 +71,26 @@ class Movimentacao(PJeBot):
         headers = dict(list(headers_)[-1].headers.items())
         client_context = Client(cookies=cookies, headers=headers)
         self.driver.quit()
+        self.executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)
+        self.original_event_set = self.print_message.set_event
 
-        executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)
+        self.print_message.set_event = self.set_event
 
-        with client_context as client, executor as pool:
+        with client_context as client, self.executor as pool:
             futures: list[Future[None]] = []
             for item in data:
                 if self.bot_stopped.is_set():
                     break
 
                 futures.append(pool.submit(self.queue, item=item, client=client))
+                sleep(2.5)
 
             _results = [future.result() for future in futures]
+
+    def set_event(self) -> None:
+        self.executor.shutdown(wait=False, cancel_futures=True)
+
+        self.original_event_set()
 
     def queue(self, item: PJeMovimentacao, client: Client) -> None:
         """Enfileire e processe um processo judicial PJE.

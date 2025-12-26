@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Literal
 
-from flask import Flask
+from flask import Flask, current_app
 from flask_mail import Message
 
 from backend.api.models import User
@@ -60,9 +60,10 @@ class MailTasks(BotTasks):
             str: Mensagem de sucesso do envio do e-mail.
 
         """
-        mail: Mail = app.extensions["mail"]
-        url_web = app.config["WEB_URL"]
-        celery: Celery = app.extensions["celery"]
+        flaskapp = current_app
+        mail: Mail = flaskapp.extensions["mail"]
+        url_web = flaskapp.config["WEB_URL"]
+        celery: Celery = flaskapp.extensions["celery"]
 
         db = cls.sqlalchemy_instance(app)
         user = cls.query_user(db, user_id)
