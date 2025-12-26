@@ -9,30 +9,22 @@ from typing import TYPE_CHECKING, ClassVar, TypedDict
 from httpx import Client
 from tqdm import tqdm
 
-from backend.common.exceptions import (
-    ExecutionError as ExecutionError,
-)
-from backend.interfaces.pje import (
-    CapaPJe,
-    DictResults,
-)
+from backend.interfaces.pje import CapaPJe, DictResults
 from backend.task_manager.controllers.pje import PJeBot
 from backend.task_manager.resources import RegioesIterator
-from backend.task_manager.resources.queues.file_downloader import FileDownloader
 
 from ._timeline import TimeLinePJe
 
 if TYPE_CHECKING:
     from queue import Queue
 
-    from backend.interfaces import BotData
     from backend.types_app import AnyType as AnyType
     from backend.types_app import Dict
 
     from ._dicionarios import DocumentoPJe
 
 
-class ArgumentosPJeCapa(TypedDict):
+class PJeMovimentacao(TypedDict):
     NUMERO_PROCESSO: str
     GRAU: str
     REGIAO: str
@@ -43,29 +35,35 @@ class Movimentacao(PJeBot):
     name: ClassVar[str] = "movimentacao_pje"
 
     def execution(self) -> None:
-        self.download_file = FileDownloader()
 
-        generator_regioes = RegioesIterator[ArgumentosPJeCapa](bot=self)
+        generator_regioes = RegioesIterator[PJeMovimentacao](bot=self)
         self.total_rows = len(self.posicoes_processos)
 
-        for data_regiao in generator_regioes:
-            if self.bot_stopped.is_set():
-                break
+        thread_pool = ThreadPoolExecutor(
+            max_workers=2,
+            thread_name_prefix=f"Fila região {self.regiao}",
+        )
 
-            with suppress(Exception):
-                if self.auth():
-                    self.queue_regiao(data=data_regiao)
+        with thread_pool as pool:
+            futures: list[Future[None]] = []
+            for data_regiao in generator_regioes:
+                if self.bot_stopped.is_set():
+                    break
+
+                with suppress(Exception):
+                    if self.auth():
+                        futures.append(pool.submit(self.queue_regiao, data=data_regiao))
+                        sleep(10)
+
+            _results = [future.result() for future in futures]
 
         self.finalizar_execucao()
 
-        while self.download_file.queue.is_shutdown():
-            ...
-
-    def queue_regiao(self, data: list[BotData]) -> None:
+    def queue_regiao(self, data: list[PJeMovimentacao]) -> None:
         """Enfileire processos judiciais para processamento.
 
         Args:
-            data (list[BotData]): Lista de dados dos processos.
+            data (list[PJeMovimentacao]): Lista de dados dos processos.
 
         """
         cookies = self.auth.get_cookies()
@@ -77,23 +75,15 @@ class Movimentacao(PJeBot):
         headers = dict(list(headers_)[-1].headers.items())
         client_context = Client(cookies=cookies, headers=headers)
 
-        thread_pool = ThreadPoolExecutor(
-            max_workers=2,
-            thread_name_prefix=f"Fila região {self.regiao}",
-        )
+        with client_context as client:
+            for item in data:
+                self.queue(item, client=client)
 
-        with client_context as client, thread_pool as pool:
-            futures: list[Future[None]] = [
-                pool.submit(self.queue, item=item, client=client) for item in data
-            ]
-
-            _results = [future.result() for future in futures]
-
-    def queue(self, item: BotData, client: Client) -> None:
+    def queue(self, item: PJeMovimentacao, client: Client) -> None:
         """Enfileire e processe um processo judicial PJE.
 
         Args:
-            item (BotData): Dados do processo.
+            item (PJeMovimentacao): Dados do processo.
             client (Client): Cliente HTTP autenticado.
 
         """
@@ -155,7 +145,12 @@ class Movimentacao(PJeBot):
             )
             raise
 
-    def kw_timeline(self, result: DictResults, item: BotData, client: Client) -> dict:
+    def kw_timeline(
+        self,
+        result: DictResults,
+        item: PJeMovimentacao,
+        client: Client,
+    ) -> dict:
 
         processo = item["NUMERO_PROCESSO"]
         return {
@@ -176,7 +171,7 @@ class Movimentacao(PJeBot):
 
         return list(filter(termo_in_tipo, tl.documentos))
 
-    def salva_erro(self, row: int, item: BotData) -> None:
+    def salva_erro(self, row: int, item: PJeMovimentacao) -> None:
 
         message = "Nenhum arquivo encontrado!"
         message_type = "error"
