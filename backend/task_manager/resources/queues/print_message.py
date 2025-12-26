@@ -10,7 +10,6 @@ from contextlib import suppress
 from datetime import datetime
 from queue import Queue
 from threading import Thread
-from time import sleep
 from typing import TYPE_CHECKING, TypedDict
 from zoneinfo import ZoneInfo
 
@@ -204,7 +203,6 @@ class PrintMessage:
                     )
 
             if data:
-                sleep(0.25)
                 with suppress(Exception):
                     to_write = data["message"]
                     mode = "a" if self.file_log.exists() else "w"
