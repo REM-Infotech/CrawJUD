@@ -111,6 +111,7 @@ class Movimentacao(PJeBot):
                     self.extrair_processo(**kw)
                 return
 
+            kw.update({"grau": grau})
             client.headers.update({"x-grau-instancia": grau})
             self.extrair_processo(**kw)
 
