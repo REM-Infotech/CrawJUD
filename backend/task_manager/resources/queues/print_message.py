@@ -226,8 +226,6 @@ class PrintMessage:
                     with self.file_log.open(mode=mode, encoding="utf-8") as fp:
                         tqdm.write(to_write, file=fp)
 
-                sleep(0.25)
-
     def emit_message(self, data: Message, sio: Client) -> None:
         sio.emit("logbot", data=data, namespace="/bot")
         tqdm.write(str(data["message"]), file=sys.stdout)
