@@ -7,26 +7,25 @@ carrega as rotas e executa o servidor SocketIO na porta definida.
 from __future__ import annotations
 
 import logging
-import warnings
 from threading import Thread
 from typing import TYPE_CHECKING
 
 from celery.apps.worker import Worker
 from clear import clear
 from dotenv import dotenv_values
+from typer import Typer
 
 if TYPE_CHECKING:
     from flask_socketio import SocketIO
 
-warnings.filterwarnings(
-    "ignore",
-    message="Werkzeug appears to be used in a production deployment.*",
-)
 environ = dotenv_values()
 FLASK_PORT: int = 5000
 clear()
 
+app = Typer()
 
+
+@app.command(name="api")
 def _api() -> None:
     from backend.api import create_app
     from backend.api import routes as routes
@@ -38,6 +37,7 @@ def _api() -> None:
     io.run(flaskapp, host="localhost", port=port, allow_unsafe_werkzeug=True)
 
 
+@app.command(name="celery")
 def _celery_worker() -> None:
     from backend.task_manager import app as celery_app
 
