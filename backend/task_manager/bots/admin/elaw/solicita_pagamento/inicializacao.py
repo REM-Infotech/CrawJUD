@@ -26,7 +26,7 @@ if TYPE_CHECKING:
         ISolicitacaoPagamentos,
     )
     from backend.resources.driver import (
-        WebElementBot as WebElement,
+        WebElement as WebElement,
     )
 
 

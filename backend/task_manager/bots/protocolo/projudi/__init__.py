@@ -26,7 +26,7 @@ from backend.resources.elements import projudi as el
 from backend.resources.formatadores import formata_string
 
 if TYPE_CHECKING:
-    from backend.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 class Protocolo(ProjudiBot):
@@ -310,7 +310,7 @@ class Protocolo(ProjudiBot):
         path_arq = out.joinpath(nome_arq_normalizado)
 
         wait = WebDriverWait(self.driver, 10)
-        input_file: WebElementBot = wait.until(
+        input_file: WebElement = wait.until(
             ec.presence_of_element_located((
                 By.XPATH,
                 el.XPATH_INPUT_ARQUIVO,
@@ -357,7 +357,7 @@ class Protocolo(ProjudiBot):
 
     def __seleciona_tipo_arquivo(
         self,
-        tr_arquivo: WebElementBot,
+        tr_arquivo: WebElement,
         tipo_arquivo: str,
         *,
         peticao_principal: bool = False,

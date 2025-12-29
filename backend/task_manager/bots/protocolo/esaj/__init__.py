@@ -28,7 +28,7 @@ from backend.controllers.esaj import ESajBot
 from backend.resources.elements import esaj as el
 
 if TYPE_CHECKING:
-    from backend.resources.driver import WebElementBot
+    from backend.resources.driver import WebElement
 
 
 class Protocolo(ESajBot):
@@ -366,7 +366,7 @@ class Protocolo(ESajBot):
 
     def _vincular_parte_peticao(
         self,
-        partes: list[WebElementBot],
+        partes: list[WebElement],
         parte_peticao: str,
     ) -> None:
         """Auxilia na vinculação da parte à petição.

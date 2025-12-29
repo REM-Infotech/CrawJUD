@@ -10,7 +10,7 @@ from contextlib import suppress
 from datetime import datetime
 from queue import Queue
 from threading import Thread
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Literal, TypedDict
 from zoneinfo import ZoneInfo
 
 from clear import clear
@@ -37,6 +37,15 @@ MSG_ROBO_INICIADO = "Robô inicializado!"
 MSG_FIM_EXECUCAO = "Fim da execução"
 MSG_ARQUIVO_BAIXADO = "Arquivo baixado com sucesso!"
 MSG_EXECUCAO_SUCESSO = "Execução efetuada com sucesso!"
+
+
+type MessageStr = Literal[
+    "Robô inicializado!",
+    "Fim da execução",
+    "Arquivo baixado com sucesso!",
+    "Execução efetuada com sucesso!",
+    "Processo Encontrado!",
+]
 
 
 class Count(TypedDict):
@@ -75,7 +84,7 @@ class PrintMessage:
 
     def __call__(
         self,
-        message: str,
+        message: MessageStr,
         message_type: MessageType,
         row: int = 0,
         link: str | None = None,

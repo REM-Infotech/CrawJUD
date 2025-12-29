@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from cryptography.x509 import Certificate
 
     from backend.controllers.pje import PJeBot
-    from backend.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 if not jpype.isJVMStarted():
     jpype.startJVM()
@@ -149,7 +149,7 @@ class AutenticadorPJe(AutenticadorBot):
     def _desafio_duplo_fator(self) -> None:
         otp = str(pyotp.parse_uri(uri=self.credenciais.otp).now())
 
-        input_otp: WebElementBot = WebDriverWait(self.driver, 60).until(
+        input_otp: WebElement = WebDriverWait(self.driver, 60).until(
             ec.presence_of_element_located((
                 By.CSS_SELECTOR,
                 'input[id="otp"]',

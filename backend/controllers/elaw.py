@@ -23,7 +23,7 @@ from backend.task_manager.constants.data._bots.cidades import cidades_amazonas
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from backend.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 class ElawBot(CrawJUD):
@@ -156,11 +156,11 @@ class ElawBot(CrawJUD):
 
         self.driver.switch_to.window(main_window)
 
-    def select2(self, element: WebElementBot, to_search: str) -> None:
+    def select2(self, element: WebElement, to_search: str) -> None:
         """Selecione uma opção em campo select2 pelo texto informado.
 
         Args:
-            element (WebElementBot): Elemento select2 alvo.
+            element (WebElement): Elemento select2 alvo.
             to_search (str): Texto da opção a ser selecionada.
 
         """

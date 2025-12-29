@@ -15,6 +15,7 @@ from . import (
     intimacoes,
     movimentacao,
     protocolo,
+    provisionamento,
 )
 
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "intimacoes",
     "movimentacao",
     "protocolo",
+    "provisionamento",
 ]

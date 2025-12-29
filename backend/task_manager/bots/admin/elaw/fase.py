@@ -14,7 +14,7 @@ from backend.controllers.elaw import ElawBot
 from backend.resources.elements.elaw import AtualizaFase as Element
 
 if TYPE_CHECKING:
-    from backend.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 class AtualizaFase(ElawBot):
@@ -104,7 +104,7 @@ class AtualizaFase(ElawBot):
         )
         sleep(2)
         # Seleciona a nova fase no seletor apropriado
-        seletor_altera_fase: WebElementBot = self.wait.until(
+        seletor_altera_fase: WebElement = self.wait.until(
             ec.presence_of_element_located((
                 By.XPATH,
                 Element.XPATH_SELETOR_FASE,

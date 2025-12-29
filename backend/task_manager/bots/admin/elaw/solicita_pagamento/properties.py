@@ -26,7 +26,7 @@ if TYPE_CHECKING:
         ISolicitacaoPagamentos,
     )
     from backend.resources.driver.web_element import (
-        WebElementBot as WebElement,
+        WebElement as WebElement,
     )
 
 PGTO_BOLETO = "Boleto bancário"

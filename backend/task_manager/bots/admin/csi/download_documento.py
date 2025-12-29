@@ -15,7 +15,7 @@ from backend.controllers.csi import CsiBot
 from backend.resources.elements import csi as el
 
 if TYPE_CHECKING:
-    from backend.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 load_dotenv()
 
@@ -73,11 +73,11 @@ class DownloadDocumento(CsiBot):
             self.bot_data.update({"MOTIVO_ERRO": message_error})
             self.append_error(data_save=[self.bot_data])
 
-    def busca_chamado(self) -> WebElementBot:
+    def busca_chamado(self) -> WebElement:
         """Busque o chamado pelo número informado e retorne o elemento.
 
         Returns:
-            WebElementBot: Elemento da tabela de solicitações encontrado.
+            WebElement: Elemento da tabela de solicitações encontrado.
 
         """
         numero_chamado = self.bot_data["NUMERO_CHAMADO"]

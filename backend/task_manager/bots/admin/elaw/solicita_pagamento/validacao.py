@@ -18,7 +18,7 @@ from .properties import Geral
 
 if TYPE_CHECKING:
     from backend.resources.driver import (
-        WebElementBot as WebElement,
+        WebElement as WebElement,
     )
 
 

@@ -23,7 +23,7 @@ from backend.resources.formatadores import formata_string
 from .master import JusdsBot
 
 if TYPE_CHECKING:
-    from backend.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 class RealizaPrazos(JusdsBot):
@@ -108,14 +108,14 @@ class RealizaPrazos(JusdsBot):
                 self.atualizar_status(prazo=prazo)
                 break
 
-    def find_prazo(self, id_prazo: str) -> WebElementBot | None:
+    def find_prazo(self, id_prazo: str) -> WebElement | None:
         """Busque o prazo judicial pelo id informado.
 
         Args:
             id_prazo (str): Identificador do compromisso.
 
         Returns:
-            WebElementBot | None: Elemento do prazo ou None se não encontrado.
+            WebElement | None: Elemento do prazo ou None se não encontrado.
 
         """
         wait = WebDriverWait(self.driver, 10)
@@ -129,7 +129,7 @@ class RealizaPrazos(JusdsBot):
 
         btn_pagina_compromissos.click()
 
-        prazos_list: list[WebElementBot] = wait.until(
+        prazos_list: list[WebElement] = wait.until(
             ec.presence_of_element_located((
                 By.XPATH,
                 el.XPATH_TABLE_PRAZOS,
@@ -188,7 +188,7 @@ class RealizaPrazos(JusdsBot):
             )),
         )
 
-        campo_tipo_anexo: WebElementBot = wait.until(
+        campo_tipo_anexo: WebElement = wait.until(
             ec.presence_of_element_located((
                 By.XPATH,
                 el.XPATH_INPUT_TIPO_DOCUMENTO,
@@ -223,7 +223,7 @@ class RealizaPrazos(JusdsBot):
             nome_anexo_normalizado,
         )
 
-        input_file: WebElementBot = wait.until(
+        input_file: WebElement = wait.until(
             ec.presence_of_element_located((
                 By.XPATH,
                 el.XPATH_INPUT_FILE,
@@ -255,7 +255,7 @@ class RealizaPrazos(JusdsBot):
             )),
         ).click()
 
-    def atualizar_status(self, prazo: WebElementBot) -> None:
+    def atualizar_status(self, prazo: WebElement) -> None:
         """Atualize o status do compromisso judicial para concluído."""
         wait = WebDriverWait(self.driver, 10)
         prazo_items = prazo.find_elements(By.TAG_NAME, "td")

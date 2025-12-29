@@ -23,7 +23,7 @@ from backend.controllers.esaj import ESajBot
 from backend.resources.elements import esaj as el
 
 if TYPE_CHECKING:
-    from backend.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 SUCESSO = 0.8
@@ -145,11 +145,11 @@ class Movimentacao(ESajBot):
                 message="Nenhuma movimentação encontrada",
             )
 
-    def filter_moves(self, move: WebElementBot) -> bool:
+    def filter_moves(self, move: WebElement) -> bool:
         """Filtre movimentações conforme critérios definidos.
 
         Args:
-            move (WebElementBot): Elemento da movimentação.
+            move (WebElement): Elemento da movimentação.
 
         Returns:
             bool: True se atender aos critérios, False caso contrário.
@@ -377,7 +377,7 @@ class Movimentacao(ESajBot):
 
     def process_single_move(
         self,
-        move: WebElementBot,
+        move: WebElement,
         keyword: str,
     ) -> None:
         """Processa uma única movimentação filtrada.

@@ -21,7 +21,7 @@ from backend.resources.elements import elaw as el
 from backend.resources.search.main import SearchBot
 
 if TYPE_CHECKING:
-    from backend.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 class ElawSearch(SearchBot):
@@ -47,7 +47,7 @@ class ElawSearch(SearchBot):
         if self.driver.current_url != el.LINK_PROCESSO_LIST:
             self.driver.get(el.LINK_PROCESSO_LIST)
 
-        campo_numproc: WebElementBot = self.wait.until(
+        campo_numproc: WebElement = self.wait.until(
             ec.presence_of_element_located((
                 By.ID,
                 "tabSearchTab:txtSearch",

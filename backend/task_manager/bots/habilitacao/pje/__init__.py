@@ -8,7 +8,7 @@ from backend.controllers import PJeBot
 from backend.controllers.projudi import ProjudiBot
 from backend.interfaces import BotData, DataSucesso
 from backend.resources import RegioesIterator
-from backend.resources.driver.web_element import WebElementBot
+from backend.resources.driver.web_element import WebElement
 from backend.resources.elements import projudi as el
 from backend.resources.formatadores import formata_string
 
@@ -18,7 +18,7 @@ __all__ = [
     "ExecutionError",
     "FileError",
     "ProjudiBot",
-    "WebElementBot",
+    "WebElement",
     "el",
     "formata_string",
     "raise_password_token",

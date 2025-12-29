@@ -14,7 +14,7 @@ from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.utils import keys_to_typing
 from selenium.webdriver.remote.command import Command
-from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.remote.webelement import WebElement as SEWebElement
 from selenium.webdriver.support.ui import Select
 
 from backend.common.raises import raise_execution_error
@@ -35,7 +35,7 @@ class RectWebElement(TypedDict):
     y: float
 
 
-class WebElementBot(WebElement):
+class WebElement(SEWebElement):
     """Gerencie e interaja com elementos web personalizados."""
 
     _current_driver: WebDriver = None
@@ -125,7 +125,7 @@ class WebElementBot(WebElement):
         self,
         by: str = By.ID,
         value: AnyType | None = None,
-    ) -> WebElementBot:
+    ) -> WebElement:
         """Localize e retorne um elemento filho deste elemento.
 
         Args:
@@ -133,7 +133,7 @@ class WebElementBot(WebElement):
             value (AnyType | None): Valor a ser buscado.
 
         Returns:
-            WebElementBot: Elemento encontrado.
+            WebElement: Elemento encontrado.
 
         """
         return super().find_element(by=by, value=value)
@@ -142,7 +142,7 @@ class WebElementBot(WebElement):
         self,
         by: str = By.ID,
         value: AnyType | None = None,
-    ) -> list[WebElementBot]:
+    ) -> list[WebElement]:
         """Localize e retorne uma lista de elementos filhos deste elemento.
 
         Args:
@@ -150,7 +150,7 @@ class WebElementBot(WebElement):
             value (AnyType | None): Valor a ser buscado.
 
         Returns:
-            list[WebElementBot]: Lista de elementos encontrados.
+            list[WebElement]: Lista de elementos encontrados.
 
         """
         return super().find_elements(by=by, value=value)
@@ -183,10 +183,7 @@ class WebElementBot(WebElement):
         """
         file_ = file
         if isinstance(file, Path):
-            if platform.system() == "Linux":
-                file_ = file.as_posix()
-            else:
-                file_ = str(file)
+            file_ = file.as_posix() if platform.system() == "Linux" else str(file)
         self._execute(
             Command.SEND_KEYS_TO_ELEMENT,
             {

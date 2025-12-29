@@ -19,9 +19,7 @@ XPATH_LOAD_MODAL = '//*[@class="modal show d-block"]/div'
 XPATH_CLOSE_MODAL = '//*[@class="modal show d-block"]/div/div/div[1]/button'
 
 XPATH_BTN_ENTRA_PROCESSO = '//*[@id="isc_Vtable"]/tbody/tr/td[1]/div/img'
-URL_INFORMACOES_PROCESSO = (
-    "https://infraero.jusds.com.br/JRD/openform.do?{args_url}"
-)
+URL_INFORMACOES_PROCESSO = "https://infraero.jusds.com.br/JRD/openform.do?{args_url}"
 
 CSS_BTN_TAB_COMPROMISSOS = 'a[id="tabButton3"]'
 XPATH_BTN_NOVO_COMPROMISSO = '//*[@id="TMAKERGRID6bar"]/i[@id="addButton"]'

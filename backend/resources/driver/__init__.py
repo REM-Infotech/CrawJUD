@@ -12,7 +12,7 @@ from seleniumwire.webdriver import Chrome as SeleniumWireChrome
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
-from backend.resources.driver.web_element import WebElementBot
+from backend.resources.driver.web_element import WebElement
 from backend.task_manager.constants import WORKDIR
 from backend.task_manager.constants.webdriver import (
     ARGUMENTS,
@@ -73,7 +73,7 @@ class BotDriver:
         elif bot.config.get("sistema").upper() == "PJE":
             self.driver = SeleniumWireChrome(options=options, service=service)
 
-        webelement = WebElementBot.set_driver(self.driver)
+        webelement = WebElement.set_driver(self.driver)
 
         self.driver._web_element_cls = webelement  # noqa: SLF001
         self.wait = WebDriverWait(self.driver, 30)
