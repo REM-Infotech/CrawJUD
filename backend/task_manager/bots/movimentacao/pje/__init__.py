@@ -73,8 +73,6 @@ class Movimentacao(PJeBot):
         self.driver.quit()
         self.executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)
 
-        self.print_message.sio.on("bot_stop", self.set_event)
-
         with client_context as client, self.executor as pool:
             futures: list[Future[None]] = []
             for item in data:
@@ -87,6 +85,7 @@ class Movimentacao(PJeBot):
             _results = [future.result() for future in futures]
 
     def set_event(self) -> None:
+
         self.executor.shutdown(wait=False, cancel_futures=True)
 
     def queue(self, item: PJeMovimentacao, client: Client) -> None:
