@@ -13,6 +13,7 @@ from flask_keepass import KeepassManager
 from flask_mail import Mail
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from passlib.context import CryptContext
 from socketio.redis_manager import RedisManager
 
 from backend.api.base import Model, Query
@@ -31,6 +32,13 @@ io = SocketIO()
 cors = CORS()
 storage = Minio()
 keepass = KeepassManager()
+
+crypt_context: CryptContext = CryptContext.from_string("""
+[passlib]
+schemes = argon2, bcrypt
+default = argon2
+deprecated = bcrypt
+""")
 
 __all__ = ["CustomPattern", "cors", "db", "jwt", "mail", "start_extensions"]
 
