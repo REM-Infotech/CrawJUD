@@ -14,7 +14,7 @@ from uuid import uuid4
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
 
-from backend.task_manager.extensions import crypt_context, db
+from backend.extensions import crypt_context, db
 
 if TYPE_CHECKING:
     from backend.task_manager.models.bot import ExecucoesBot

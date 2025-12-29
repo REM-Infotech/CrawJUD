@@ -6,8 +6,8 @@ from celery import Celery
 from dynaconf import FlaskDynaconf
 
 from backend import _hook
+from backend.config import CeleryConfig, settings
 from backend.task_manager.base import FlaskTask
-from backend.task_manager.config import CeleryConfig, config
 
 __all__ = ["_hook"]
 
@@ -27,7 +27,7 @@ def make_celery() -> Celery:
     FlaskDynaconf(
         app=flaskapp,
         instance_relative_config=True,
-        dynaconf_instance=config,
+        dynaconf_instance=settings,
     )
 
     celery_app.config_from_object(CeleryConfig(flaskapp.config))

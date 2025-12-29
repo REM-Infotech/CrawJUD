@@ -15,7 +15,7 @@ from flask_jwt_extended import get_current_user
 from flask_socketio import Namespace, join_room
 
 from backend.api.decorators import jwt_sio_required
-from backend.api.extensions import io
+from backend.extensions import io
 from backend.utilities import format_time, load_timezone, update_timezone
 
 if TYPE_CHECKING:

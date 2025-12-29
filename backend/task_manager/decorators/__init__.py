@@ -8,7 +8,8 @@ from importlib import import_module
 from typing import TYPE_CHECKING
 
 from celery import shared_task
-from flask import current_app
+from dynaconf import FlaskDynaconf
+from flask import Flask, current_app
 
 from backend.task_manager.base import FlaskTask
 
@@ -95,11 +96,21 @@ class SharedClassMethodTask:
             T: Resultado do classmethod.
 
         """
+        from backend.config import settings
+
         _kwarg = kwargs
         _arg = args
         is_async = iscoroutine(self._fn)
         cls = import_class(self._path_cls)
-        from backend.api import app
+        app = Flask(__name__)
+
+        FlaskDynaconf(
+            app=app,
+            instance_relative_config=True,
+            extensions_list="EXTENSIONS",  # pyright: ignore[reportArgumentType]
+            dynaconf_instance=settings,
+            env="api",
+        )
 
         with app.app_context():
             if self.has_app:

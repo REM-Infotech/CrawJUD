@@ -20,8 +20,8 @@ from socketio import Client
 from socketio.exceptions import BadNamespaceError
 from tqdm import tqdm
 
+from backend.config import settings
 from backend.interfaces import Message
-from backend.task_manager.config import config
 from backend.task_manager.resources.iterators.queues import QueueIterator
 
 if TYPE_CHECKING:
@@ -182,7 +182,7 @@ class PrintMessage:
         presentes na fila para o FrontEnd.
 
         """
-        socketio_server = config.get("API_URL")
+        socketio_server = settings.get("API_URL")
 
         cookies = json.loads(b64decode(self.bot.config.get("cookies")).decode())
         session = Session()

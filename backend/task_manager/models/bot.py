@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
 
-from backend.task_manager.extensions import db
+from backend.extensions import db
 
 if TYPE_CHECKING:
     from backend.task_manager.models.users import LicenseUser, User

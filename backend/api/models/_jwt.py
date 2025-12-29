@@ -11,7 +11,7 @@ from flask_jwt_extended import get_current_user
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
 
-from backend.api.extensions import db, jwt
+from backend.extensions import db, jwt
 
 from ._users import User
 
@@ -65,9 +65,7 @@ def user_lookup_callback(*args: AnyType, **kwargs: AnyType) -> User | None:
     for item in args:
         jwt_data.update(item)
 
-    return (
-        db.session.query(User).filter_by(Id=int(jwt_data["sub"])).one_or_none()
-    )
+    return db.session.query(User).filter_by(Id=int(jwt_data["sub"])).one_or_none()
 
 
 class TokenBlocklist(db.Model):

@@ -10,7 +10,7 @@ from flask import Flask
 from passlib.context import CryptContext
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from backend.api.config import settings
+from backend.config import settings
 
 # Instancia a aplicação Flask
 app: Flask = Flask(__name__)

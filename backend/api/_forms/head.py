@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING, ClassVar, Self
 from flask import current_app, request
 from flask_jwt_extended import get_current_user
 
-from backend.api.extensions import celery
 from backend.api.models import Bots, LicenseUser, User, db
 from backend.api.resources import camel_to_snake, formata_string
 from backend.common.exceptions._fatal import FatalError
+from backend.extensions import celery
 
 if TYPE_CHECKING:
     from flask_keepass import KeepassManager

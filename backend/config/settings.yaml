@@ -1,12 +1,79 @@
-default:
+api:
   # Configurações específicas para o ambiente de produção
   EXTENSIONS: [
-      "backend.api.extensions:start_extensions",
+      "backend.extensions:start_extensions",
       "backend.api.routes:register_routes",
       # "backend.api.models:init_database",
       # "backend.api.models:create_bots",
       # "backend.api.models:load_credentials",
     ]
+
+  ## Configurações do Flask
+
+  PROPAGATE_EXCEPTIONS: False
+  TRAP_HTTP_EXCEPTIONS: False
+  TRAP_BAD_REQUEST_ERRORS: False
+  SESSION_COOKIE_NAME: "session"
+  SESSION_COOKIE_HTTPONLY: True
+  SESSION_COOKIE_SAMESITE: "None"
+  SESSION_COOKIE_SECURE: True
+  SESSION_COOKIE_PARTITIONED: True
+  PERMANENT_SESSION_LIFETIME: 604800
+  SESSION_REFRESH_EACH_REQUEST: True
+  USE_X_SENDFILE: False
+  SEND_FILE_MAX_AGE_DEFAULT: 2592000
+
+  APPLICATION_ROOT: "/api/v1"
+  PREFERRED_URL_SCHEME: "https"
+
+  BODY_TIMEOUT: 300
+  MAX_FORM_PARTS: 1000
+  MAX_COOKIE_SIZE: 4093
+  MAX_CONTENT_LENGTH: 5368709120
+  MAX_FORM_MEMORY_SIZE: 67108864
+  TEMPLATES_AUTO_RELOAD: True
+  EXPLAIN_TEMPLATE_LOADING: True
+  PROVIDE_AUTOMATIC_OPTIONS: True
+
+  # ✅ Configurações SQLAlchemy
+  SQLALCHEMY_POOL_SIZE: 30
+  SQLALCHEMY_MAX_OVERFLOW: 10
+  SQLALCHEMY_POOL_TIMEOUT: 30
+  SQLALCHEMY_POOL_RECYCLE: 1800
+  SQLALCHEMY_POOL_PRE_PING: true
+  SQLALCHEMY_TRACK_MODIFICATIONS: false
+  SQLALCHEMY_ENGINE_OPTIONS:
+    pool_pre_ping: true
+    pool_recycle: 1800
+    pool_size: 30
+
+  # ✅ Configurações Redis
+  SESSION_TYPE: "sqlalchemy"
+  SESSION_SQLALCHEMY_TABLE: "sessions"
+  SESSION_SQLALCHEMY_SEQUENCE: "session_id_seq"
+  SESSION_USE_SIGNER: true
+  SESSION_KEY_PREFIX: "session:"
+  SESSION_ID_LENGTH: 32
+  SESSION_SERIALIZATION_FORMAT: "json"
+
+  # ✅ Configurações Celery
+  task_serializer: "json"
+  result_serializer: "json"
+  accept_content:
+    - "json"
+  enable_utc: true
+  timezone: "America/Sao_Paulo"
+  worker_concurrency: 8
+  worker_pool: "threads"
+  task_default_queue: "celery"
+  task_default_exchange: "celery"
+  task_default_exchange_type: "direct"
+  task_default_routing_key: "celery"
+  worker_hijack_root_logger: "@bool off"
+
+celery:
+  # Configurações específicas para o ambiente de produção
+  EXTENSIONS: ["backend.task_manager.extensions:start_extensions"]
 
   ## Configurações do Flask
 

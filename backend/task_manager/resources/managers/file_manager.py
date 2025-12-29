@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from minio import Minio as MinioClient
 from tqdm import tqdm
 
-from backend.task_manager.config import config
+from backend.config import settings
 from backend.task_manager.constants import WORKDIR
 from backend.task_manager.resources.formatadores import formata_string
 
@@ -34,7 +34,7 @@ class FileManager(MinioClient):
             bot (CrawJUD): Instância do robô principal.
 
         """
-        dict_config = dict(list(config.as_dict().items()))
+        dict_config = dict(list(settings.as_dict().items()))
         super().__init__(
             endpoint=dict_config["MINIO_ENDPOINT"],
             access_key=dict_config.get("MINIO_ACCESS_KEY"),

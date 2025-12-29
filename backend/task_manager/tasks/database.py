@@ -55,6 +55,9 @@ class DatabaseTasks(BotTasks):
             str: Mensagem de sucesso da operação.
 
         """
+        from backend.extensions import start_extensions
+
+        app = start_extensions(app)
         # Obtém instância do banco de dados
         db: SQLAlchemy = app.extensions["sqlalchemy"]
         # Busca usuário e bot relacionados

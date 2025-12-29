@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from celery import Celery
+from flask.app import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_keepass import KeepassManager
@@ -16,7 +17,7 @@ from socketio.redis_manager import RedisManager
 
 from backend.api.base import Model, Query
 from backend.api.base._tst import CustomPattern
-from backend.api.extensions._minio import Minio
+from backend.extensions._minio import Minio
 
 if TYPE_CHECKING:
     from dynaconf.contrib import DynaconfConfig
@@ -34,7 +35,7 @@ keepass = KeepassManager()
 __all__ = ["CustomPattern", "cors", "db", "jwt", "mail", "start_extensions"]
 
 
-def start_extensions(app: Flask) -> None:
+def start_extensions(app: Flask) -> Flask:
     """Inicializa as extensões do Flask."""
     with app.app_context():
         if not app.extensions.get("sqlalchemy"):
@@ -72,3 +73,5 @@ def start_extensions(app: Flask) -> None:
             worker_redirect_stdouts=False,
             worker_redirect_stdouts_level="CRITICAL",
         )
+
+    return app

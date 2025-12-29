@@ -10,7 +10,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
 
 from backend.api import crypt_context
-from backend.api.extensions import db
+from backend.extensions import db
 
 if TYPE_CHECKING:
     from backend.api.models._bot import Bots, CredenciaisRobo, ExecucoesBot
