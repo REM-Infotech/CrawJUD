@@ -15,7 +15,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.raises import raise_execution_error
-from backend.task_manager.resources.elements.elaw import (
+from backend.resources.elements.elaw import (
     SolicitaPagamento as Element,
 )
 
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from backend.interfaces.elaw.pagamentos import (
         ISolicitacaoPagamentos,
     )
-    from backend.task_manager.resources.driver import (
+    from backend.resources.driver import (
         WebElementBot as WebElement,
     )
 

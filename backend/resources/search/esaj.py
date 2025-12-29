@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from backend.task_manager.resources.search.main import SearchBot
+from backend.resources.search.main import SearchBot
 
 if TYPE_CHECKING:
     from backend.types_app import AnyType

@@ -15,8 +15,8 @@ from backend.common.exceptions import (
     ExecutionError,
     LoginSystemError,
 )
-from backend.task_manager.resources.auth.pje import AutenticadorBot
-from backend.task_manager.resources.elements import projudi as el
+from backend.resources.auth.pje import AutenticadorBot
+from backend.resources.elements import projudi as el
 
 if TYPE_CHECKING:
     from selenium.webdriver.common.alert import Alert

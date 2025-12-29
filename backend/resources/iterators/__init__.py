@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Self
 from pandas import read_excel
 
 from backend.interfaces import BotData
-from backend.task_manager.resources.formatadores import (
+from backend.resources.formatadores import (
     format_data,
     format_float,
     formata_string,
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from backend.task_manager.controllers.head import CrawJUD
 
 
-class BotIterator:
+class BotIterator[T: BotData]:
     """Iterator para os dados inputados na planilha."""
 
     def __init__(self, bot: CrawJUD) -> None:
@@ -56,7 +56,7 @@ class BotIterator:
             self._frame = data_bot
             bot.total_rows = len(self._frame)
 
-    def __iter__(self) -> Self:
+    def __iter__(self) -> Self[T]:
         """Retorne o próprio iterador para permitir iteração sobre regiões.
 
         Returns:
@@ -65,7 +65,7 @@ class BotIterator:
         """
         return self
 
-    def __next__(self) -> BotData:
+    def __next__(self) -> T:
         """Implementa a iteração retornando próxima região e dados associados.
 
         Returns:

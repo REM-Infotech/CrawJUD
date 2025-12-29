@@ -11,8 +11,8 @@ from minio import Minio as MinioClient
 from tqdm import tqdm
 
 from backend.config import settings
+from backend.resources.formatadores import formata_string
 from backend.task_manager.constants import WORKDIR
-from backend.task_manager.resources.formatadores import formata_string
 
 if TYPE_CHECKING:
     from celery import Celery

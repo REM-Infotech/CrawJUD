@@ -22,7 +22,7 @@ from tqdm import tqdm
 
 from backend.config import settings
 from backend.interfaces import Message
-from backend.task_manager.resources.iterators.queues import QueueIterator
+from backend.resources.iterators.queues import QueueIterator
 
 if TYPE_CHECKING:
     from pathlib import Path

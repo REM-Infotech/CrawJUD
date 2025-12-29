@@ -24,19 +24,19 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common import auth_error
+from backend.resources.assinador import Assinador
+from backend.resources.auth.main import AutenticadorBot
+from backend.resources.elements import pje as el
+from backend.resources.formatadores import random_base36
+from backend.resources.keystore import KeyStore
 from backend.task_manager.constants import NO_CONTENT_STATUS
 from backend.task_manager.constants.pje import ENDPOINT_DESAFIO
-from backend.task_manager.resources.assinador import Assinador
-from backend.task_manager.resources.auth.main import AutenticadorBot
-from backend.task_manager.resources.elements import pje as el
-from backend.task_manager.resources.formatadores import random_base36
-from backend.task_manager.resources.keystore import KeyStore
 
 if TYPE_CHECKING:
     from cryptography.x509 import Certificate
 
+    from backend.resources.driver.web_element import WebElementBot
     from backend.task_manager.controllers.pje import PJeBot
-    from backend.task_manager.resources.driver.web_element import WebElementBot
 
 if not jpype.isJVMStarted():
     jpype.startJVM()

@@ -6,14 +6,14 @@ from typing import TYPE_CHECKING, ClassVar
 
 from dotenv import load_dotenv
 
+from backend.resources import RegioesIterator
+from backend.resources.auth.pje import AutenticadorPJe
+from backend.resources.search.pje import PjeSeach
 from backend.task_manager.controllers.head import CrawJUD
-from backend.task_manager.resources import RegioesIterator
-from backend.task_manager.resources.auth.pje import AutenticadorPJe
-from backend.task_manager.resources.search.pje import PjeSeach
 
 if TYPE_CHECKING:
     from backend.interfaces import BotData
-    from backend.task_manager.resources.queues.file_downloader import (
+    from backend.resources.queues.file_downloader import (
         FileDownloader,
     )
     from backend.types_app import Dict

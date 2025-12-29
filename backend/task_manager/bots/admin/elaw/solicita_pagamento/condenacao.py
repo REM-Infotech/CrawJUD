@@ -6,7 +6,7 @@ import traceback
 
 from backend.common.raises import raise_execution_error
 from backend.interfaces.elaw.main import ElawData
-from backend.task_manager.resources.elements.elaw import (
+from backend.resources.elements.elaw import (
     PgtoCondenacao as Element,
 )
 

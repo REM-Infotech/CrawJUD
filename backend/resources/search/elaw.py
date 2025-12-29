@@ -17,11 +17,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-from backend.task_manager.resources.elements import elaw as el
-from backend.task_manager.resources.search.main import SearchBot
+from backend.resources.elements import elaw as el
+from backend.resources.search.main import SearchBot
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElementBot
 
 
 class ElawSearch(SearchBot):

@@ -6,14 +6,14 @@ from typing import TYPE_CHECKING
 
 from bs4 import BeautifulSoup
 
-from backend.task_manager.controllers.head import CrawJUD
-from backend.task_manager.resources import value_check
-from backend.task_manager.resources.auth.projudi import AutenticadorProjudi
-from backend.task_manager.resources.formatadores import (
+from backend.resources import value_check
+from backend.resources.auth.projudi import AutenticadorProjudi
+from backend.resources.formatadores import (
     formata_string,
     normalizar,
 )
-from backend.task_manager.resources.search.projudi import ProjudiSearch
+from backend.resources.search.projudi import ProjudiSearch
+from backend.task_manager.controllers.head import CrawJUD
 
 if TYPE_CHECKING:
     from bs4._typing import _SomeTags

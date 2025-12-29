@@ -10,14 +10,14 @@ from typing import TYPE_CHECKING
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.resources.elements.elaw import (
+from backend.resources.elements.elaw import (
     SolicitaPagamento as Element,
 )
 
 from .properties import Geral
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver import (
+    from backend.resources.driver import (
         WebElementBot as WebElement,
     )
 
@@ -96,9 +96,7 @@ class Validador(Geral):
 
         # Caso não encontre o pagamento, informa para verificação manual
         if data["ID_PAGAMENTO"] == "Vazio":
-            message = (
-                "Não foi possível comprovar pagamento, verificar manualmente"
-            )
+            message = "Não foi possível comprovar pagamento, verificar manualmente"
             message_type = "info"
             self.print_message(
                 message=message,

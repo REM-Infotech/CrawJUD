@@ -18,7 +18,7 @@ from typing import TypedDict
 from httpx import Client
 from tqdm import tqdm
 
-from backend.task_manager.resources.iterators.queues import QueueIterator
+from backend.resources.iterators.queues import QueueIterator
 
 BUFFER_1MB = 1024 * 1024
 CHUNK_8MB = 8192 * 1024

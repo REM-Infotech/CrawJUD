@@ -3,7 +3,7 @@ from __future__ import annotations
 from contextlib import suppress
 from typing import TYPE_CHECKING, Any, TypedDict
 
-from backend.task_manager.resources.elements import pje as el
+from backend.resources.elements import pje as el
 
 if TYPE_CHECKING:
     from httpx import Client

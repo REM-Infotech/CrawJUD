@@ -10,9 +10,9 @@ from httpx import Client
 from tqdm import tqdm
 
 from backend.interfaces.pje import CapaPJe, DictResults
+from backend.resources import RegioesIterator
+from backend.resources.driver import BotDriver
 from backend.task_manager.controllers.pje import PJeBot
-from backend.task_manager.resources import RegioesIterator
-from backend.task_manager.resources.driver import BotDriver
 
 from ._dicionarios import PJeMovimentacao
 from ._timeline import TimeLinePJe

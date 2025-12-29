@@ -17,13 +17,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 from tqdm import tqdm
 
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.resources.elements import jusds as el
-from backend.task_manager.resources.formatadores import formata_string
+from backend.resources.elements import jusds as el
+from backend.resources.formatadores import formata_string
 
 from .master import JusdsBot
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElementBot
 
 
 class RealizaPrazos(JusdsBot):

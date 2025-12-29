@@ -7,7 +7,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.resources.auth.main import AutenticadorBot
+from backend.resources.auth.main import AutenticadorBot
 
 
 class AutenticadorElaw(AutenticadorBot):

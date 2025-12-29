@@ -6,8 +6,8 @@ from backend.interfaces.projudi import (
     PartesProjudiDict,
     RepresentantesProjudiDict,
 )
+from backend.resources.elements import projudi as el
 from backend.task_manager.controllers.projudi import ProjudiBot
-from backend.task_manager.resources.elements import projudi as el
 
 
 def limpa_campo(valor: str) -> str:

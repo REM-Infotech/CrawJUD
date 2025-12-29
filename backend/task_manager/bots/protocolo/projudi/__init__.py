@@ -21,12 +21,12 @@ from selenium.webdriver.support.wait import WebDriverWait
 from backend.common import raise_password_token
 from backend.common.exceptions import ExecutionError, FileError
 from backend.interfaces import DataSucesso
+from backend.resources.elements import projudi as el
+from backend.resources.formatadores import formata_string
 from backend.task_manager.controllers.projudi import ProjudiBot
-from backend.task_manager.resources.elements import projudi as el
-from backend.task_manager.resources.formatadores import formata_string
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElementBot
 
 
 class Protocolo(ProjudiBot):
@@ -330,9 +330,7 @@ class Protocolo(ProjudiBot):
 
         files = list(table_arquivos.find_elements(By.TAG_NAME, "tr"))
         _files_name = [
-            f.find_elements(By.TAG_NAME, "td")[1]
-            .find_element(By.TAG_NAME, "a")
-            .text
+            f.find_elements(By.TAG_NAME, "td")[1].find_element(By.TAG_NAME, "a").text
             for f in files
         ]
 

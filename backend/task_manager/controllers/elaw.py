@@ -15,15 +15,15 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.raises import raise_execution_error
+from backend.resources.auth import AutenticadorElaw
+from backend.resources.search import ElawSearch
 from backend.task_manager.constants.data._bots.cidades import cidades_amazonas
 from backend.task_manager.controllers.head import CrawJUD
-from backend.task_manager.resources.auth import AutenticadorElaw
-from backend.task_manager.resources.search import ElawSearch
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElementBot
 
 
 class ElawBot(CrawJUD):

@@ -10,11 +10,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common import raise_execution_error
+from backend.resources.elements.elaw import AtualizaFase as Element
 from backend.task_manager.controllers.elaw import ElawBot
-from backend.task_manager.resources.elements.elaw import AtualizaFase as Element
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElementBot
 
 
 class AtualizaFase(ElawBot):

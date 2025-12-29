@@ -16,13 +16,13 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 
 from backend.common.exceptions import ExecutionError
+from backend.resources.elements import projudi as el
 from backend.task_manager.controllers.projudi import ProjudiBot
-from backend.task_manager.resources.elements import projudi as el
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElementBot
 
 
 class Movimentacao(ProjudiBot):
@@ -237,7 +237,9 @@ class Movimentacao(ProjudiBot):
             message = f"Foram encontradas {qtd_movimentacoes} movimentações!"
 
             if com_documento:
-                message = f"Foram encontradas {qtd_movimentacoes} movimentações com arquivos!"
+                message = (
+                    f"Foram encontradas {qtd_movimentacoes} movimentações com arquivos!"
+                )
 
             self.print_message(
                 message=message,
@@ -305,9 +307,7 @@ class Movimentacao(ProjudiBot):
                 tds_files[0]
 
                 link_arquivo = (
-                    tds_files[4]
-                    .find_element(By.TAG_NAME, "a")
-                    .get_attribute("href")
+                    tds_files[4].find_element(By.TAG_NAME, "a").get_attribute("href")
                 )
 
                 with client.stream("get", link_arquivo) as stream:
@@ -321,9 +321,7 @@ class Movimentacao(ProjudiBot):
                     part_files.append(tmp_path_file)
 
         _pages = [
-            writer.add_page(page)
-            for f in part_files
-            for page in PdfReader(f).pages
+            writer.add_page(page) for f in part_files for page in PdfReader(f).pages
         ]
 
         pdf_out_name = tds[3].text

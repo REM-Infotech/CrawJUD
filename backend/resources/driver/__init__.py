@@ -12,13 +12,13 @@ from seleniumwire.webdriver import Chrome as SeleniumWireChrome
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
+from backend.resources.driver.web_element import WebElementBot
 from backend.task_manager.constants import WORKDIR
 from backend.task_manager.constants.webdriver import (
     ARGUMENTS,
     PREFERENCES,
     SETTINGS,
 )
-from backend.task_manager.resources.driver.web_element import WebElementBot
 
 if TYPE_CHECKING:
     from backend.task_manager.controllers.head import CrawJUD

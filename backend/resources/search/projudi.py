@@ -19,14 +19,14 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 from backend.common.exceptions import ExecutionError
+from backend.resources.elements import projudi as el
+from backend.resources.search.main import SearchBot
 from backend.task_manager.constants import CSS_INPUT_PROCESSO
-from backend.task_manager.resources.elements import projudi as el
-from backend.task_manager.resources.search.main import SearchBot
 
 if TYPE_CHECKING:
     from backend.interfaces import BotData
+    from backend.resources.driver.web_element import WebElementBot
     from backend.task_manager.controllers.projudi import ProjudiBot
-    from backend.task_manager.resources.driver.web_element import WebElementBot
 
 
 GRAU_PRIMEIRA_INSTANCIA = 1

@@ -17,10 +17,10 @@ from backend.common.exceptions._fatal import FatalError
 from backend.interfaces.pje import (
     CapaPJe,
 )
+from backend.resources import RegioesIterator
+from backend.resources.queues.file_downloader import FileDownloader
 from backend.task_manager.bots.capa.pje._timeline import TimeLinePJe
 from backend.task_manager.controllers.pje import PJeBot
-from backend.task_manager.resources import RegioesIterator
-from backend.task_manager.resources.queues.file_downloader import FileDownloader
 
 if TYPE_CHECKING:
     from queue import Queue

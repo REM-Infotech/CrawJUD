@@ -24,11 +24,11 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.exceptions import ExecutionError
 from backend.common.raises import raise_execution_error
+from backend.resources.elements import esaj as el
 from backend.task_manager.controllers.esaj import ESajBot
-from backend.task_manager.resources.elements import esaj as el
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver import WebElementBot
+    from backend.resources.driver import WebElementBot
 
 
 class Protocolo(ESajBot):

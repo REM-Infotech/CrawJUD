@@ -11,9 +11,9 @@ from json.decoder import JSONDecodeError
 from typing import TYPE_CHECKING, TypedDict
 
 from backend.interfaces.pje import DictResults
+from backend.resources.elements import pje as el
+from backend.resources.search.main import SearchBot
 from backend.task_manager.constants import HTTP_OK_STATUS
-from backend.task_manager.resources.elements import pje as el
-from backend.task_manager.resources.search.main import SearchBot
 
 if TYPE_CHECKING:
     from httpx import Client, Response

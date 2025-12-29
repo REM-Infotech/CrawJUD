@@ -20,19 +20,19 @@ from backend.common.exceptions import StartError
 from backend.common.exceptions._fatal import FatalError
 from backend.common.exceptions._file import ArquivoNaoEncontradoError
 from backend.extensions import celery
-from backend.task_manager.constants import WORKDIR
-from backend.task_manager.decorators import SharedTask
-from backend.task_manager.resources.driver import BotDriver
-from backend.task_manager.resources.iterators import BotIterator
-from backend.task_manager.resources.managers.credencial_manager import (
+from backend.resources.driver import BotDriver
+from backend.resources.iterators import BotIterator
+from backend.resources.managers.credencial_manager import (
     CredencialManager,
 )
-from backend.task_manager.resources.managers.file_manager import FileManager
-from backend.task_manager.resources.queues.file_operation import (
+from backend.resources.managers.file_manager import FileManager
+from backend.resources.queues.file_operation import (
     SaveError,
     SaveSuccess,
 )
-from backend.task_manager.resources.queues.print_message import PrintMessage
+from backend.resources.queues.print_message import PrintMessage
+from backend.task_manager.constants import WORKDIR
+from backend.task_manager.decorators import SharedTask
 
 if TYPE_CHECKING:
     from pathlib import Path

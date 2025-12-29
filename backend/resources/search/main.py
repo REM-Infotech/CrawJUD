@@ -14,8 +14,8 @@ if TYPE_CHECKING:
     from seleniumwire.webdriver import Chrome
 
     from backend.interfaces import BotData
+    from backend.resources.queues.print_message import PrintMessage
     from backend.task_manager.controllers.head import CrawJUD
-    from backend.task_manager.resources.queues.print_message import PrintMessage
     from backend.types_app import Dict
 
 
