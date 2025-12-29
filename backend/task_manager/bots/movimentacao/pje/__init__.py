@@ -4,7 +4,7 @@ import traceback
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
 from time import sleep
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from httpx import Client
 from tqdm import tqdm
@@ -33,7 +33,7 @@ WORKERS_QTD = 4
 
 class Movimentacao(PJeBot):
     queue_files: Queue
-    name: ClassVar[str] = "movimentacao_pje"
+    name = "movimentacao_pje"
     driver: Chrome
 
     def execution(self) -> None:
@@ -72,9 +72,8 @@ class Movimentacao(PJeBot):
         client_context = Client(cookies=cookies, headers=headers)
         self.driver.quit()
         self.executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)
-        self.original_event_set = self.print_message.set_event
 
-        self.print_message.set_event = self.set_event
+        self.print_message.sio.on("bot_stop", self.set_event)
 
         with client_context as client, self.executor as pool:
             futures: list[Future[None]] = []
@@ -89,8 +88,6 @@ class Movimentacao(PJeBot):
 
     def set_event(self) -> None:
         self.executor.shutdown(wait=False, cancel_futures=True)
-
-        self.original_event_set()
 
     def queue(self, item: PJeMovimentacao, client: Client) -> None:
         """Enfileire e processe um processo judicial PJE.

@@ -1,4 +1,4 @@
-api:
+default:
   # Configurações específicas para o ambiente de produção
   EXTENSIONS: [
       "backend.extensions:start_extensions",

@@ -23,7 +23,7 @@ from flask_jwt_extended import (
 )
 from werkzeug.exceptions import HTTPException
 
-from backend.api.models import User
+from backend.models import User
 from backend.utilities import load_timezone
 
 if TYPE_CHECKING:

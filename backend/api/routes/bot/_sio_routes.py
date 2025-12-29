@@ -19,9 +19,9 @@ from backend.extensions import io
 from backend.utilities import format_time, load_timezone, update_timezone
 
 if TYPE_CHECKING:
-    from backend.api.models import User
     from backend.interfaces import Message
     from backend.interfaces.payloads import BotInfo
+    from backend.models import User
     from backend.types_app import AnyType, Sistemas
 
 semaphore = Semaphore(1)

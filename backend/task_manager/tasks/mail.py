@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING, Literal
 from flask import Flask
 from flask_mail import Mail, Message
 
-from backend.api.models import User
 from backend.common.exceptions._fatal import FatalError
+from backend.models import User
 from backend.task_manager.decorators import (
     SharedClassMethodTask as SharedClassMethodTask,
 )

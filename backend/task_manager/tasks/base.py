@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 from jinja2 import Environment, FileSystemLoader
 from jinja2.environment import Template as JinjaTemplate
 
-from backend.task_manager.models import Bots, ExecucoesBot, User
+from backend.models import Bots, ExecucoesBot, User
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -136,8 +136,4 @@ class BotTasks:
             ExecucoesBot | None: Execução encontrada ou None se não existir.
 
         """
-        return (
-            db.session.query(ExecucoesBot)
-            .filter(ExecucoesBot.pid == pid)
-            .first()
-        )
+        return db.session.query(ExecucoesBot).filter(ExecucoesBot.pid == pid).first()

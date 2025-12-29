@@ -82,4 +82,6 @@ def start_extensions(app: Flask) -> Flask:
             worker_redirect_stdouts_level="CRITICAL",
         )
 
+        app.extensions["celery"] = celery
+
     return app

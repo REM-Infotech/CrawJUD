@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, TypedDict, cast
 from uuid import uuid4
 
-from backend.api.models._bot import Bots, CredenciaisRobo, ExecucoesBot
-from backend.api.models._users import LicenseUser, User
 from backend.extensions import db
+from backend.models._bot import Bots, CredenciaisRobo, ExecucoesBot
+from backend.models._users import LicenseUser, User
 
 from ._jwt import TokenBlocklist
 

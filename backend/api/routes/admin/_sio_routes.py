@@ -8,7 +8,7 @@ from flask_jwt_extended import get_current_user, jwt_required
 from flask_socketio import Namespace
 
 if TYPE_CHECKING:
-    from backend.api.models import User
+    from backend.models import User
 
 
 class CredencialItem(TypedDict):

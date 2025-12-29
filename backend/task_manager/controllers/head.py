@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 from backend.common.exceptions import StartError
 from backend.common.exceptions._fatal import FatalError
 from backend.common.exceptions._file import ArquivoNaoEncontradoError
+from backend.extensions import celery
 from backend.task_manager.constants import WORKDIR
 from backend.task_manager.decorators import SharedTask
 from backend.task_manager.resources.driver import BotDriver
@@ -67,8 +68,6 @@ class CrawJUD:
 
     def shutdown_all(self) -> None:
 
-        from backend.task_manager import celery_app as app
-
         if hasattr(self, "append_success"):
             with suppress(Exception):
                 self.append_success.queue_save.shutdown()
@@ -79,7 +78,7 @@ class CrawJUD:
 
         kw = self.config
         kw["tipo_notificacao"] = "stop"
-        app.send_task("notifica_usuario", kwargs=kw)
+        celery.send_task("notifica_usuario", kwargs=kw)
 
     @classmethod
     def __subclasshook__(cls, *args: AnyType, **kwargs: AnyType) -> None:

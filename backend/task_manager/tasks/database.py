@@ -12,10 +12,10 @@ from zoneinfo import ZoneInfo
 
 from flask import Flask
 
+from backend.models import ExecucoesBot
 from backend.task_manager.decorators import (
     SharedClassMethodTask,
 )
-from backend.task_manager.models import ExecucoesBot
 from backend.task_manager.tasks.base import BotTasks
 
 if TYPE_CHECKING:

@@ -16,30 +16,34 @@ from dotenv import dotenv_values
 from typer import Typer
 
 from backend.api import create_app
-from backend.task_manager import app as celery_app
 
 if TYPE_CHECKING:
+    from celery import Celery
+    from flask import Flask
     from flask_socketio import SocketIO
 
 environ = dotenv_values()
 FLASK_PORT: int = 5000
 clear()
 
-app = Typer()
+typerapp = Typer()
+
+app: Flask = create_app()
 
 
 def _api() -> None:
     from backend.api import routes as routes
 
-    flaskapp = create_app()
-    io: SocketIO = flaskapp.extensions["socketio"]
+    io: SocketIO = app.extensions["socketio"]
     port: int = int(environ.get("FLASK_PORT", FLASK_PORT)) or FLASK_PORT
 
-    io.run(flaskapp, host="localhost", port=port, allow_unsafe_werkzeug=True)
+    io.run(app, host="localhost", port=port, allow_unsafe_werkzeug=True)
 
 
 def _celery_worker() -> None:
+    from backend.task_manager import make_celery
 
+    celery_app: Celery = make_celery(app)
     celery_app.conf.update(
         worker_hijack_root_logger=False,
         CELERY_REDIRECT_STDOUTS=False,
@@ -47,6 +51,7 @@ def _celery_worker() -> None:
 
     worker = Worker(
         app=celery_app,
+        pool="threads",
         loglevel=logging.INFO,
         redirect_stdouts=False,
         redirect_stdouts_level=logging.CRITICAL,
@@ -55,7 +60,7 @@ def _celery_worker() -> None:
     worker.start()
 
 
-@app.command(name="api")
+@typerapp.command(name="api")
 def _thread_api() -> NoReturn:
 
     api_ = Thread(target=_api, daemon=True)
@@ -65,7 +70,7 @@ def _thread_api() -> NoReturn:
         ...
 
 
-@app.command(name="celery")
+@typerapp.command(name="celery")
 def _thread_celery() -> NoReturn:
 
     celery_ = Thread(target=_celery_worker, daemon=True)
@@ -84,4 +89,4 @@ def _start_backend() -> None:
     api_.start()
 
 
-__all__ = ["_start_backend"]
+__all__ = ["_start_backend", "typerapp"]

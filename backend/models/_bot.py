@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
@@ -12,13 +12,16 @@ from backend.extensions import db
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from backend.api.models._users import LicenseUser, User
+    from backend.models._users import LicenseUser, User
 
 rel = db.relationship
+
+type _TableArgs = dict[Literal["extend_existing"], bool]
 
 
 class Bots(db.Model):
     __tablename__ = "bots"
+    __table_args__: ClassVar[_TableArgs] = {"extend_existing": True}
     Id: int = Column("id", Integer, primary_key=True)
     display_name: str = Column(String(64), nullable=False)
     sistema: str = Column(String(16), nullable=False)
@@ -44,6 +47,8 @@ class ExecucoesBot(db.Model):
     """Model de execuções dos bots."""
 
     __tablename__ = "execucoes"
+    __table_args__: ClassVar[_TableArgs] = {"extend_existing": True}
+
     Id: int = Column("id", Integer, primary_key=True)
     pid: str = Column(String(length=64), nullable=False)
     status: str = Column("status", String(length=64), nullable=False)
@@ -62,6 +67,8 @@ class CredenciaisRobo(db.Model):
     """Credenciais Bots Model."""
 
     __tablename__ = "credenciais_robo"
+    __table_args__: ClassVar[_TableArgs] = {"extend_existing": True}
+
     Id: int = Column("id", Integer, primary_key=True)
     nome_credencial: str = Column(
         "nome_credencial",
