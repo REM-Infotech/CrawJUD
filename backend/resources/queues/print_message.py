@@ -27,7 +27,7 @@ from backend.resources.iterators.queues import QueueIterator
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from backend.task_manager.controllers.head import CrawJUD
+    from backend.controllers.head import CrawJUD
     from backend.types_app import AnyType, MessageType
 
 load_dotenv()

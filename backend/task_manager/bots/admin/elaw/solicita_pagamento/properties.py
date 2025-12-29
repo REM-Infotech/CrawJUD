@@ -14,10 +14,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.raises import raise_execution_error
+from backend.controllers import ElawBot
 from backend.resources.elements.elaw import (
     SolicitaPagamento as Element,
 )
-from backend.task_manager.controllers import ElawBot
 
 if TYPE_CHECKING:
     from backend.interfaces.elaw.pagamentos import (

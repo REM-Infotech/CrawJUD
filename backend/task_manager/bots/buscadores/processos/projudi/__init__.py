@@ -10,11 +10,11 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 from backend.common.exceptions import ExecutionError
+from backend.controllers.projudi import ProjudiBot
 from backend.resources.driver.web_element import (
     WebElementBot as WebElement,
 )
 from backend.resources.elements import projudi as el
-from backend.task_manager.controllers.projudi import ProjudiBot
 
 
 class ProcParte(ProjudiBot):

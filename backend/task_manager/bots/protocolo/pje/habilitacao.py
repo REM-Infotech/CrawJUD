@@ -17,9 +17,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
+from backend.controllers.pje import PJeBot
 from backend.resources.elements import pje as el
 from backend.resources.formatadores import formata_string
-from backend.task_manager.controllers.pje import PJeBot
 
 dotenv.load_dotenv()
 
@@ -132,7 +132,8 @@ class HabilitiacaoPJe(PJeBot):
             if len(parte) > 0:
                 parte = parte[-1]
                 btn_seleciona = parte.find_elements(By.TAG_NAME, "td")[0].find_element(
-                    By.TAG_NAME, "mat-checkbox"
+                    By.TAG_NAME,
+                    "mat-checkbox",
                 )
                 btn_seleciona.click()
                 break

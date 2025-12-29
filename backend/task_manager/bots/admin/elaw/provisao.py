@@ -20,8 +20,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.exceptions import ExecutionError
+from backend.controllers.elaw import ElawBot
 from backend.resources.elements import elaw as el
-from backend.task_manager.controllers.elaw import ElawBot
 
 if TYPE_CHECKING:
     from backend.resources.driver.web_element import WebElementBot

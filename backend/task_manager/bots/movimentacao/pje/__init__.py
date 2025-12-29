@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING
 from httpx import Client
 from tqdm import tqdm
 
+from backend.controllers.pje import PJeBot
 from backend.interfaces.pje import CapaPJe, DictResults
 from backend.resources import RegioesIterator
 from backend.resources.driver import BotDriver
-from backend.task_manager.controllers.pje import PJeBot
 
 from ._dicionarios import PJeMovimentacao
 from ._timeline import TimeLinePJe

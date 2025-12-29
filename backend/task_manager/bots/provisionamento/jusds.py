@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from backend.task_manager.controllers.jusds import JusDsBot
+from backend.controllers.jusds import JusDsBot
 
 if TYPE_CHECKING:
+    from backend.controllers.head import BotIterator
     from backend.interfaces import BotData
-    from backend.task_manager.controllers.head import BotIterator
 
 
 class Provisionamento(JusDsBot):

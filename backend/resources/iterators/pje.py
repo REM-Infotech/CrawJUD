@@ -9,8 +9,8 @@ from backend.common.exceptions.validacao import (
 )
 
 if TYPE_CHECKING:
+    from backend.controllers.pje import PJeBot
     from backend.interfaces import BotData
-    from backend.task_manager.controllers.pje import PJeBot
     from backend.types_app.bot import ProcessoCNJ
 
 

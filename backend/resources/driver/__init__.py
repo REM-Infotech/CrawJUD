@@ -21,7 +21,7 @@ from backend.task_manager.constants.webdriver import (
 )
 
 if TYPE_CHECKING:
-    from backend.task_manager.controllers.head import CrawJUD
+    from backend.controllers.head import CrawJUD
 
 
 class BotDriver:

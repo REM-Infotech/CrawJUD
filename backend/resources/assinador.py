@@ -36,7 +36,7 @@ from typer import Argument, Option, Typer
 if TYPE_CHECKING:
     from cryptography.x509 import Certificate
 
-    from backend.task_manager.controllers.pje import PJeBot
+    from backend.controllers.pje import PJeBot
 
 if not jpype.isJVMStarted():
     jpype.startJVM()

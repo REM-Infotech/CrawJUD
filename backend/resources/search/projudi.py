@@ -24,9 +24,9 @@ from backend.resources.search.main import SearchBot
 from backend.task_manager.constants import CSS_INPUT_PROCESSO
 
 if TYPE_CHECKING:
+    from backend.controllers.projudi import ProjudiBot
     from backend.interfaces import BotData
     from backend.resources.driver.web_element import WebElementBot
-    from backend.task_manager.controllers.projudi import ProjudiBot
 
 
 GRAU_PRIMEIRA_INSTANCIA = 1

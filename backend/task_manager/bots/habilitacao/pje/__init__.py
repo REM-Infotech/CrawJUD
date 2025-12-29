@@ -4,13 +4,13 @@ from typing import ClassVar, TypedDict
 
 from backend.common import raise_password_token
 from backend.common.exceptions import ExecutionError, FileError
+from backend.controllers import PJeBot
+from backend.controllers.projudi import ProjudiBot
 from backend.interfaces import BotData, DataSucesso
 from backend.resources import RegioesIterator
 from backend.resources.driver.web_element import WebElementBot
 from backend.resources.elements import projudi as el
 from backend.resources.formatadores import formata_string
-from backend.task_manager.controllers import PJeBot
-from backend.task_manager.controllers.projudi import ProjudiBot
 
 __all__ = [
     "BotData",

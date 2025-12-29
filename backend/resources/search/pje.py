@@ -18,8 +18,8 @@ from backend.task_manager.constants import HTTP_OK_STATUS
 if TYPE_CHECKING:
     from httpx import Client, Response
 
+    from backend.controllers import PJeBot
     from backend.interfaces import BotData
-    from backend.task_manager.controllers import PJeBot
 
 
 class _ResponseDadosBasicos(TypedDict):

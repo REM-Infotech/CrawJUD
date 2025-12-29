@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING, Self
 from backend.interfaces.elaw.main import ElawData
 
 if TYPE_CHECKING:
+    from backend.controllers.elaw import ElawBot
     from backend.interfaces import BotData
-    from backend.task_manager.controllers.elaw import ElawBot
 
 
 class ElawIterator:

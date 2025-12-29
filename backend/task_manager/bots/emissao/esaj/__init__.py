@@ -18,8 +18,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.exceptions import ExecutionError
 from backend.common.raises import raise_execution_error
+from backend.controllers.esaj import ESajBot
 from backend.resources.elements import esaj as el
-from backend.task_manager.controllers.esaj import ESajBot
 
 
 class Emissao(ESajBot):

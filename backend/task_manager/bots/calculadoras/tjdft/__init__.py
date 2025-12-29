@@ -16,7 +16,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.controllers.head import CrawJUD
+from backend.controllers.head import CrawJUD
 
 cookieaceito = []
 
@@ -244,9 +244,7 @@ class Tjdft(CrawJUD):
                 self.bot_data.get("JUROS_PARTIR"),
             ).upper()
 
-            css_select_juros = (
-                'select[id="juros_partir"][class="select-consultas"]'
-            )
+            css_select_juros = 'select[id="juros_partir"][class="select-consultas"]'
             select = Select(
                 self.wait.until(
                     ec.presence_of_element_located((
@@ -309,9 +307,7 @@ class Tjdft(CrawJUD):
 
         """
         try:
-            css_data_valor_devido = (
-                'input[id="data-0"][name="parcela_data:list"]'
-            )
+            css_data_valor_devido = 'input[id="data-0"][name="parcela_data:list"]'
             self.message = "Informando data valor devido"
             self.message_type = "log"
             self.prt()
@@ -380,9 +376,7 @@ class Tjdft(CrawJUD):
 
         """
         try:
-            css_calcular = (
-                'input[type="submit"][value="Calcular"][id="calcular"]'
-            )
+            css_calcular = 'input[type="submit"][value="Calcular"][id="calcular"]'
             calcular = self.driver.find_element(
                 By.CSS_SELECTOR,
                 css_calcular,
@@ -441,9 +435,7 @@ class Tjdft(CrawJUD):
         """
         try:
             sleep(1)
-            css_multa_percentual = (
-                'input[name="multa_percent"][id="multa_percent"]'
-            )
+            css_multa_percentual = 'input[name="multa_percent"][id="multa_percent"]'
             self.message = "Informando multa percentual"
             self.message_type = "log"
             self.prt()
@@ -531,8 +523,7 @@ class Tjdft(CrawJUD):
                 ).get_attribute("disabled")
 
             elif (
-                self.bot_data.get("HONORARIO_SUCUMB_DATA", None)
-                and disabled_state == ""
+                self.bot_data.get("HONORARIO_SUCUMB_DATA", None) and disabled_state == ""
             ):
                 honor_sucumb_data = self.driver.find_element(
                     By.CSS_SELECTOR,

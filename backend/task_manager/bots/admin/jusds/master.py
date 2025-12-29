@@ -7,9 +7,9 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
+from backend.controllers.head import CrawJUD
 from backend.interfaces import DataSucesso
 from backend.resources.elements import jusds as el
-from backend.task_manager.controllers.head import CrawJUD
 
 
 class JusdsBot(CrawJUD):

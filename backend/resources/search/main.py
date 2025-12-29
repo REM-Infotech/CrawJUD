@@ -13,9 +13,9 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
+    from backend.controllers.head import CrawJUD
     from backend.interfaces import BotData
     from backend.resources.queues.print_message import PrintMessage
-    from backend.task_manager.controllers.head import CrawJUD
     from backend.types_app import Dict
 
 

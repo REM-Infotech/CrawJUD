@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, ClassVar
 
 from dotenv import load_dotenv
 
+from backend.controllers.head import CrawJUD
 from backend.resources import RegioesIterator
 from backend.resources.auth.pje import AutenticadorPJe
 from backend.resources.search.pje import PjeSeach
-from backend.task_manager.controllers.head import CrawJUD
 
 if TYPE_CHECKING:
     from backend.interfaces import BotData

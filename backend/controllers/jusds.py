@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING as TYPE_CHECKING
 
+from backend.controllers.head import CrawJUD
 from backend.resources.auth import AutenticadorElaw
 from backend.resources.search import ElawSearch
-from backend.task_manager.controllers.head import CrawJUD
 
 
 class JusDsBot(CrawJUD):

@@ -20,10 +20,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common import raise_password_token
 from backend.common.exceptions import ExecutionError, FileError
+from backend.controllers.projudi import ProjudiBot
 from backend.interfaces import DataSucesso
 from backend.resources.elements import projudi as el
 from backend.resources.formatadores import formata_string
-from backend.task_manager.controllers.projudi import ProjudiBot
 
 if TYPE_CHECKING:
     from backend.resources.driver.web_element import WebElementBot

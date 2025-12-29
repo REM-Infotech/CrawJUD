@@ -14,8 +14,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.exceptions import ExecutionError
+from backend.controllers.esaj import ESajBot
 from backend.resources.elements import esaj as el
-from backend.task_manager.controllers.esaj import ESajBot
 
 if TYPE_CHECKING:
     from selenium.webdriver.remote.webelement import WebElement

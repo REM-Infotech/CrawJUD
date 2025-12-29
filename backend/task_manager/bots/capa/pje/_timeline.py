@@ -9,8 +9,8 @@ from zoneinfo import ZoneInfo
 if TYPE_CHECKING:
     from httpx import Client
 
+    from backend.controllers import PJeBot
     from backend.task_manager.bots.capa.pje._dicionarios import DocumentoPJe
-    from backend.task_manager.controllers import PJeBot
 
 type AnyType = Any
 

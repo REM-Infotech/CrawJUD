@@ -5,8 +5,8 @@ from contextlib import suppress
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
+from backend.controllers.head import CrawJUD
 from backend.resources.elements import csi as el
-from backend.task_manager.controllers.head import CrawJUD
 
 
 class CsiBot(CrawJUD):

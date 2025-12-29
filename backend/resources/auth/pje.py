@@ -35,8 +35,8 @@ from backend.task_manager.constants.pje import ENDPOINT_DESAFIO
 if TYPE_CHECKING:
     from cryptography.x509 import Certificate
 
+    from backend.controllers.pje import PJeBot
     from backend.resources.driver.web_element import WebElementBot
-    from backend.task_manager.controllers.pje import PJeBot
 
 if not jpype.isJVMStarted():
     jpype.startJVM()

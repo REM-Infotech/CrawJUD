@@ -8,7 +8,7 @@ from ._strings import LinkPJe, NomeDocumentoPJe
 if TYPE_CHECKING:
     from httpx import Client
 
-    from backend.task_manager.controllers import PJeBot
+    from backend.controllers import PJeBot
 
     from ._dicionarios import DocumentoPJe
 

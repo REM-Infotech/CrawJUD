@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from celery import Celery
     from minio.datatypes import Object
 
-    from backend.task_manager.controllers.head import CrawJUD
+    from backend.controllers.head import CrawJUD
 load_dotenv()
 
 

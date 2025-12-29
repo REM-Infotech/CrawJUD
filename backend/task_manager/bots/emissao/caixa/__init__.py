@@ -14,7 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.controllers.head import CrawJUD
+from backend.controllers.head import CrawJUD
 
 
 class Emissor(CrawJUD):
@@ -423,7 +423,9 @@ class Emissor(CrawJUD):
         pgto_name = self.bot_data.get("NOME_CUSTOM", "Guia De Depósito")
 
         numproc = self.bot_data.get("NUMERO_PROCESSO")
-        pdf_name = f"{pgto_name} - {numproc} - {self.bot_data.get('AUTOR')} - {self.pid}.pdf"
+        pdf_name = (
+            f"{pgto_name} - {numproc} - {self.bot_data.get('AUTOR')} - {self.pid}.pdf"
+        )
         sleep(10)
 
         caminho_old_pdf = self.output_dir_path.joinpath(
@@ -457,9 +459,7 @@ class Emissor(CrawJUD):
         numeros_encontrados = []
 
         # Expressão regular para encontrar números nesse formato
-        pattern = (
-            r"\b\d{5}\.\d{5}\s*\d{5}\.\d{6}\s*\d{5}\.\d{6}\s*\d\s*\d{14}\b"
-        )
+        pattern = r"\b\d{5}\.\d{5}\s*\d{5}\.\d{6}\s*\d{5}\.\d{6}\s*\d\s*\d{14}\b"
 
         pdf_file = path_pdf
         read = PdfReader(pdf_file)
@@ -476,9 +476,7 @@ class Emissor(CrawJUD):
 
         # Imprima os números encontrados
         for numero in numeros_encontrados:
-            bar_code = (
-                str(numero).replace("  ", "").replace(" ", "").replace(".", " ")
-            )
+            bar_code = str(numero).replace("  ", "").replace(" ", "").replace(".", " ")
 
         return [
             self.bot_data.get("NUMERO_PROCESSO"),

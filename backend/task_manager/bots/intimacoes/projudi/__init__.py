@@ -11,11 +11,11 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 
 from backend.common.exceptions import ExecutionError
+from backend.controllers.projudi import ProjudiBot
 from backend.resources.driver.web_element import (
     WebElementBot as WebElement,
 )
 from backend.resources.elements import projudi as el
-from backend.task_manager.controllers.projudi import ProjudiBot
 
 
 class Intimacoes(ProjudiBot):
