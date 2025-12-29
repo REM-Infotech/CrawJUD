@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict, cast
+from typing import TYPE_CHECKING, cast
 from uuid import uuid4
 
 from backend.extensions import db
 from backend.models._bot import Bots, CredenciaisRobo, ExecucoesBot
 from backend.models._users import LicenseUser, User
+from backend.types_app.payloads import SystemBots
 
 from ._jwt import TokenBlocklist
 
@@ -18,43 +19,22 @@ if TYPE_CHECKING:
     from flask_keepass import KeepassManager
     from pykeepass import Group
 
+    from backend.interfaces import DictCredencial, DictUsers
     from backend.types_app import Dict
-    from backend.types_app.payloads import SystemBots
+
 
 __all__ = [
     "Bots",
     "CredenciaisRobo",
     "ExecucoesBot",
     "LicenseUser",
+    "SystemBots",
     "TokenBlocklist",
     "User",
 ]
 
 
 parent_path = Path(__file__).parent.resolve()
-
-
-class DictUsers(TypedDict):
-    Id: int
-    login: str
-    nome_usuario: str
-    email: str
-    password: str
-    login_time: str
-    verification_code: str
-    login_id: str
-    filename: str
-    blob_doc: bytes
-    licenseus_id: int
-
-
-class DictCredencial(TypedDict):
-    Id: 8
-    nome_credencial: str
-    system: SystemBots
-    login_metodo: str
-    login: str
-    password: str
 
 
 def init_database(app: Flask) -> None:

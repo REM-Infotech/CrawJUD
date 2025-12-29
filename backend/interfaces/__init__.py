@@ -10,6 +10,30 @@ if TYPE_CHECKING:
         PolosProcessuais,
         StatusBot,
     )
+    from backend.types_app.payloads import SystemBots
+
+
+class DictUsers(TypedDict):  # noqa: D101
+    Id: int
+    login: str
+    nome_usuario: str
+    email: str
+    password: str
+    login_time: str
+    verification_code: str
+    login_id: str
+    filename: str
+    blob_doc: bytes
+    licenseus_id: int
+
+
+class DictCredencial(TypedDict):  # noqa: D101
+    Id: 8
+    nome_credencial: str
+    system: SystemBots
+    login_metodo: str
+    login: str
+    password: str
 
 
 class DataSave(TypedDict):
