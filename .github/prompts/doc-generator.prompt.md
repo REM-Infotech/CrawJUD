@@ -2,10 +2,17 @@
 agent: "agent"
 model: GPT-4.1 (copilot)
 description: "Gerar documentação da pasta"
-name: "gerar-doc
+name: "gerar-doc"
 
-tools: ['edit', 'search/codebase', 'search/fileSearch', 'search/listDirectory', 'search/usages', 'web/githubRepo']
-
+tools:
+  [
+    "edit",
+    "search/codebase",
+    "search/fileSearch",
+    "search/listDirectory",
+    "search/usages",
+    "web/githubRepo",
+  ]
 ---
 
 Geração de markdown para a pasta informada.
@@ -20,6 +27,7 @@ Regras:
 
 - Crie arquivos Markdown descrevendo cada arquivo
 - Salve os arquivos dentro da pasta `docs/<caminho_relativo_arquivo>`, mantendo a estrutura dos diretorios
+
   - **Exemplo**:
     > **Arquivo _app/app.vue_ >> Documentação _docs/app/app.vue.md_**
 
