@@ -1,7 +1,7 @@
 ---
 model: GPT-4.1 (copilot)
 description: "Gerar documentação da pasta"
-name: "gerar-doc"
+name: "Gerador de documentação"
 
 tools:
   [
@@ -14,11 +14,12 @@ tools:
   ]
 ---
 
-Geração de markdown para a pasta informada.
+# Geração de markdown para o projeto.
 
+Você não vai editar nenhuma pasta/arquivo além de doc/, apenas ler.
 Com base no arquivo \*_doc-markdown.instructions.md_:
 
-- Crie a documentação da pasta referida
+- Crie a documentação da pasta do projeto especificada em pyproject.toml (project.name)
 - Salve os arquivos dentro de _docs/_
 - Mantenha a estrutura real do projeto
 
