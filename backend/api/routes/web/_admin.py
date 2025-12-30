@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from backend.api.base import BlueprintNamespace
     from backend.models import User
 
+type Any = any
+
 
 class CredencialItem(TypedDict):
     Id: int
@@ -29,14 +31,14 @@ class UsuarioItem(TypedDict):
 
 @adminNS.on("disconnect")
 @jwt_required()
-def disconnect(self: BlueprintNamespace) -> None:
+def disconnect(self: BlueprintNamespace, args: Any) -> None:
 
     return ""
 
 
 @adminNS.on("connect")
 @jwt_required()
-def connect(self: BlueprintNamespace) -> None:
+def connect(self: BlueprintNamespace, *args: Any, **kwargs: Any) -> None:
 
     return ""
 
