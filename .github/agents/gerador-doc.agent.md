@@ -2,16 +2,7 @@
 model: GPT-4.1 (copilot)
 description: "Gerar documentação da pasta"
 name: "Gerador de documentação"
-
-tools:
-  [
-    "edit",
-    "search/codebase",
-    "search/fileSearch",
-    "search/listDirectory",
-    "search/usages",
-    "web/githubRepo",
-  ]
+tools: [view, glob, bash, grep]
 ---
 
 # Geração de markdown para o projeto.
