@@ -1,4 +1,6 @@
+---
 ## [GH-9] feature - Gerenciamento de credenciais e novas rotas API
+---
 
 ## 📖 Descrição
 
@@ -39,10 +41,6 @@ O impacto esperado é a melhoria na organização do backend, maior clareza nos 
 
 - [x] Não
 - [ ] Sim (descrever abaixo)
-
-## 🧪 Testes e Validação
-
-As mudanças foram validadas manualmente em ambiente de desenvolvimento. Não houve alteração em arquivos de teste automatizado.
 
 ## 🧹 Manutenção e Qualidade
 
