@@ -143,5 +143,3 @@ class CredencialBot:
 
         db.session.add(cred)
         db.session.commit()
-
-        return
