@@ -9,6 +9,7 @@ tools: [view, glob, bash, grep]
 
 Você não vai editar nenhuma pasta/arquivo além de doc/, apenas ler.
 Com base no arquivo \*_doc-markdown.instructions.md_:
+A pull request deve para a branch "devel", nunca para "main"
 
 - Crie a documentação da pasta do projeto especificada em pyproject.toml (project.name)
 - Salve os arquivos dentro de _docs/_
