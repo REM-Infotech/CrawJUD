@@ -6,7 +6,7 @@ andamentos.
 
 from selenium.webdriver.support.wait import WebDriverWait  # noqa: F401
 
-from backend.task_manager.resources.elements import jusds as el  # noqa: F401
+from backend.resources.elements import jusds as el  # noqa: F401
 
 from .master import JusdsBot
 

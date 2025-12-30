@@ -12,7 +12,7 @@ SETTINGS = {
 ARGUMENTS = [
     "--ignore-ssl-errors=yes",
     "--ignore-certificate-errors",
-    "--display=:0",
+    "--display=:99",
     "--window-size=1280,720",
     "--no-sandbox",
     "--kiosk-printing",

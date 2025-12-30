@@ -7,9 +7,9 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
+from backend.controllers.head import CrawJUD
 from backend.interfaces import DataSucesso
-from backend.task_manager.controllers.head import CrawJUD
-from backend.task_manager.resources.elements import jusds as el
+from backend.resources.elements import jusds as el
 
 
 class JusdsBot(CrawJUD):
@@ -160,8 +160,7 @@ class JusdsBot(CrawJUD):
 
             window = list(
                 filter(
-                    lambda x: x
-                    not in {self.window_busca_processo, self.main_window},
+                    lambda x: x not in {self.window_busca_processo, self.main_window},
                     self.driver.window_handles,
                 ),
             )

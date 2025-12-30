@@ -12,7 +12,7 @@ from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.model import Model as FSA_Model
 
-from backend.task_manager.resources import camel_to_snake
+from backend.resources import camel_to_snake
 
 from .query import Query, QueryProperty
 

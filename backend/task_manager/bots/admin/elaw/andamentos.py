@@ -8,8 +8,8 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.controllers.elaw import ElawBot
-from backend.task_manager.resources.elements import elaw as el
+from backend.controllers.elaw import ElawBot
+from backend.resources.elements import elaw as el
 
 
 class Andamentos(ElawBot):
@@ -139,9 +139,7 @@ class Andamentos(ElawBot):
                 el.inpt_ocorrencia,
             )
             text_andamento = (
-                str(self.bot_data.get("OCORRENCIA"))
-                .replace("\t", "")
-                .replace("\n", "")
+                str(self.bot_data.get("OCORRENCIA")).replace("\t", "").replace("\n", "")
             )
 
             ocorrencia.send_keys(text_andamento)
@@ -171,9 +169,7 @@ class Andamentos(ElawBot):
                 el.inpt_obs,
             )
             text_andamento = (
-                str(self.bot_data.get("OBSERVACAO"))
-                .replace("\t", "")
-                .replace("\n", "")
+                str(self.bot_data.get("OBSERVACAO")).replace("\t", "").replace("\n", "")
             )
 
             observacao.send_keys(text_andamento)

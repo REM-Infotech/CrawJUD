@@ -9,12 +9,7 @@ from tempfile import gettempdir
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from flask import (
-    Blueprint,
-    current_app,
-    jsonify,
-    make_response,
-)
+from flask import Blueprint, current_app, jsonify, make_response, request
 from flask.wrappers import Response
 from flask_jwt_extended import (
     jwt_required,
@@ -24,9 +19,12 @@ from backend.api._forms.head import FormBot
 from backend.api.constants import SISTEMAS
 from backend.api.decorators import CrossDomain
 from backend.api.resources import gerar_id
+from backend.resources._credencial import CredencialBot
 
 if TYPE_CHECKING:
-    from backend.api.extensions._minio import Minio
+    from flask_sqlalchemy import SQLAlchemy
+
+    from backend.extensions._minio import Minio
     from backend.types_app import Sistemas
     from backend.types_app.responses import (
         PayloadDownloadExecucao,
@@ -85,12 +83,14 @@ def run_bot(sistema: Sistemas) -> Response:
             code = 200
 
         except Exception as e:  # noqa: BLE001
-            _exc = "\n".join(traceback.format_exception(e))
+            _exc = "\n".join(traceback.format_exception(e))  # noqa: RUF052
+            print(_exc)  # noqa: T201
 
     return make_response(jsonify(payload), code)
 
 
 @bots.get("/execucoes/<string:pid>/download")
+@CrossDomain(origin="*", methods=["get", "post", "options"])
 @jwt_required()
 def download_execucao(pid: str) -> Response[PayloadDownloadExecucao]:
     """Baixe o arquivo de execução do bot pelo PID informado.
@@ -128,3 +128,29 @@ def download_execucao(pid: str) -> Response[PayloadDownloadExecucao]:
     })
 
     return make_response(payload, 200)
+
+
+@bots.post("/cadastro_credencial")
+@CrossDomain(origin="*", methods=["get", "post", "options"])
+@jwt_required()
+def cadatro_credencial() -> Response:
+
+    form_ = request.form
+    _files = request.files
+
+    payload = {
+        "mensagem": "Erro ao salvar credencial",
+    }
+
+    status_code = 500
+
+    if form_:
+        _db: SQLAlchemy = current_app.extensions["sqlalchemy"]
+        CredencialBot(app=current_app, **form_).cadastro()
+
+        payload = {
+            "mensagem": "Credencial salva com sucesso!",
+        }
+
+        status_code = 200
+    return make_response(jsonify(payload), status_code)

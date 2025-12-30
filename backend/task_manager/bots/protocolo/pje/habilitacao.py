@@ -17,9 +17,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-from backend.task_manager.controllers.pje import PJeBot
-from backend.task_manager.resources.elements import pje as el
-from backend.task_manager.resources.formatadores import formata_string
+from backend.controllers.pje import PJeBot
+from backend.resources.elements import pje as el
+from backend.resources.formatadores import formata_string
 
 dotenv.load_dotenv()
 
@@ -32,9 +32,7 @@ class HabilitiacaoPJe(PJeBot):
         bot_data: dict,
         regiao: str,
     ) -> None:
-        link_habilitacao = (
-            f"https://pje.trt{regiao}.jus.br/pjekz/habilitacao-autos"
-        )
+        link_habilitacao = f"https://pje.trt{regiao}.jus.br/pjekz/habilitacao-autos"
         self.driver.get(link_habilitacao)
         self.bot_data = bot_data
 
@@ -75,9 +73,7 @@ class HabilitiacaoPJe(PJeBot):
         campo_busca_processo.send_keys(Keys.ENTER)
         sleep(0.5)
 
-        xpath_btn_prosseguir = (
-            '//*[@id="area-cadastro"]/mat-action-row/div[2]/button'
-        )
+        xpath_btn_prosseguir = '//*[@id="area-cadastro"]/mat-action-row/div[2]/button'
 
         btn_prosseguir = wait.until(
             ec.presence_of_element_located((
@@ -135,15 +131,14 @@ class HabilitiacaoPJe(PJeBot):
 
             if len(parte) > 0:
                 parte = parte[-1]
-                btn_seleciona = parte.find_elements(By.TAG_NAME, "td")[
-                    0
-                ].find_element(By.TAG_NAME, "mat-checkbox")
+                btn_seleciona = parte.find_elements(By.TAG_NAME, "td")[0].find_element(
+                    By.TAG_NAME,
+                    "mat-checkbox",
+                )
                 btn_seleciona.click()
                 break
 
-        xpath_btn_prosseguir = (
-            '//*[@id="area-cadastro"]/mat-action-row/div[2]/button'
-        )
+        xpath_btn_prosseguir = '//*[@id="area-cadastro"]/mat-action-row/div[2]/button'
         sleep(1.5)
 
         btn_prosseguir = wait.until(

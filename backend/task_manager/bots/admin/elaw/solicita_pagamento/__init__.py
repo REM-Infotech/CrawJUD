@@ -11,10 +11,10 @@ import traceback
 
 from backend.common.exceptions import ExecutionError
 from backend.common.raises import raise_execution_error
-from backend.task_manager.resources.formatadores import (
+from backend.resources.formatadores import (
     formata_string as formata_string,
 )
-from backend.task_manager.resources.iterators.elaw import ElawIterator
+from backend.resources.iterators.elaw import ElawIterator
 
 from .condenacao import PgtoCondenacao
 from .custas import PgtoCustas

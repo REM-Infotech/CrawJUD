@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.resources.elements import jusds as el
+from backend.resources.elements import jusds as el
 
 from .master import JusdsBot
 

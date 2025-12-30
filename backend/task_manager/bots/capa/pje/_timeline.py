@@ -9,8 +9,8 @@ from zoneinfo import ZoneInfo
 if TYPE_CHECKING:
     from httpx import Client
 
+    from backend.controllers import PJeBot
     from backend.task_manager.bots.capa.pje._dicionarios import DocumentoPJe
-    from backend.task_manager.controllers import PJeBot
 
 type AnyType = Any
 
@@ -44,9 +44,7 @@ class NomeDocumentoPJe(UserString):
         ano = datetime.now(tz=TZ_SAO_PAULO).strftime("%Y")
         tipo = documento["tipo"]
         titulo = documento["titulo"]
-        splited_titulo = (
-            titulo.split(" - ")[1:] if " - " in titulo else [titulo]
-        )
+        splited_titulo = titulo.split(" - ")[1:] if " - " in titulo else [titulo]
         titulo_formatado = " ".join([i.capitalize() for i in splited_titulo])
 
         seq_dict = {
@@ -55,6 +53,7 @@ class NomeDocumentoPJe(UserString):
             "processo": tl.processo,
             "titulo": titulo_formatado,
             "pid": tl.bot.pid,
+            "id_doc": documento["idUnicoDocumento"],
         }
         if titulo == tipo:
             seq_dict.pop("titulo")

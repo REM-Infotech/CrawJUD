@@ -20,11 +20,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.controllers.elaw import ElawBot
-from backend.task_manager.resources.elements import elaw as el
+from backend.controllers.elaw import ElawBot
+from backend.resources.elements import elaw as el
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 class Provisao(ElawBot):
@@ -93,7 +93,7 @@ class Provisao(ElawBot):
         )
 
         if label_classificacao_risco.text == "Risco Quebrado":
-            element_select: WebElementBot = self.wait.until(
+            element_select: WebElement = self.wait.until(
                 ec.presence_of_element_located((
                     By.CSS_SELECTOR,
                     el.CSS_SELETOR_TIPO_RISCO,
@@ -199,10 +199,7 @@ class Provisao(ElawBot):
                     el.value_provcss,
                 ).text
 
-            if (
-                "-" in valueprovisao
-                or valueprovisao == "Nenhum registro encontrado!"
-            ):
+            if "-" in valueprovisao or valueprovisao == "Nenhum registro encontrado!":
                 return valueprovisao
 
         return "Contém valores"
@@ -329,7 +326,7 @@ class Provisao(ElawBot):
                 id_selector=id_selector,
             )
 
-            element_select: WebElementBot = self.wait.until(
+            element_select: WebElement = self.wait.until(
                 ec.presence_of_element_located((
                     By.CSS_SELECTOR,
                     css_element,
@@ -467,7 +464,7 @@ class Provisao(ElawBot):
         )
         self.sleep_load('div[id="j_id_3q"]')
 
-    def __tabela_valores(self) -> list[WebElementBot]:
+    def __tabela_valores(self) -> list[WebElement]:
         tabela_valores = self.wait.until(
             ec.presence_of_element_located((
                 By.CSS_SELECTOR,

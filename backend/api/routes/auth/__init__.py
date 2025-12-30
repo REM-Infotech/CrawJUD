@@ -5,7 +5,6 @@ from __future__ import annotations
 import traceback
 from contextlib import suppress
 from typing import TYPE_CHECKING
-from urllib.parse import quote
 from zoneinfo import available_timezones
 
 from flask import (
@@ -24,7 +23,8 @@ from flask_jwt_extended import (
 )
 from werkzeug.exceptions import HTTPException
 
-from backend.api.models import User
+from backend.models import User
+from backend.utilities import load_timezone
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
@@ -86,7 +86,7 @@ def login() -> Response:
             encoded_access_token=access_token,
         )
 
-        timezone = quote(data.get("timezone"))
+        timezone = load_timezone()
         if timezone in available_timezones():
             response.set_cookie(
                 "TimeZone",

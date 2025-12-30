@@ -16,13 +16,13 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.controllers.projudi import ProjudiBot
-from backend.task_manager.resources.elements import projudi as el
+from backend.controllers.projudi import ProjudiBot
+from backend.resources.elements import projudi as el
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 class Movimentacao(ProjudiBot):
@@ -155,11 +155,11 @@ class Movimentacao(ProjudiBot):
             )
         ]
 
-        def filtrar(elemento: WebElementBot) -> bool:
+        def filtrar(elemento: WebElement) -> bool:
             """Filtre elementos de movimentação conforme os termos especificados.
 
             Args:
-                elemento (WebElementBot): Elemento da tabela de movimentações.
+                elemento (WebElement): Elemento da tabela de movimentações.
 
             Returns:
                 bool: Indica se o elemento corresponde aos termos filtrados.
@@ -216,16 +216,16 @@ class Movimentacao(ProjudiBot):
 
     def __iter_movimentacoes(
         self,
-        table_movimentacoes: WebElementBot,
-        filtered_moves: list[WebElementBot],
+        table_movimentacoes: WebElement,
+        filtered_moves: list[WebElement],
         *,
         com_documento: bool = False,
     ) -> None:
         """Itera sobre as movimentações filtradas e processe cada uma conforme regras.
 
         Args:
-            table_movimentacoes (WebElementBot): Elemento da tabela de movimentações.
-            filtered_moves (list[WebElementBot]): Lista de linhas filtradas.
+            table_movimentacoes (WebElement): Elemento da tabela de movimentações.
+            filtered_moves (list[WebElement]): Lista de linhas filtradas.
             com_documento (bool, opcional): Indica se deve extrair arquivos. Padrão: False.
 
         """
@@ -237,7 +237,9 @@ class Movimentacao(ProjudiBot):
             message = f"Foram encontradas {qtd_movimentacoes} movimentações!"
 
             if com_documento:
-                message = f"Foram encontradas {qtd_movimentacoes} movimentações com arquivos!"
+                message = (
+                    f"Foram encontradas {qtd_movimentacoes} movimentações com arquivos!"
+                )
 
             self.print_message(
                 message=message,
@@ -261,14 +263,14 @@ class Movimentacao(ProjudiBot):
 
     def _extrair_arquivos_movimentacao(
         self,
-        table_movimentacoes: WebElementBot,
-        tds: list[WebElementBot],
+        table_movimentacoes: WebElement,
+        tds: list[WebElement],
     ) -> None:
         """Extraia arquivos vinculados à movimentação do processo no Projudi.
 
         Args:
-            table_movimentacoes (WebElementBot): Elemento da tabela de movimentações.
-            tds (list[WebElementBot]): Lista de elementos <td> da movimentação.
+            table_movimentacoes (WebElement): Elemento da tabela de movimentações.
+            tds (list[WebElement]): Lista de elementos <td> da movimentação.
 
         """
 
@@ -305,9 +307,7 @@ class Movimentacao(ProjudiBot):
                 tds_files[0]
 
                 link_arquivo = (
-                    tds_files[4]
-                    .find_element(By.TAG_NAME, "a")
-                    .get_attribute("href")
+                    tds_files[4].find_element(By.TAG_NAME, "a").get_attribute("href")
                 )
 
                 with client.stream("get", link_arquivo) as stream:
@@ -321,9 +321,7 @@ class Movimentacao(ProjudiBot):
                     part_files.append(tmp_path_file)
 
         _pages = [
-            writer.add_page(page)
-            for f in part_files
-            for page in PdfReader(f).pages
+            writer.add_page(page) for f in part_files for page in PdfReader(f).pages
         ]
 
         pdf_out_name = tds[3].text
@@ -343,12 +341,12 @@ class Movimentacao(ProjudiBot):
 
     def _formatar_dados(
         self,
-        tds: list[WebElementBot],
+        tds: list[WebElement],
     ) -> None:
         """Formata e armazene os dados da movimentação extraída do Projudi.
 
         Args:
-            tds (list[WebElementBot]): Lista de elementos `<td>` da movimentação.
+            tds (list[WebElement]): Lista de elementos `<td>` da movimentação.
 
         """
         bot_data = self.bot_data

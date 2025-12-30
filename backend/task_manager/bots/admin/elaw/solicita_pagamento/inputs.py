@@ -12,16 +12,16 @@ from typing import TYPE_CHECKING, Literal
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.task_manager.resources.elements.elaw import (
+from backend.resources.elements.elaw import (
     SolicitaPagamento as Element,
 )
-from backend.task_manager.resources.formatadores import formata_string
+from backend.resources.formatadores import formata_string
 
 from .properties import Geral
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver import (
-        WebElementBot as WebElement,
+    from backend.resources.driver import (
+        WebElement as WebElement,
     )
 
 

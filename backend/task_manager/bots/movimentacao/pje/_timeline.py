@@ -1,67 +1,23 @@
 from __future__ import annotations
 
-from collections import UserString
 from contextlib import suppress
-from datetime import datetime
-from typing import TYPE_CHECKING, Any, Literal, Self, cast
-from zoneinfo import ZoneInfo
+from typing import TYPE_CHECKING, Any, Self, cast
+
+from ._strings import LinkPJe, NomeDocumentoPJe
 
 if TYPE_CHECKING:
     from httpx import Client
 
-    from backend.task_manager.bots.capa.pje._dicionarios import DocumentoPJe
-    from backend.task_manager.controllers import PJeBot
+    from backend.controllers import PJeBot
+
+    from ._dicionarios import DocumentoPJe
+
 
 type AnyType = Any
 
 
-TZ_SAO_PAULO = ZoneInfo("America/Sao_Paulo")
-
-type ReprLinkTimeline = Literal[
-    "LinkPJe<https://pje.trt{regiao}.jus.br/pje-comum-api/api/processos/id/{id_proc}/{endpoint}?{query}>"
-]
-
-
-class LinkPJe(UserString):
-    def __init__(
-        self,
-        regiao: str,
-        id_proc: str,
-        query: dict,
-        endpoint: str,
-    ) -> None:
-        seq = f"https://pje.trt{regiao}.jus.br/pje-comum-api/api/processos/id/{id_proc}/{endpoint}?{query}"
-        super().__init__(seq)
-
-    def __repr__(self) -> ReprLinkTimeline:
-        return f"<LinkPJe({self.data})>"
-
-
-class NomeDocumentoPJe(UserString):
-    NOME_DOCUMENTO = "{ANO} - {TIPO} - {PROCESSO} - {TITULO} - {PID}.pdf"
-
-    def __init__(self, tl: TimeLinePJe, documento: DocumentoPJe) -> None:
-        ano = datetime.now(tz=TZ_SAO_PAULO).strftime("%Y")
-        tipo = documento["tipo"]
-        titulo = documento["titulo"]
-        splited_titulo = (
-            titulo.split(" - ")[1:] if " - " in titulo else [titulo]
-        )
-        titulo_formatado = " ".join([i.capitalize() for i in splited_titulo])
-
-        seq_dict = {
-            "ano": ano,
-            "tipo": tipo,
-            "processo": tl.processo,
-            "titulo": titulo_formatado,
-            "pid": tl.bot.pid,
-        }
-        if titulo == tipo:
-            seq_dict.pop("titulo")
-
-        seq = f"{' - '.join(seq_dict.values())}.pdf"
-
-        super().__init__(seq)
+BUFFER_1MB = 1024 * 1024
+CHUNK_8MB = 8192 * 1024
 
 
 class TimeLinePJe:
@@ -124,13 +80,20 @@ class TimeLinePJe:
 
     def baixar_documento(
         self,
-        bot: PJeBot,
         documento: DocumentoPJe,
         grau: str = 1,
+        row: int = 0,
         *,
         incluir_capa: bool = False,
         inclur_assinatura: bool = False,
-    ) -> bytes:
+    ) -> None:
+
+        nome_arquivo = str(NomeDocumentoPJe(tl=self, documento=documento))
+        msg_ = f'Baixando arquivo "{nome_arquivo}"'
+        type_ = "log"
+        self.bot.print_message(msg_, type_, row)
+
+        bot = self.bot
         query = "&".join([
             f"grau={grau}",
             "=".join(["incluirCapa", str(incluir_capa).lower()]),
@@ -147,14 +110,24 @@ class TimeLinePJe:
         d = documento["id"]
         link = str(LinkPJe(r, p, query, f"documentos/id/{d}/conteudo"))
 
+        stream_kw = {
+            "method": "GET",
+            "url": link,
+        }
+
         out_dir = bot.output_dir_path
-        nome_arquivo = str(NomeDocumentoPJe(tl=self, documento=documento))
+
         caminho_arquivo = out_dir.joinpath(self.processo, nome_arquivo)
 
         caminho_arquivo.parent.mkdir(exist_ok=True, parents=True)
 
-        bot.download_file(
-            file=str(caminho_arquivo),
-            link=link,
-            cookies=self.cliente.cookies,
-        )
+        with (
+            self.cliente.stream(**stream_kw) as stream,
+            caminho_arquivo.open("wb", buffering=BUFFER_1MB) as fp,
+        ):
+            for chunk in stream.iter_bytes(chunk_size=CHUNK_8MB):
+                fp.write(chunk)
+
+        msg_ = f'Arquivo "{nome_arquivo}" baixado com sucesso!'
+        type_ = "info"
+        self.bot.print_message(msg_, type_, row)

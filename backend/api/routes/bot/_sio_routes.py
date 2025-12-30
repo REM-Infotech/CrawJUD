@@ -7,7 +7,7 @@ from contextlib import suppress
 from datetime import datetime
 from pathlib import Path
 from tempfile import gettempdir
-from threading import Lock
+from threading import Semaphore
 from typing import TYPE_CHECKING, Literal, TypedDict
 from zoneinfo import ZoneInfo
 
@@ -15,17 +15,17 @@ from flask_jwt_extended import get_current_user
 from flask_socketio import Namespace, join_room
 
 from backend.api.decorators import jwt_sio_required
-from backend.api.extensions import io
+from backend.extensions import io
 from backend.utilities import format_time, load_timezone, update_timezone
 
 if TYPE_CHECKING:
-    from backend.api.models import User
     from backend.interfaces import Message
     from backend.interfaces.payloads import BotInfo
+    from backend.models import User
     from backend.types_app import AnyType, Sistemas
 
-lock = Lock()
-
+semaphore = Semaphore(1)
+semaphore2 = Semaphore(1)
 
 SISTEMAS: set[Sistemas] = {
     "PROJUDI",
@@ -102,10 +102,11 @@ class BotNS(Namespace):
     @jwt_sio_required
     def on_logbot(self, data: Message) -> None:
         """Log bot."""
-        with lock:
-            updated = update_timezone(data["time_message"])
-            data["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
-            # Define diretório temporário para logs
+        updated = update_timezone(data["time_message"])
+        data["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
+        # Define diretório temporário para logs
+
+        with semaphore2:
             temp_dir: Path = Path(gettempdir()).joinpath("crawjud", "logs")
             log_file: Path = temp_dir.joinpath(f"{data['pid']}.log")
             # Cria diretório e arquivo de log se não existirem
@@ -121,12 +122,12 @@ class BotNS(Namespace):
             list_messages.append(data)
             log_file.write_text(json.dumps(list_messages), encoding="utf-8")
 
-            io.emit(
-                "logbot",
-                data=data,
-                room=data["pid"],
-                namespace="/bot",
-            )
+        io.emit(
+            "logbot",
+            data=data,
+            room=data["pid"],
+            namespace="/bot",
+        )
 
     @jwt_sio_required
     def on_listagem(self, *args: AnyType, **kwargs: AnyType) -> list[BotInfo]:
@@ -174,32 +175,33 @@ class BotNS(Namespace):
             list[str]: Lista de mensagens do log.
 
         """
-        # Adiciona o usuário à sala especificada
-        join_room(data["room"])
+        with semaphore:
+            # Adiciona o usuário à sala especificada
+            join_room(data["room"])
 
-        # Inicializa a lista de mensagens
-        messages: list[Message] = []
-        temp_dir = Path(gettempdir()).joinpath("crawjud", "logs")
-        log_file = temp_dir.joinpath(f"{data['room']}.log")
-        _str_dir = str(log_file)
-        now = datetime.now(ZoneInfo(load_timezone()))
+            # Inicializa a lista de mensagens
+            messages: list[Message] = []
+            temp_dir = Path(gettempdir()).joinpath("crawjud", "logs")
+            log_file = temp_dir.joinpath(f"{data['room']}.log")
+            _str_dir = str(log_file)
+            now = datetime.now(ZoneInfo(load_timezone()))
 
-        def map_messages(msg: Message) -> Message:
-            updt = update_timezone(msg["time_message"])
-            updated = updt.replace(
-                day=now.day,
-                month=now.month,
-                year=now.year,
-            )
-            msg["time_message"] = updated.strftime("%H:%M:%S")
-            return msg
+            def map_messages(msg: Message) -> Message:
+                updt = update_timezone(msg["time_message"])
+                updated = updt.replace(
+                    day=now.day,
+                    month=now.month,
+                    year=now.year,
+                )
+                msg["time_message"] = updated.strftime("%H:%M:%S")
+                return msg
 
-        # Se o diretório e o arquivo de log existem, carrega as mensagens
-        if temp_dir.exists() and log_file.exists():
-            text_file = log_file.read_text(encoding="utf-8").replace("null", '""')
+            # # Se o diretório e o arquivo de log existem, carrega as mensagens
+            if temp_dir.exists() and log_file.exists():
+                text_file = log_file.read_text(encoding="utf-8").replace("null", '""')
 
-            with suppress(json.JSONDecodeError):
-                messages.extend(json.loads(text_file))
+                with suppress(json.JSONDecodeError):
+                    messages.extend(json.loads(text_file))
 
         return [map_messages(msg) for msg in messages]
 

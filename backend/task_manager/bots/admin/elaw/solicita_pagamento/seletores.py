@@ -8,15 +8,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from backend.task_manager.resources.elements.elaw import (
+from backend.resources.elements.elaw import (
     SolicitaPagamento as Element,
 )
 
 from .properties import Geral
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver import (
-        WebElementBot as WebElement,
+    from backend.resources.driver import (
+        WebElement as WebElement,
     )
 
 
@@ -58,9 +58,7 @@ class Seletores(Geral):
         tipo_custa: str = self.bot_data["TIPO_GUIA"]
 
         # Exibe mensagem de início do preenchimento do tipo de custa
-        message: str = (
-            f"Informando tipo de custas. Tipo informado: {tipo_custa}"
-        )
+        message: str = f"Informando tipo de custas. Tipo informado: {tipo_custa}"
         message_type: str = "log"
         self.print_message(message=message, message_type=message_type)
 

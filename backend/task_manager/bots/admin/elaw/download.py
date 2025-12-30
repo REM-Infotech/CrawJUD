@@ -13,8 +13,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.exceptions import ExecutionError
-from backend.task_manager.controllers.elaw import ElawBot
-from backend.task_manager.resources.elements import elaw as el
+from backend.controllers.elaw import ElawBot
+from backend.resources.elements import elaw as el
 
 
 class Download(ElawBot):
@@ -145,15 +145,11 @@ class Download(ElawBot):
                 if str(termo).lower() in get_name_file.lower():
                     sleep(1)
 
-                    self.message = (
-                        f'Arquivo com termo de busca "{termo}" encontrado!'
-                    )
+                    self.message = f'Arquivo com termo de busca "{termo}" encontrado!'
                     self.message_type = "log"
                     self.prt()
 
-                    baixar = item.find_elements(By.TAG_NAME, "td")[
-                        13
-                    ].find_element(
+                    baixar = item.find_elements(By.TAG_NAME, "td")[13].find_element(
                         By.CSS_SELECTOR,
                         el.botao_baixar,
                     )

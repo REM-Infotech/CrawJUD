@@ -12,10 +12,10 @@ from zoneinfo import ZoneInfo
 
 from flask import Flask
 
+from backend.models import ExecucoesBot
 from backend.task_manager.decorators import (
     SharedClassMethodTask,
 )
-from backend.task_manager.models import ExecucoesBot
 from backend.task_manager.tasks.base import BotTasks
 
 if TYPE_CHECKING:
@@ -55,6 +55,9 @@ class DatabaseTasks(BotTasks):
             str: Mensagem de sucesso da operação.
 
         """
+        from backend.extensions import start_extensions
+
+        app = start_extensions(app)
         # Obtém instância do banco de dados
         db: SQLAlchemy = app.extensions["sqlalchemy"]
         # Busca usuário e bot relacionados

@@ -19,11 +19,11 @@ from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.exceptions import ExecutionError
 from backend.common.raises import raise_execution_error
-from backend.task_manager.controllers.esaj import ESajBot
-from backend.task_manager.resources.elements import esaj as el
+from backend.controllers.esaj import ESajBot
+from backend.resources.elements import esaj as el
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 
 SUCESSO = 0.8
@@ -145,11 +145,11 @@ class Movimentacao(ESajBot):
                 message="Nenhuma movimentação encontrada",
             )
 
-    def filter_moves(self, move: WebElementBot) -> bool:
+    def filter_moves(self, move: WebElement) -> bool:
         """Filtre movimentações conforme critérios definidos.
 
         Args:
-            move (WebElementBot): Elemento da movimentação.
+            move (WebElement): Elemento da movimentação.
 
         Returns:
             bool: True se atender aos critérios, False caso contrário.
@@ -338,9 +338,7 @@ class Movimentacao(ESajBot):
             if key not in message_:
                 message_.append(f"{_msg_}\n")
             if idx + 1 == len(args):
-                _msg_ += (
-                    "\n====================================================\n"
-                )
+                _msg_ += "\n====================================================\n"
                 message_.append(_msg_)
         self.message = "".join(message_)
         self.message_type = "info"
@@ -364,9 +362,7 @@ class Movimentacao(ESajBot):
         )
         mov = ""
         mov_chk = False
-        trazer_teor = (
-            str(self.bot_data.get("TRAZER_TEOR", "NÃO")).upper() == "SIM"
-        )
+        trazer_teor = str(self.bot_data.get("TRAZER_TEOR", "NÃO")).upper() == "SIM"
         patterns = [
             r"Referente ao evento (.+?) \((\d{2}/\d{2}/\d{4})\)",
             r"\) ([A-Z\s]+) \((\d{2}/\d{2}/\d{4})\)",
@@ -381,7 +377,7 @@ class Movimentacao(ESajBot):
 
     def process_single_move(
         self,
-        move: WebElementBot,
+        move: WebElement,
         keyword: str,
     ) -> None:
         """Processa uma única movimentação filtrada.
@@ -395,10 +391,8 @@ class Movimentacao(ESajBot):
         itensmove = move.find_elements(By.TAG_NAME, "td")
         text_mov = str(itensmove[3].text)
         data_mov = str(itensmove[2].text.split(" ")[0]).replace(" ", "")
-        mov_chk, trazerteor, mov_name, use_gpt, save_another_file = (
-            self._check_others(
-                text_mov,
-            )
+        mov_chk, trazerteor, mov_name, use_gpt, save_another_file = self._check_others(
+            text_mov,
         )
         nome_mov = str(itensmove[3].find_element(By.TAG_NAME, "b").text)
         movimentador = itensmove[4].text

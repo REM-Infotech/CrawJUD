@@ -18,8 +18,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.exceptions import ExecutionError
 from backend.common.raises import raise_execution_error
-from backend.task_manager.controllers.esaj import ESajBot
-from backend.task_manager.resources.elements import esaj as el
+from backend.controllers.esaj import ESajBot
+from backend.resources.elements import esaj as el
 
 
 class Emissao(ESajBot):
@@ -247,9 +247,7 @@ class Emissao(ESajBot):
 
         elif portal == "não informado":
             raise_execution_error(
-                message=(
-                    "Informar portal do processo na planilha (PROJUDI ou ESAJ)"
-                ),
+                message=("Informar portal do processo na planilha (PROJUDI ou ESAJ)"),
             )
 
     def generate_doc(self) -> str:
@@ -259,9 +257,7 @@ class Emissao(ESajBot):
             str: URL do PDF gerado pelo ESAJ.
 
         """
-        self.original_window = original_window = (
-            self.driver.current_window_handle
-        )
+        self.original_window = original_window = self.driver.current_window_handle
         generatepdf = self.wait.until(
             ec.presence_of_element_located((
                 By.CSS_SELECTOR,
@@ -309,14 +305,10 @@ class Emissao(ESajBot):
         self.nomearquivo = f"{tipo_doc} - {processo} - {parte} - {self.pid}.pdf"
 
         if platform.system() == "Windows":
-            self.path_pdf = path_pdf = (
-                f"{self.output_dir_path}\\{self.nomearquivo}"
-            )
+            self.path_pdf = path_pdf = f"{self.output_dir_path}\\{self.nomearquivo}"
 
         elif platform.system() == "Linux":
-            self.path_pdf = path_pdf = (
-                f"{self.output_dir_path}/{self.nomearquivo}"
-            )
+            self.path_pdf = path_pdf = f"{self.output_dir_path}/{self.nomearquivo}"
 
         with Path(path_pdf).open("wb") as file:
             file.write(response.content)
@@ -346,9 +338,7 @@ class Emissao(ESajBot):
             numeros_encontrados = []
 
             # Expressão regular para encontrar números nesse formato
-            pattern = (
-                r"\b\d{5}\.\d{5}\s*\d{5}\.\d{6}\s*\d{5}\.\d{6}\s*\d\s*\d{14}\b"
-            )
+            pattern = r"\b\d{5}\.\d{5}\s*\d{5}\.\d{6}\s*\d{5}\.\d{6}\s*\d\s*\d{14}\b"
 
             pdf_file = self.path_pdf
             read = PdfReader(pdf_file)

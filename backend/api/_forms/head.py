@@ -5,15 +5,17 @@ import traceback
 from base64 import b64encode
 from typing import TYPE_CHECKING, ClassVar, Self
 
-from flask import request
+from flask import current_app, request
 from flask_jwt_extended import get_current_user
 
-from backend.api.extensions import celery
-from backend.api.models import Bots, LicenseUser, User, db
 from backend.api.resources import camel_to_snake, formata_string
 from backend.common.exceptions._fatal import FatalError
+from backend.extensions import celery
+from backend.models import Bots, LicenseUser, User, db
 
 if TYPE_CHECKING:
+    from flask_keepass import KeepassManager
+
     from backend.types_app import Dict
 
 
@@ -125,7 +127,7 @@ class FormBot:
                 dir(self),
             ),
         )
-
+        keepass: KeepassManager = current_app.extensions["keepass"]
         for key in keys:
             value = getattr(self, key)
             if key == "credencial":
@@ -146,10 +148,31 @@ class FormBot:
                         lic.credenciais,
                     ),
                 )[-1]
+
+                entry = keepass.find_entries(
+                    first=True,
+                    title=credencial.nome_credencial,
+                    notes=credencial.rastreio,
+                )
+
+                if credencial.login_metodo == "pw":
+                    data.update({
+                        "credenciais": {
+                            "username": entry.username,
+                            "password": entry.password,
+                            "otp": entry.otp,
+                        },
+                    })
+                    continue
+
+                attachment = entry.attachments[0]
                 data.update({
                     "credenciais": {
-                        "username": credencial.login,
-                        "password": credencial.password,
+                        "username": entry.username,
+                        "password": entry.password,
+                        "nome_certificado": attachment.filename,
+                        "certificado": b64encode(attachment.data).decode(),
+                        "otp": entry.otp,
                     },
                 })
                 continue

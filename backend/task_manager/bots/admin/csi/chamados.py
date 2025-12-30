@@ -14,8 +14,8 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 from tqdm import tqdm
 
-from backend.task_manager.controllers.csi import CsiBot
-from backend.task_manager.resources.elements import csi as el
+from backend.controllers.csi import CsiBot
+from backend.resources.elements import csi as el
 
 load_dotenv()
 
@@ -93,9 +93,7 @@ class Chamados(CsiBot):
             desc = el.desc_subsidios.format(
                 ATO="ATORD",
                 NUMERO_PROCESSO=data["NUMERO_PROCESSO"],
-                COMARCA_VARA=(
-                    f"{data['NÚMERO_SIGLA_OJ']} {data.get('JUÍZO', '')}"
-                ),
+                COMARCA_VARA=(f"{data['NÚMERO_SIGLA_OJ']} {data.get('JUÍZO', '')}"),
                 ASSUNTOS=f" -  {data.get('FATO_GERADOR', 'Diversos')}",
                 NOME_RECLAMANTE=data["AUTOR"],
                 CPF_RECLAMANTE=data.get("CPF_AUTOR", "000.000.000-00"),

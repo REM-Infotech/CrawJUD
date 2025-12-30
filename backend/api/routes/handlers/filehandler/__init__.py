@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 from flask_jwt_extended import jwt_required
 
-from backend.api.extensions import io
 from backend.api.routes.handlers.filehandler.upload import uploader
+from backend.extensions import io
 
 if TYPE_CHECKING:
     from backend.types_app import AnyType

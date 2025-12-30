@@ -11,11 +11,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-from backend.task_manager.controllers.csi import CsiBot
-from backend.task_manager.resources.elements import csi as el
+from backend.controllers.csi import CsiBot
+from backend.resources.elements import csi as el
 
 if TYPE_CHECKING:
-    from backend.task_manager.resources.driver.web_element import WebElementBot
+    from backend.resources.driver.web_element import WebElement
 
 load_dotenv()
 
@@ -73,11 +73,11 @@ class DownloadDocumento(CsiBot):
             self.bot_data.update({"MOTIVO_ERRO": message_error})
             self.append_error(data_save=[self.bot_data])
 
-    def busca_chamado(self) -> WebElementBot:
+    def busca_chamado(self) -> WebElement:
         """Busque o chamado pelo número informado e retorne o elemento.
 
         Returns:
-            WebElementBot: Elemento da tabela de solicitações encontrado.
+            WebElement: Elemento da tabela de solicitações encontrado.
 
         """
         numero_chamado = self.bot_data["NUMERO_CHAMADO"]
@@ -127,9 +127,7 @@ class DownloadDocumento(CsiBot):
         wait = WebDriverWait(self.driver, 10)
         self.swtich_iframe_anexos(wait)
 
-        cookies = {
-            item["name"]: item["value"] for item in self.driver.get_cookies()
-        }
+        cookies = {item["name"]: item["value"] for item in self.driver.get_cookies()}
 
         out_dir = self.output_dir_path
         chamado = self.bot_data["NUMERO_CHAMADO"]
