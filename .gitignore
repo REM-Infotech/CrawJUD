@@ -6,7 +6,7 @@ dist-electron/
 release
 temp_asar_extract
 .build/
-
+erros_ruff/
 launch.json
 *.secrets.*
 logs
