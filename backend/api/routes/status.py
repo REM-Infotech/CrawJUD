@@ -16,14 +16,12 @@ from flask import (
 from flask_jwt_extended import jwt_required
 
 from backend.api import app
-from backend.api.routes import handlers
 from backend.extensions import db
 
 if TYPE_CHECKING:
     from backend.types_app import HealtCheck
 
-
-__all__ = ["handlers"]
+__all__ = ["app"]
 
 
 @app.route("/health")

@@ -14,29 +14,27 @@ from flask import (
 )
 
 from backend.api import app
-from backend.api.routes import handlers
-from backend.api.routes.admin import NamespaceAdminCrawJUD
-from backend.api.routes.auth import auth
-from backend.api.routes.bot import BotNS, bots
 
-from . import status
+from . import api, status, web
+from ._blueprints import admin, adminNS, auth, botNS, bots, fileNS
 
 if TYPE_CHECKING:
     from flask_socketio import SocketIO
 
-__all__ = ["handlers", "status"]
+__all__ = ["api", "status", "web"]
 
 
 def register_routes(app: Flask) -> None:
-    blueprints = [auth, bots]
+    blueprints = [auth, bots, admin]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 
     sio: SocketIO = app.extensions["socketio"]
 
     with app.app_context():
-        sio.on_namespace(BotNS())
-        sio.on_namespace(NamespaceAdminCrawJUD())
+        for ns in [adminNS, botNS, fileNS]:
+            sio.on_namespace(ns)
+            sio.on_namespace(ns)
 
 
 @app.after_request

@@ -12,12 +12,12 @@ from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.model import Model as FSA_Model
 
-from backend.resources import camel_to_snake
-
 from .query import Query, QueryProperty
 
 if TYPE_CHECKING:
     from backend.types_app import AnyType
+
+type Any = any
 
 
 class FSAProperty:
@@ -29,11 +29,11 @@ class FSAProperty:
 
     fsa_instante: SQLAlchemy = SQLAlchemy()
 
-    def __set__(self, *args, **kwargs) -> None:
+    def __set__(self, *args: Any, **kwargs: Any) -> None:
         """Defina dinamicamente a instância do SQLAlchemy."""
         self.fsa_instante = args[1]
 
-    def __get__(self, *args, **kwargs) -> SQLAlchemy:
+    def __get__(self, *args: Any, **kwargs: Any) -> SQLAlchemy:
         """Obtenha dinamicamente a instância do SQLAlchemy.
 
         Args:
@@ -63,7 +63,7 @@ class FSATableName:
 
     _tablename: ClassVar[str] = ""
 
-    def __set__(self, *args) -> None:
+    def __set__(self, *args: Any) -> None:
         """Defina dinamicamente o nome da tabela."""
         self._tablename = args[1]  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -85,6 +85,8 @@ class FSATableName:
 
         """
         if cls:
+            from backend.resources import camel_to_snake
+
             snake_cased = camel_to_snake(cls.__class__.__name__)
             cls.__name__ = cls.__tablename__ or snake_cased  # pyright: ignore[reportAttributeAccessIssue]
 

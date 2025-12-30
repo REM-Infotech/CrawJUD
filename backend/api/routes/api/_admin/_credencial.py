@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, TypedDict, Unpack, cast
+from typing import TYPE_CHECKING, Literal, Self, TypedDict, Unpack, cast
 from uuid import uuid4
 
-from flask import current_app
+from flask import current_app, jsonify, make_response, request
 from flask_jwt_extended import get_current_user
 from werkzeug.datastructures import FileStorage
 
@@ -46,8 +47,11 @@ class CredencialBot:
     otp: str | None
     requer_duplo_fator: bool
 
+    db: SQLAlchemy
+
     def __init__(self, app: Flask, **kwargs: Unpack[CredencialBotDict]) -> None:
 
+        self.db = current_app.extensions["sqlalchemy"]
         self.keepass: KeepassManager = app.extensions["keepass"]
 
         cred_empty = CredencialBotDict(
@@ -122,8 +126,6 @@ class CredencialBot:
                     filename=attachment_name,
                 )
 
-        db: SQLAlchemy = current_app.extensions["sqlalchemy"]
-
         cred = CredenciaisRobo(
             nome_credencial=self.nome_credencial,
             sistema=sistema.upper(),
@@ -134,12 +136,57 @@ class CredencialBot:
         user: User = get_current_user()
 
         license_ = (
-            db.session.query(LicenseUser)
+            self.db.session.query(LicenseUser)
             .filter(LicenseUser.ProductKey == user.license_.ProductKey)
             .first()
         )
 
         license_.credenciais.append(cred)
 
-        db.session.add(cred)
-        db.session.commit()
+        self.db.session.add(cred)
+        self.db.session.commit()
+
+    @classmethod
+    def deletar_credencial(cls) -> None:
+
+        form_ = dict(request.form.items())
+        form_.update({"login_metodo": form_.get("tipo_autenticacao")})
+
+        payload = {
+            "mensagem": "Erro ao salvar credencial",
+        }
+
+        status_code = 500
+
+        if form_:
+            with suppress(Exception):
+                self: Self = cls(app=current_app, **form_)
+                id_credencial = form_.get("Id")
+
+                cred = (
+                    self.db.session.query(CredenciaisRobo)
+                    .filter(CredenciaisRobo.Id == int(id_credencial))
+                    .first()
+                )
+
+                if cred:
+                    entry = self.keepass.find_entries(
+                        title=self.nome_credencial,
+                        notes=cred.rastreio,
+                        first=True,
+                    )
+
+                    if entry:
+                        self.keepass.delete_entry(entry)
+                        self.keepass.save()
+
+                    self.db.session.delete(cred)
+                    self.db.session.commit()
+
+                    payload = {
+                        "mensagem": "Credencial deletada com sucesso!",
+                    }
+
+                    status_code = 200
+
+        return make_response(jsonify(payload, status_code))

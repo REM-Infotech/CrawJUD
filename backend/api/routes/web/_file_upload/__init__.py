@@ -6,15 +6,17 @@ from typing import TYPE_CHECKING
 
 from flask_jwt_extended import jwt_required
 
-from backend.api.routes.handlers.filehandler.upload import uploader
-from backend.extensions import io
+from backend.api.routes._blueprints import fileNS
+
+from .upload import uploader
 
 if TYPE_CHECKING:
+    from backend.api.base import BlueprintNamespace
     from backend.types_app import AnyType
 
 
-@io.on("add_file", namespace="/files")
+@fileNS.on("add_file")
 @jwt_required()
-def add_file(data: AnyType = None) -> None:
+def add_file(self: BlueprintNamespace, data: AnyType = None) -> None:
     """Log bot."""
     uploader(data)
