@@ -1,6 +1,6 @@
 # Logs
 
-
+.pullrequests
 out/
 dist-electron/
 release
