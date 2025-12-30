@@ -1,0 +1,16 @@
+# resources/elements/caixa.py
+
+## Propósito
+
+Defina elementos e funcionalidades relacionados à Caixa.
+
+Este módulo contém classes e métodos para operar elementos
+da Caixa.
+
+## Classe: `CaixaAm`
+
+Defina funcionalidades para operar elementos da Caixa AM.
+
+Esta classe representa operações e atributos relacionados
+à Caixa AM.
+
