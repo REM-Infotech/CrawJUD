@@ -15,7 +15,7 @@ from flask import (
 
 from backend.api import app
 from backend.api.routes import handlers
-from backend.api.routes.admin import NamespaceAdminCrawJUD
+from backend.api.routes.admin import NamespaceAdminCrawJUD, admin
 from backend.api.routes.auth import auth
 from backend.api.routes.bot import BotNS, bots
 
@@ -28,7 +28,7 @@ __all__ = ["handlers", "status"]
 
 
 def register_routes(app: Flask) -> None:
-    blueprints = [auth, bots]
+    blueprints = [auth, bots, admin]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 

@@ -49,7 +49,7 @@ class NamespaceAdminCrawJUD(Namespace):
             {
                 "Id": item.Id,
                 "nome_credencial": item.nome_credencial,
-                "tipo_autenticacao": "Usuário / Senha",
+                "tipo_autenticacao": item.login_metodo,
             }
             for item in user.license_.credenciais
         ]

@@ -14,14 +14,16 @@ from ._query import Query, QueryProperty
 if TYPE_CHECKING:
     from backend.types_app import AnyType
 
+type Any = any
+
 
 class FSAProperty:
     fsa_instante: SQLAlchemy = SQLAlchemy()
 
-    def __set__(self, *args, **kwargs) -> None:
+    def __set__(self, *args: Any, **kwargs: Any) -> None:
         self.fsa_instante = args[1]
 
-    def __get__(self, *args, **kwargs) -> SQLAlchemy:
+    def __get__(self, *args: Any, **kwargs: Any) -> SQLAlchemy:
         with suppress(KeyError):
             app = current_app
             with app.app_context():
@@ -35,7 +37,7 @@ class FSAProperty:
 class FSATableName:
     _tablename: ClassVar[str] = ""
 
-    def __set__(self, *args) -> None:
+    def __set__(self, *args: Any) -> None:
         self._tablename = args[1]  # pyright: ignore[reportAttributeAccessIssue]
 
     def __get__(
@@ -55,3 +57,18 @@ class Model(FSA_Model):
     query: ClassVar[Query[Self]] = cast("Query[Self]", QueryProperty())  # pyright: ignore[reportIncompatibleVariableOverride]
     __fsa__: ClassVar[SQLAlchemy] = cast("SQLAlchemy", FSAProperty())
     __tablename__: ClassVar[str] = FSAProperty()
+
+    def to_dict(self) -> dict:
+
+        data = {}
+        for item in filter(lambda x: not x.startswith("_") and x != "query", dir(self)):
+            value = getattr(self, item, None)
+
+            if isinstance(value, list):
+                value: list[Self]
+                val_list = [it.to_dict() for it in value]
+                value: list[dict[str, str]] = val_list
+
+            data.update({item: value})
+
+        return data
