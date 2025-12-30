@@ -8,7 +8,8 @@ from flask import Blueprint, Response, current_app, jsonify, make_response, requ
 from flask_jwt_extended import jwt_required
 
 from backend.api.decorators import CrossDomain
-from backend.resources._credencial import CredencialBot
+
+from ._credencial import CredencialBot
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
