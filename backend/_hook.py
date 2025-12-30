@@ -18,8 +18,7 @@ type MyAny = Any
 
 class Legacy(importlib.abc.SourceLoader):
     def get_data(self, path: str) -> str:
-        with Path(path).open("r", encoding="utf-8") as file:
-            return file.read()
+        return Path(path).read_text("utf-8")
 
     def get_filename(self, fullname: str) -> str:
         return fullname + ".json"
@@ -48,8 +47,7 @@ class Legacy(importlib.abc.SourceLoader):
 
 class JSONLoader(importlib.abc.SourceLoader):
     def get_data(self, path: str) -> str:
-        with Path(path).open("r", encoding="utf-8") as file:
-            return file.read()
+        return Path(path).read_text(encoding="utf-8")
 
     def get_filename(self, fullname: str) -> str:
         return fullname + ".json"
@@ -82,10 +80,7 @@ class JSONFinder(importlib.abc.MetaPathFinder):
 
         if not path_mod.exists():
             path_mod = (
-                Path(__file__)
-                .cwd()
-                .joinpath(*fullname.split("."))
-                .with_suffix(".json")
+                Path(__file__).cwd().joinpath(*fullname.split(".")).with_suffix(".json")
             )
 
         if path_mod.exists() and self.guess(path_mod):

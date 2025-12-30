@@ -148,9 +148,7 @@ class ElawBot(CrawJUD):
         sleep(5)
 
         bytes_png = self.driver.get_screenshot_as_png()
-
-        with path_comprovante.open("wb") as fp:
-            fp.write(bytes_png)
+        path_comprovante.write_bytes(bytes_png)
 
         self.driver.close()
 

@@ -29,9 +29,7 @@ class BotIterator[T: BotData]:
         )
 
         if path_xlsx.exists():
-            with path_xlsx.open("rb") as fp:
-                df = read_excel(fp, engine="openpyxl")
-
+            df = read_excel(path_xlsx.read_bytes(), engine="openpyxl")
             df.columns = df.columns.str.upper()
 
             for col in df.columns:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from io import BytesIO
 from pathlib import Path
 from queue import Empty, Queue, ShutDown
 from threading import Thread
@@ -134,11 +135,11 @@ class FileUploader:
                 )
 
     def __upload_storage(self, object_path: str, path_file: Path) -> None:
-        with path_file.open("rb") as fp:
-            sz = path_file.stat().st_size
-            obj = object_path
-            bucket = self.bucket_name
-            storage.put_object(bucket, obj, data=fp, length=sz)
+
+        sz = path_file.stat().st_size
+        obj = object_path
+        bucket = self.bucket_name
+        storage.put_object(bucket, obj, data=BytesIO(path_file.read_bytes()), length=sz)
 
         path_file.unlink()
         path_file.parent.rmdir()

@@ -164,8 +164,7 @@ class AtualizaFase(ElawBot):
 
         # Salva o comprovante como imagem PNG
         path_comprovante = out_dir.joinpath(nome_comprovante)
-        with path_comprovante.open("wb") as fp:
-            fp.write(form_info_processo.screenshot_as_png)
+        path_comprovante.write_bytes(form_info_processo.screenshot_as_png)
 
         # Prepara mensagem de sucesso e dados para salvar
         message = "Fase atualizada com sucesso!"

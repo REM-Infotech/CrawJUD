@@ -216,8 +216,8 @@ class Validador(Geral):
         self.driver.get(self.url_pagamento)
 
         # Salva o screenshot do comprovante no arquivo especificado
-        with path_comprovante.open("wb") as fp:
-            fp.write(self.driver.get_screenshot_as_png())
+
+        path_comprovante.write_bytes(self.driver.get_screenshot_as_png())
 
         # Fecha a aba do comprovante e retorna ao contexto anterior
         self.driver.close()
