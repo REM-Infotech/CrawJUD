@@ -4,18 +4,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flask import Blueprint, Response, current_app, jsonify, make_response, request
+from flask import Response, current_app, jsonify, make_response, request
 from flask_jwt_extended import jwt_required
 
 from backend.api.decorators import CrossDomain
+from backend.api.routes._blueprints import admin
 
 from ._credencial import CredencialBot
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
-
-
-admin = Blueprint("admin", __name__, url_prefix="/admin")
 
 
 @admin.post("/cadastro_credencial")

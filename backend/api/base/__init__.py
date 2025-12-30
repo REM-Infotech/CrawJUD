@@ -3,4 +3,6 @@
 from backend.api.base._sqlalchemy._model import Model
 from backend.api.base._sqlalchemy._query import Query
 
-__all__ = ["Model", "Query"]
+from ._socketio import BlueprintNamespace
+
+__all__ = ["BlueprintNamespace", "Model", "Query"]

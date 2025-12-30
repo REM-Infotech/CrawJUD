@@ -1,0 +1,12 @@
+from flask import Blueprint
+
+from backend.api.base import BlueprintNamespace
+
+bots = Blueprint("bots", __name__, url_prefix="/bot")
+auth = Blueprint("auth", __name__, url_prefix="/auth")
+admin = Blueprint("admin", __name__, url_prefix="/admin")
+
+
+botNS = BlueprintNamespace("/bot")  # noqa: N816
+adminNS = BlueprintNamespace("/admin")  # noqa: N816
+fileNS = BlueprintNamespace("/files")  # noqa: N816

@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from zoneinfo import available_timezones
 
 from flask import (
-    Blueprint,
     Response,
     abort,
     current_app,
@@ -23,13 +22,12 @@ from flask_jwt_extended import (
 )
 from werkzeug.exceptions import HTTPException
 
+from backend.api.routes._blueprints import auth
 from backend.models import User
 from backend.utilities import load_timezone
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
-
-auth = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @auth.post("/login")

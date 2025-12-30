@@ -9,7 +9,7 @@ from tempfile import gettempdir
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from flask import Blueprint, current_app, jsonify, make_response
+from flask import current_app, jsonify, make_response
 from flask.wrappers import Response
 from flask_jwt_extended import (
     jwt_required,
@@ -19,6 +19,7 @@ from backend.api._forms.head import FormBot
 from backend.api.constants import SISTEMAS
 from backend.api.decorators import CrossDomain
 from backend.api.resources import gerar_id
+from backend.api.routes._blueprints import bots
 
 if TYPE_CHECKING:
     from backend.extensions._minio import Minio
@@ -27,8 +28,6 @@ if TYPE_CHECKING:
         PayloadDownloadExecucao,
         Response,
     )
-
-bots = Blueprint("bots", __name__, url_prefix="/bot")
 
 
 def is_sistema(valor: Sistemas) -> bool:
