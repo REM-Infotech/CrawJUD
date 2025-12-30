@@ -21,6 +21,7 @@ CrawJUD is a Brazilian judicial automation backend system that provides web scra
 ## Critical: Always Follow Language-Specific Instructions
 
 **BEFORE making ANY code changes**, verify the file language and consult `.github/instructions/`:
+
 - Python files: `.github/instructions/doc-python.instructions.md`
 - JavaScript/TypeScript: `.github/instructions/doc-javascript.instructions.md`
 - Markdown docs: `.github/instructions/doc-markdown.instructions.md`
@@ -49,10 +50,18 @@ uv sync
 source .venv/bin/activate
 ```
 
+> Disclaimer: If windows, run:
+>
+> ```powershell
+>
+> & ".\.venv\Scripts\activate"
+>
+> ```
+
 ### 3. Install Linting Tools
 
 ```bash
-pip install ruff  # Required for code quality checks
+uv pip install ruff  # Required for code quality checks
 ```
 
 ## Configuration Requirements
@@ -60,6 +69,7 @@ pip install ruff  # Required for code quality checks
 **Before running the application**, you MUST create secret configuration files:
 
 1. **`.secrets.flask.yaml`** - Main Flask secrets (see `backend/config/secret-flask.template.md`)
+
    - Database URI (PostgreSQL)
    - SECRET_KEY, JWT tokens
    - Redis/Celery broker URL
@@ -104,7 +114,7 @@ ruff format backend
 
 - 41x E501 (line too long) - mostly docstrings
 - 13x BLE001 (blind except) - intentional in bot error handling
-- 8x ANN002/ANN003 (missing type annotations for *args/**kwargs)
+- 8x ANN002/ANN003 (missing type annotations for \*args/\*\*kwargs)
 - 4x F821 (undefined name) - in incomplete code blocks
 - Various FURB101/103 (Path.open suggestions) - can be fixed
 
@@ -184,6 +194,7 @@ Redis runs on port 6380 (host) → 6379 (container) with password from `.env`.
 ## Testing
 
 **No automated test suite exists**. Testing strategy:
+
 1. Manually validate code changes by running the affected bot/endpoint
 2. Check for import errors: `python -c "import backend"`
 3. Lint with ruff before committing
@@ -256,7 +267,7 @@ Redis runs on port 6380 (host) → 6379 (container) with password from `.env`.
 ## Validation Checklist Before PR
 
 1. ✅ Run `ruff check backend --fix` - resolve new errors
-2. ✅ Run `ruff format backend` - ensure consistent formatting  
+2. ✅ Run `ruff format backend` - ensure consistent formatting
 3. ✅ Test imports: `python -c "import backend"`
 4. ✅ Check docstrings follow `.github/instructions/doc-python.instructions.md`
 5. ✅ No secrets in code or committed files
