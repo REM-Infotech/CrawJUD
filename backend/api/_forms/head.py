@@ -177,7 +177,7 @@ class FormBot:
                 if entry.attachments:
                     attachment: Attachment = entry.attachments[0]
                     data_cred.update({
-                        "nome_cetificado": attachment.filename,
+                        "nome_certificado": attachment.filename,
                         "certificado": b64encode(attachment.data).decode(),
                     })
 

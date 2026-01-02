@@ -52,6 +52,8 @@ class Movimentacao(PJeBot):
                 if self.auth():
                     self.queue_regiao(data=data_regiao)
 
+            self.driver.quit()
+
         self.finalizar_execucao()
 
     def queue_regiao(self, data: list[PJeMovimentacao]) -> None:
@@ -65,7 +67,6 @@ class Movimentacao(PJeBot):
         cookies = self.auth.get_cookies()
         headers = self.auth.get_headers(url=url)
         client_context = Client(cookies=cookies, headers=headers)
-        self.driver.quit()
         self.executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)
 
         with client_context as client, self.executor as pool:
