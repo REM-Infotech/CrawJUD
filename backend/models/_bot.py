@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal, TypedDict, Unpack
 
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
@@ -17,6 +17,18 @@ if TYPE_CHECKING:
 rel = db.relationship
 
 type _TableArgs = dict[Literal["extend_existing"], bool]
+
+
+class __Bots(TypedDict):
+    Id: int
+    display_name: str
+    sistema: str
+    categoria: str
+    configuracao_form: str
+    descricao: str
+    license_id: int
+    license_: LicenseUser
+    execucoes: list[ExecucoesBot]
 
 
 class Bots(db.Model):
@@ -41,6 +53,13 @@ class Bots(db.Model):
     license_: Mapped[LicenseUser] = rel(back_populates="bots")
 
     execucoes: Mapped[list[ExecucoesBot]] = rel(back_populates="bot")
+
+    def __init__(self, **kwargs: Unpack[__Bots]) -> None:
+
+        for k, v in list(kwargs.items()):
+            setattr(self, k, v)
+
+        super().__init__()
 
 
 class ExecucoesBot(db.Model):

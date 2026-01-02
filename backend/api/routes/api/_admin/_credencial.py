@@ -142,7 +142,7 @@ class CredencialBot:
         )
 
         license_.credenciais.append(cred)
-
+        self.keepass.save()
         self.db.session.add(cred)
         self.db.session.commit()
 

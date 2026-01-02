@@ -139,7 +139,7 @@
     "Id": 18,
     "display_name": "JUSDS - PROVISIONAMENTO",
     "sistema": "JUSDS",
-    "categoria": "PROVISAO",
+    "categoria": "PROVISIONAMENTO",
     "configuracao_form": "file_auth",
     "descricao": "Realiza provisionamento de valores no sistema JUSDS."
   },
@@ -179,7 +179,7 @@
     "Id": 23,
     "display_name": "ELAW - PROVISIONAMENTO",
     "sistema": "ELAW",
-    "categoria": "PROVISAO",
+    "categoria": "PROVISIONAMENTO",
     "configuracao_form": "file_auth",
     "descricao": "Realiza provisionamento de valores no sistema ELAW."
   },

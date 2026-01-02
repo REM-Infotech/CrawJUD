@@ -1,3 +1,4 @@
+# ruff: noqa: T201, BLE001
 from __future__ import annotations
 
 from traceback import format_exception
@@ -26,8 +27,8 @@ class Provisionamento(JusDsBot):
 
         try:
             if self.search():
-                print("ok")  # noqa: T201
+                print("ok")
 
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             exc = format_exception(e)
             tqdm.write("\n".join(exc))

@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING as TYPE_CHECKING
 
 from backend.controllers.head import CrawJUD
-from backend.resources.auth import AutenticadorElaw
-from backend.resources.search import ElawSearch
+from backend.resources.auth.jusds import AutenticadorJusds
+from backend.resources.search.jusds import JusdsSearch
 
 
 class JusDsBot(CrawJUD):
@@ -14,5 +14,5 @@ class JusDsBot(CrawJUD):
 
     def __init__(self) -> None:
         """Inicialize o robô Elaw."""
-        self.search = ElawSearch(self)
-        self.auth = AutenticadorElaw(self)
+        self.search = JusdsSearch(self)
+        self.auth = AutenticadorJusds(self)

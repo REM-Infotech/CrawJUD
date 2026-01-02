@@ -1,11 +1,12 @@
 default:
   # Configurações específicas para o ambiente de produção
-  EXTENSIONS: [
+  EXTENSIONS:
+    [
       "backend.extensions:start_extensions",
       "backend.api.routes:register_routes",
-      # "backend.api.models:init_database",
-      # "backend.api.models:create_bots",
-      # "backend.api.models:load_credentials",
+      "backend.models:init_database",
+      "backend.models:create_bots",
+      "backend.models:load_credentials",
     ]
 
   ## Configurações do Flask

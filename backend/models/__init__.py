@@ -136,7 +136,6 @@ def load_credentials(app: Flask) -> None:
                         first=True,
                     )
 
-                    rastreio = entry.notes
                     if not entry:
                         rastreio = str(uuid4())
                         entry = keepass.add_entry(
@@ -148,6 +147,7 @@ def load_credentials(app: Flask) -> None:
                             notes=rastreio,
                         )
 
+                    rastreio = str(entry.notes)
                     if item.get("otp"):
                         entry.otp = item.get("otp")
 
