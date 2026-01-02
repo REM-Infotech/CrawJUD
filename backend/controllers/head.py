@@ -297,6 +297,9 @@ def start_bot(config: Dict) -> None:
     try:
         bot_nome = f"{config['categoria']}_{config['sistema']}"
         bot = CrawJUD.bots.get(bot_nome)
+        if not bot:
+            bot_nome = f"{config['sistema']}_{config['categoria']}"
+            bot = CrawJUD.bots[bot_nome]
 
         bot = bot()
         bot.setup(config=config)
@@ -313,6 +316,8 @@ def start_bot(config: Dict) -> None:
         clear()
 
         class Dummy(CrawJUD): ...
+
+        config["sistema"] = "PJE"
 
         bot = Dummy().setup(config=config)
         exc = BotUtil.logging_fatal_error(e, bot)

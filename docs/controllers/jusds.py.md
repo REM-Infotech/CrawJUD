@@ -12,7 +12,7 @@ Módulo para a classe de controle dos robôs Elaw.
 - `backend.resources.search`
 - `typing`
 
-## Classe: `JusDsBot`
+## Classe: `JusdsBot`
 
 Classe de controle para robôs do Elaw.
 
@@ -27,4 +27,3 @@ Inicialize o robô Elaw.
 **Parâmetros:**
 
 - `self` (Any)
-

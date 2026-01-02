@@ -16,7 +16,7 @@ Módulo do sistema CrawJUD.
 
 ## Classe: `Provisionamento`
 
-**Herda de:** `JusDsBot`
+**Herda de:** `JusdsBot`
 
 ### Atributos
 
@@ -35,4 +35,3 @@ Módulo do sistema CrawJUD.
 **Parâmetros:**
 
 - `self` (Any)
-
