@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from pandas import DataFrame
 
-from backend.interfaces import DataSave
+from backend.interfaces import DataSave, DataSucesso
 from backend.resources.iterators.queues import QueueIterator
 from backend.resources.queues.file_operation.main import (
     FileOperator,
@@ -34,7 +34,7 @@ class SaveSuccess(FileOperator):
         self.thead_save = Thread(target=self.save_success, daemon=True)
         self.thead_save.start()
 
-    def __call__(self, worksheet: str, data_save: str) -> None:
+    def __call__(self, worksheet: str, data_save: list[DataSucesso]) -> None:
         """Adicione dados de sucesso à fila para processamento assíncrono.
 
         Args:

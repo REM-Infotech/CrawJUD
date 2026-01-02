@@ -16,6 +16,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.raises import raise_execution_error
 from backend.controllers.head import CrawJUD
+from backend.interfaces import DataSucesso
 from backend.resources.auth import AutenticadorElaw
 from backend.resources.search import ElawSearch
 from backend.task_manager.constants.data._bots.cidades import cidades_amazonas
@@ -199,3 +200,32 @@ class ElawBot(CrawJUD):
 
         # Lança exceção se a opção não for encontrada
         raise_execution_error(message=f'Opção "{to_search}" não encontrada!')
+
+    def print_comprovante(self, message: str) -> None:
+        """Salve comprovante do processo e registre mensagem de sucesso.
+
+        Args:
+            message (str): Mensagem a ser exibida no comprovante.
+
+        """
+        numero_processo = self.bot_data.get("NUMERO_PROCESSO")
+        name_comprovante = f"Comprovante - {numero_processo} - {self.pid}.png"
+        savecomprovante = self.output_dir_path.joinpath(
+            name_comprovante,
+        )
+
+        with savecomprovante.open("wb") as fp:
+            fp.write(self.driver.get_screenshot_as_png())
+
+        data = DataSucesso(
+            NUMERO_PROCESSO=numero_processo,
+            MENSAGEM=message,
+            NOME_COMPROVANTE=name_comprovante,
+            NOME_COMPROVANTE_2="",
+        )
+        self.append_success(worksheet="sucessos", data_save=[data])
+
+        self.print_message(
+            message=message,
+            message_type="success",
+        )
