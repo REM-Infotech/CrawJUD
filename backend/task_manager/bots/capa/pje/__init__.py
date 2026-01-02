@@ -20,7 +20,7 @@ from backend.interfaces.pje import (
 )
 from backend.resources import RegioesIterator
 from backend.resources.queues.file_downloader import FileDownloader
-from backend.task_manager.bots.capa.pje._timeline import TimeLinePJe
+from backend.task_manager.bots.capa.pje._timeline import TimeLinePJe as TimeLinePJe
 
 if TYPE_CHECKING:
     from queue import Queue
@@ -94,9 +94,6 @@ class Capa(PJeBot):
 
         processo = item["NUMERO_PROCESSO"]
         pos_processo = self.posicoes_processos[processo]
-        termos: str = item.get("TERMOS", "SENTENÇA,ACÓRDAO,LIMINAR")
-        if not termos:
-            return
 
         row = int(pos_processo) + 1
         if not self.bot_stopped.is_set():
@@ -108,50 +105,24 @@ class Capa(PJeBot):
                     row=row,
                     client=client,
                 )
-                if resultados:
-                    self.print_message(
-                        message="Processo encontrado!",
-                        message_type="info",
-                        row=row,
-                    )
+                if not resultados:
+                    return
 
-                    id_processo = resultados["id_processo"]
-                    data_ = resultados["data_request"]
+                self.print_message(
+                    message="Processo encontrado!",
+                    message_type="info",
+                    row=row,
+                )
 
-                    termos: list[str] = termos.split(",") if ", " in termos else [termos]
+                _id_processo = resultados["id_processo"]
+                data_ = resultados["data_request"]
+                capa = self.capa_processual(result=data_)
 
-                    capa = self.capa_processual(result=data_)
-                    timeline = TimeLinePJe.load(
-                        processo=processo,
-                        cliente=client,
-                        id_processo=id_processo,
-                        regiao=self.regiao,
-                        bot=self,
-                    )
+                self.append_success("Sucessos", [capa])
 
-                    for file in timeline.documentos:
-                        if any(
-                            termo.lower() in file["tipo"].lower() for termo in termos
-                        ):
-                            timeline.baixar_documento(
-                                bot=self,
-                                documento=file,
-                                grau="1",
-                                inclur_assinatura=True,
-                            )
-
-                        self.append_success(
-                            worksheet="Resultados",
-                            data_save=[capa],
-                        )
-
-                        return
-
-                    type_ = "success"
-                    msg_ = "Execução Efetuada com sucesso!"
-                    self.print_message(msg_, type_, row)
-                    item.update({"MENSAGEM_ERRO": msg_})
-                    self.append_error(data_save=item)
+                type_ = "success"
+                msg_ = "Execução Efetuada com sucesso!"
+                self.print_message(msg_, type_, row)
 
             except Exception as e:
                 exc = "\n".join(traceback.format_exception(e))
