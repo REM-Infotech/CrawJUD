@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import json
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any, ClassVar, TypedDict
 
 from backend.resources.elements import pje as el
 
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 type AnyType = Any
 
 
-class Partes(TypedDict):
+class PartePJe(TypedDict):
     """Defina os campos das partes do processo judicial no padrão PJe.
 
     Args:
@@ -76,6 +77,9 @@ class Representantes(TypedDict):
 
 
 class PartesPJe:
+    representantes_unformatted: ClassVar[list[dict[int, dict[str, str]]]] = []
+    partes_list: list[dict[str, str]]
+
     @staticmethod
     def __formata_numero_representante(
         representante: AnyType,
@@ -87,8 +91,19 @@ class PartesPJe:
 
         return ""
 
+    def __init__(self, partes: list[dict[str, str]], processo: str) -> None:
+        self.partes_list = partes
+        self.processo: str = processo
+        self.representantes_unformatted = []
+
     @classmethod
-    def partes(cls, cliente: Client, regiao: str, id_processo: str) -> None:
+    def partes(
+        cls,
+        cliente: Client,
+        regiao: str,
+        id_processo: str,
+        processo: str,
+    ) -> None:
         link_partes = el.LINK_CONSULTA_PARTES.format(
             trt_id=regiao,
             id_processo=id_processo,
@@ -99,18 +114,20 @@ class PartesPJe:
         with suppress(Exception):
             request_partes = cliente.get(url=link_partes)
             if request_partes:
-                data_partes, data_representantes = self._salva_partes(
-                    processo=processo,
-                    data_partes=request_partes.json(),
-                )
+                return cls(partes=json.loads(request_partes.content), processo=processo)
 
-    @classmethod
-    def formata_partes(cls, request_partes: list[dict[str, str]]) -> None:
+        return None
+
+    def formata_partes(
+        self,
+        request_partes: list[dict[str, str]],
+        processo: str,
+    ) -> list[PartePJe]:
         partes = []
         representantes_unformatted = []
-        for parte in request_partes:
+        for pos, parte in enumerate(request_partes):
             partes.append(
-                Partes(
+                PartePJe(
                     ID_PJE=parte.get("id"),
                     NOME=parte.get("nome"),
                     DOCUMENTO=parte.get(
@@ -133,12 +150,17 @@ class PartesPJe:
 
             if parte.get("representantes"):
                 representantes = parte.get("representantes")
-                representantes_unformatted.extend(representantes)
+                representantes_unformatted.append({pos, representantes})
 
-    @classmethod
-    def formata_representantes(cls, unformatted: list[dict[str, str]]) -> None:
+        self.representantes_unformatted = representantes_unformatted
+        return partes
+
+    def formata_representantes(self) -> list[Representantes]:
         representantes: list[Representantes] = []
-        for representante in unformatted:
+        for item in self.representantes_unformatted:
+            pos, representante = next(iter(item.items()))
+            parte = self.partes_list[int(pos)]
+
             processo = ""
             representantes.append(
                 Representantes(
@@ -164,6 +186,8 @@ class PartesPJe:
                     EMAILS=",".join(
                         representante.get("emails", []),
                     ),
-                    TELEFONE=__formata_numero_representante(representante),
+                    TELEFONE=PartesPJe.__formata_numero_representante(representante),
                 ),
             )
+
+        return representantes

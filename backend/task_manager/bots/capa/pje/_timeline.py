@@ -10,7 +10,8 @@ if TYPE_CHECKING:
     from httpx import Client
 
     from backend.controllers import PJeBot
-    from backend.task_manager.bots.capa.pje._dicionarios import DocumentoPJe
+
+    from ._dicionarios import DocumentoPJe
 
 type AnyType = Any
 

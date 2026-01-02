@@ -66,9 +66,11 @@ class Capa(PJeBot):
             data (list[BotData]): Lista de dados dos processos.
 
         """
+        url = f"https://pje.trt{self.regiao}.jus.br/pjekz"
         cookies = self.auth.get_cookies()
-        client_context = Client(cookies=cookies)
-        thread_pool = ThreadPoolExecutor(4)
+        headers = self.auth.get_headers(url=url)
+        client_context = Client(cookies=cookies, headers=headers)
+        thread_pool = ThreadPoolExecutor(2)
 
         with client_context as client, thread_pool as pool:
             futures: list[Future[None]] = []

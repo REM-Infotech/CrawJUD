@@ -1,7 +1,4 @@
-"""Module: movimentacao.
-
-Handle movement-related operations in the Projudi system with data scraping and reporting.
-"""
+# ruff: noqa: BLE001, E501, SLF001
 
 from __future__ import annotations
 

@@ -61,14 +61,9 @@ class Movimentacao(PJeBot):
             data (list[PJeMovimentacao]): Lista de dados dos processos.
 
         """
-        cookies = self.auth.get_cookies()
-
         url = f"https://pje.trt{self.regiao}.jus.br/pjekz"
-
-        requests = self.driver.requests
-        headers_ = filter(lambda x: x.url.startswith(url), requests)
         cookies = self.auth.get_cookies()
-        headers = dict(list(headers_)[-1].headers.items())
+        headers = self.auth.get_headers(url=url)
         client_context = Client(cookies=cookies, headers=headers)
         self.driver.quit()
         self.executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)

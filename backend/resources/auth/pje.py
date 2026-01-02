@@ -34,6 +34,7 @@ from backend.task_manager.constants.pje import ENDPOINT_DESAFIO
 
 if TYPE_CHECKING:
     from cryptography.x509 import Certificate
+    from seleniumwire.webdriver import Chrome
 
     from backend.controllers.pje import PJeBot
     from backend.resources.driver.web_element import WebElement
@@ -58,6 +59,8 @@ class AutenticadorPJe(AutenticadorBot):
 
     _chain: list[Certificate]
     bot: PJeBot
+    driver: Chrome
+    wait: WebDriverWait[Chrome]
 
     @property
     def regiao(self) -> str:
@@ -173,6 +176,14 @@ class AutenticadorPJe(AutenticadorBot):
     def get_cookies(self) -> dict[str, str]:
         """Retorne os headers e cookies atuais do navegador."""
         return self._cookie_to_dict()
+
+    def get_headers(self, *, url: str) -> dict[str, str]:
+
+        headers_ = list(
+            filter(lambda x: x.url.startswith(url), list(self.driver.requests)),
+        )
+        headers_.reverse()
+        return dict(next(iter(headers_)).headers.items())
 
     def _cookie_to_dict(self) -> dict[str, str]:
         cookies_driver = self.driver.get_cookies()
