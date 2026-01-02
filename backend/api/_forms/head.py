@@ -15,6 +15,7 @@ from backend.models import Bots, LicenseUser, User, db
 
 if TYPE_CHECKING:
     from flask_keepass import KeepassManager
+    from pykeepass import Attachment
 
     from backend.types_app import Dict
 
@@ -165,16 +166,25 @@ class FormBot:
                     })
                     continue
 
-                attachment = entry.attachments[0]
-                data.update({
-                    "credenciais": {
-                        "username": entry.username,
-                        "password": entry.password,
-                        "nome_certificado": attachment.filename,
+                data_cred = {
+                    "username": entry.username,
+                    "password": entry.password,
+                    "nome_certificado": "",
+                    "certificado": "",
+                    "otp": entry.otp,
+                }
+
+                if entry.attachments:
+                    attachment: Attachment = entry.attachments[0]
+                    data_cred.update({
+                        "nome_cetificado": attachment.filename,
                         "certificado": b64encode(attachment.data).decode(),
-                        "otp": entry.otp,
-                    },
+                    })
+
+                data.update({
+                    "credenciais": data_cred,
                 })
+
                 continue
 
             if key == "sid_filesocket":

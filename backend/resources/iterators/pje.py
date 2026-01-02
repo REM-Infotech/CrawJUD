@@ -109,7 +109,7 @@ class RegioesIterator[T: BotData]:
                     item["NUMERO_PROCESSO"],
                 )
 
-                regiao = numero_processo.tj
+                regiao = item.get("REGIAO", numero_processo.tj)
                 # Atualiza o número do processo no item
                 item["NUMERO_PROCESSO"] = str(numero_processo)
                 # Adiciona a posição do processo na

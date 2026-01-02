@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from flask import Flask
     from flask_keepass import KeepassManager
     from flask_sqlalchemy import SQLAlchemy
+    from pykeepass import Attachment
     from pykeepass.group import Group
 
     from backend.types_app import Sistemas
@@ -70,6 +71,9 @@ class CredencialBot:
         for item in list(cred_empty.keys()):
             setattr(self, item, kwargs.get(item, cred_empty.get(item)))
 
+        if self.login_metodo == "cert":
+            self.certificado = request.files["certificado"]
+
     def cadastro(self) -> None:
 
         keepass = self.keepass
@@ -110,21 +114,31 @@ class CredencialBot:
             if isinstance(self.certificado, FileStorage):
                 path_temp = Path.cwd().joinpath("temp")
                 path_temp.mkdir(exist_ok=True, parents=True)
-                self.certificado.save(str(path_temp))
 
-                self.certificado = str(path_temp)
+                path_cert = path_temp.joinpath(self.certificado.filename)
+
+                self.certificado.save(str(path_cert))
+                self.certificado = str(path_cert)
 
             path_cert = Path(self.certificado)
             attachment_name = path_cert.name
 
-            if not keepass.find_attachments(filename=attachment_name):
+            attachment_: Attachment = keepass.find_attachments(
+                filename=attachment_name,
+                first=True,
+            )
+            if not attachment_:
                 attachment_data = path_cert.read_bytes()
 
                 binary_id = keepass.add_binary(attachment_data)
-                entry.add_attachment(
-                    id=binary_id,
-                    filename=attachment_name,
-                )
+
+            elif attachment_:
+                binary_id = attachment_.id
+
+            entry.add_attachment(
+                id=binary_id,
+                filename=attachment_name,
+            )
 
         cred = CredenciaisRobo(
             nome_credencial=self.nome_credencial,
