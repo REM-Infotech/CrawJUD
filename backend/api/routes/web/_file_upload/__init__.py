@@ -11,7 +11,7 @@ from backend.api.routes._blueprints import fileNS
 from .upload import uploader
 
 if TYPE_CHECKING:
-    from backend.api.base import BlueprintNamespace
+    from backend.base import BlueprintNamespace
     from backend.types_app import AnyType
 
 

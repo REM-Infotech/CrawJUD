@@ -19,7 +19,7 @@ from backend.api.routes._blueprints import botNS
 from backend.utilities import format_time, load_timezone, update_timezone
 
 if TYPE_CHECKING:
-    from backend.api.base import BlueprintNamespace
+    from backend.base import BlueprintNamespace
     from backend.interfaces import Message
     from backend.interfaces.payloads import BotInfo
     from backend.models import User

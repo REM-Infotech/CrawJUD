@@ -1,15 +1,9 @@
-"""Implemente consultas tipadas e paginação para SQLAlchemy.
-
-Fornece classes e utilitários para facilitar consultas tipadas,
-paginação e integração com Flask-SQLAlchemy.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, ClassVar, Self, TypeVar, cast
 
-from flask import abort, current_app
+from flask import abort
 from flask_sqlalchemy.pagination import Pagination as FSAPagination
 from flask_sqlalchemy.pagination import (
     QueryPagination as FSAQueryPagination,
@@ -21,41 +15,25 @@ from sqlalchemy.sql._typing import (
     _ColumnsClauseArgument,
 )
 
-T = TypeVar("T")
-type AnyType = any
-
-_Entities = _ColumnsClauseArgument[T] | Sequence[_ColumnsClauseArgument[T]]
-
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
 
-    from .model import Model
+    from backend.base.sqlalchemy._model import Model
+
+T = TypeVar("T")
+type AnyType = any
+
+
+_Entities = _ColumnsClauseArgument[T] | Sequence[_ColumnsClauseArgument[T]]
 
 
 class QueryProperty[T]:
-    """Forneça acesso ao objeto Query tipado para o modelo.
-
-    Args:
-        instance (AnyType): Instância do modelo.
-        owner (type[T]): Classe do modelo.
-
-    """
-
     def __init__(self) -> None:
-        """Inicialize a propriedade de consulta para o modelo."""
+        pass
 
     def __get__(self, instance: AnyType, owner: type[T]) -> Query[T]:
-        """Retorne a consulta tipada para o modelo solicitado.
+        from backend.api import app
 
-        Args:
-            instance (AnyType): Instância do modelo.
-            owner (type[T]): Classe do modelo.
-
-        Returns:
-            Query[T]: Consulta tipada para o modelo.
-
-        """
-        app = current_app
         cls = cast("Model", owner)
         if "sqlalchemy" in app.extensions:
             cls.__fsa__ = cast(
@@ -83,17 +61,10 @@ class Query[T](SAQuery):
     _total: ClassVar[int] = 0
 
     def len(self) -> int:
-        """Retorne o total de itens encontrados na consulta.
-
-        Returns:
-            int: Total de itens encontrados na consulta.
-
-        """
         return self._total
 
     @property
     def total(self) -> int:
-        """Obtenha o total de itens encontrados na consulta."""
         return self._total
 
     @total.setter
@@ -101,54 +72,37 @@ class Query[T](SAQuery):
         self._total = new_total
 
     def filter(self, *criterion: _ColumnExpressionArgument) -> Self:
-        """Filtre a consulta usando critérios fornecidos.
-
-        Returns:
-            Self: Consulta filtrada conforme os critérios.
-
-        """
         return super().filter(*criterion)
 
     def filter_by(self, **kwargs: AnyType) -> Self:
-        """Filtre a consulta usando campos e valores fornecidos.
-
-        Returns:
-            Self: Consulta filtrada conforme os campos e valores.
-
-        """
         return super().filter_by(**kwargs)
 
     def first(self) -> T | None:
-        """Retorne o primeiro resultado encontrado ou None.
-
-        Returns:
-            T | None: Primeiro resultado ou None se não houver.
-
-        """
         self._total = 1
         return super().first()
 
     def all(self) -> list[T]:
-        """Retorne todos os resultados encontrados na consulta.
-
-        Returns:
-            list[T]: Lista de todos os resultados encontrados.
-
-        """
         all_results = super().all()
         self._total = len(all_results)
 
         return all_results
 
-    def get_or_404(self, ident: AnyType, description: str | None = None) -> T:
-        """Recupere item pelo id ou retorne erro 404.
+    def get_or_404(
+        self,
+        ident: AnyType,
+        description: str | None = None,
+    ) -> T:
+        """Results or 404.
 
-        Args:
-            ident (AnyType): Identificador do item.
-            description (str | None): Mensagem de erro opcional.
+        Like :meth:`~sqlalchemy.orm.Query.get`
+            but aborts with a ``404 Not Found``
+            error instead of returning ``None``.
+
+        :param ident: The primary key to query.
+        :param description: A custom message to show on the error page.
 
         Returns:
-            T: Item encontrado ou aborta com 404.
+            The instance corresponding to the given primary key, or raises a 404 error.
 
         """
         rv = self.get(ident)
@@ -160,13 +114,15 @@ class Query[T](SAQuery):
         return rv
 
     def first_or_404(self, description: str | None = None) -> T:
-        """Retorne o primeiro resultado ou aborte com erro 404.
+        """First or 404.
 
-        Args:
-            description (str | None): Mensagem de erro opcional.
+        Like :meth:`~sqlalchemy.orm.Query.first` but aborts with a ``404 Not Found``
+        error instead of returning ``None``.
+
+        :param description: A custom message to show on the error page.
 
         Returns:
-            T: Primeiro resultado encontrado ou aborta com 404.
+            The first result of the query, or raises a 404 error if no results are found
 
         """
         rv = self.first()
@@ -178,13 +134,16 @@ class Query[T](SAQuery):
         return rv
 
     def one_or_404(self, description: str | None = None) -> T:
-        """Retorne um resultado ou aborte com erro 404.
+        """One or 404.
 
-        Args:
-            description (str | None): Mensagem de erro opcional.
+        Like :meth:`~sqlalchemy.orm.Query.one` but aborts with a ``404 Not Found``
+        error instead of raising ``NoResultFound`` or ``MultipleResultsFound``.
+
+        :param description: A custom message to show on the error page.
 
         Returns:
-            T: Resultado encontrado ou aborta com 404.
+            The one and only result of the query, or raises a 404 error if the result
+            is not exactly one.
 
         """
         try:
@@ -202,17 +161,36 @@ class Query[T](SAQuery):
         error_out: bool = True,
         count: bool = True,
     ) -> QueryPagination[T]:
-        """Paginar resultados da consulta conforme parâmetros fornecidos.
+        """Paginate the query.
 
-        Args:
-            page (int | None): Número da página.
-            per_page (int | None): Itens por página.
-            max_per_page (int | None): Máximo de itens por página.
-            error_out (bool): Se deve lançar erro ao falhar.
-            count (bool): Se deve contar total de itens.
+        Apply an offset and limit to the query based on the current page and number
+        of items per page, returning a :class:`.Pagination` object.
+
+        :param page: The current page, used to calculate the offset. Defaults to the
+            ``page`` query arg during a request, or 1 otherwise.
+        :param per_page: The maximum number of items on a page, used to calculate the
+            offset and limit. Defaults to the ``per_page`` query arg during a request,
+            or 20 otherwise.
+        :param max_per_page: The maximum allowed value for ``per_page``, to limit a
+            user-provided value. Use ``None`` for no limit. Defaults to 100.
+        :param error_out: Abort with a ``404 Not Found`` error if no items are returned
+            and ``page`` is not 1, or if ``page`` or ``per_page`` is less than 1, or if
+            either are not ints.
+        :param count: Calculate the total number of values by issuing an extra count
+            query. For very complex queries this may be inaccurate or slow, so it can be
+            disabled and set manually if necessary.
+
+        .. versionchanged:: 3.0
+            All parameters are keyword-only.
+
+        .. versionchanged:: 3.0
+            The ``count`` query is more efficient.
+
+        .. versionchanged:: 3.0
+            ``max_per_page`` defaults to 100.
 
         Returns:
-            QueryPagination[T]: Objeto de paginação da consulta.
+            A :class:`.Pagination` object containing the results for the specified page.
 
         """
         return cast(

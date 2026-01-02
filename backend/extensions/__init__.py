@@ -16,8 +16,8 @@ from flask_sqlalchemy import SQLAlchemy
 from passlib.context import CryptContext
 from socketio.redis_manager import RedisManager
 
-from backend.api.base import Model, Query
-from backend.api.base._tst import CustomPattern
+from backend.base import Model, Query
+from backend.base._tst import CustomPattern
 from backend.extensions._minio import Minio
 
 if TYPE_CHECKING:

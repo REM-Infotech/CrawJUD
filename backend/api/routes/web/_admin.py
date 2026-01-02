@@ -9,7 +9,7 @@ from flask_jwt_extended import get_current_user, jwt_required
 from backend.api.routes._blueprints import adminNS
 
 if TYPE_CHECKING:
-    from backend.api.base import BlueprintNamespace
+    from backend.base import BlueprintNamespace
     from backend.models import User
 
 type Any = any

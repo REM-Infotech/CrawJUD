@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from backend.api.base import BlueprintNamespace
+from backend.base import BlueprintNamespace
 
 bots = Blueprint("bots", __name__, url_prefix="/bot")
 auth = Blueprint("auth", __name__, url_prefix="/auth")

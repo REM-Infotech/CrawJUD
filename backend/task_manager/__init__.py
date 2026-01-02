@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 from celery import Celery
 
 from backend import _hook
+from backend.base import FlaskTask
 from backend.config import CeleryConfig, settings
-from backend.task_manager.base import FlaskTask
 
 if TYPE_CHECKING:
     from flask import Flask

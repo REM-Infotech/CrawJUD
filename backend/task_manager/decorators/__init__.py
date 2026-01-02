@@ -11,7 +11,7 @@ from celery import shared_task
 from dynaconf import FlaskDynaconf
 from flask import Flask, current_app
 
-from backend.task_manager.base import FlaskTask
+from backend.base import FlaskTask
 
 if TYPE_CHECKING:
     from collections.abc import Callable

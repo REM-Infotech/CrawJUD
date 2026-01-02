@@ -1,8 +1,3 @@
-"""Forneça utilitários para integração com SQLAlchemy.
-
-Inclui classes para manipular instâncias e nomes de tabelas dinamicamente.
-"""
-
 from __future__ import annotations
 
 from contextlib import suppress
@@ -12,7 +7,9 @@ from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.model import Model as FSA_Model
 
-from .query import Query, QueryProperty
+from backend.api.resources import camel_to_snake
+
+from ._query import Query, QueryProperty
 
 if TYPE_CHECKING:
     from backend.types_app import AnyType
@@ -21,29 +18,12 @@ type Any = any
 
 
 class FSAProperty:
-    """Gerencie a instância do SQLAlchemy de forma dinâmica.
-
-    Atributos:
-        fsa_instante (SQLAlchemy): Instância do SQLAlchemy.
-    """
-
     fsa_instante: SQLAlchemy = SQLAlchemy()
 
     def __set__(self, *args: Any, **kwargs: Any) -> None:
-        """Defina dinamicamente a instância do SQLAlchemy."""
         self.fsa_instante = args[1]
 
     def __get__(self, *args: Any, **kwargs: Any) -> SQLAlchemy:
-        """Obtenha dinamicamente a instância do SQLAlchemy.
-
-        Args:
-            *args (tuple): Argumentos posicionais.
-            **kwargs (dict): Argumentos nomeados.
-
-        Returns:
-            SQLAlchemy: Instância atual do SQLAlchemy.
-
-        """
         with suppress(KeyError):
             app = current_app
             with app.app_context():
@@ -55,16 +35,9 @@ class FSAProperty:
 
 
 class FSATableName:
-    """Gerencie dinamicamente o nome da tabela SQLAlchemy.
-
-    Atributos:
-        _tablename (str): Nome da tabela em snake_case.
-    """
-
     _tablename: ClassVar[str] = ""
 
     def __set__(self, *args: Any) -> None:
-        """Defina dinamicamente o nome da tabela."""
         self._tablename = args[1]  # pyright: ignore[reportAttributeAccessIssue]
 
     def __get__(
@@ -73,20 +46,7 @@ class FSATableName:
         *args: AnyType,
         **kwargs: AnyType,
     ) -> str:
-        """Retorne dinamicamente o nome da tabela em snake_case.
-
-        Args:
-            cls (Model | None): Classe do modelo.
-            *args (AnyType): Argumentos posicionais.
-            **kwargs (AnyType): Argumentos nomeados.
-
-        Returns:
-            str: Nome da tabela em snake_case.
-
-        """
         if cls:
-            from backend.resources import camel_to_snake
-
             snake_cased = camel_to_snake(cls.__class__.__name__)
             cls.__name__ = cls.__tablename__ or snake_cased  # pyright: ignore[reportAttributeAccessIssue]
 
@@ -94,8 +54,21 @@ class FSATableName:
 
 
 class Model(FSA_Model):
-    """Implemente modelo base para integração com SQLAlchemy."""
-
     query: ClassVar[Query[Self]] = cast("Query[Self]", QueryProperty())  # pyright: ignore[reportIncompatibleVariableOverride]
     __fsa__: ClassVar[SQLAlchemy] = cast("SQLAlchemy", FSAProperty())
     __tablename__: ClassVar[str] = FSAProperty()
+
+    def to_dict(self) -> dict:
+
+        data = {}
+        for item in filter(lambda x: not x.startswith("_") and x != "query", dir(self)):
+            value = getattr(self, item, None)
+
+            if isinstance(value, list):
+                value: list[Self]
+                val_list = [it.to_dict() for it in value]
+                value: list[dict[str, str]] = val_list
+
+            data.update({item: value})
+
+        return data

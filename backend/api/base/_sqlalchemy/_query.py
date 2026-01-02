@@ -18,7 +18,7 @@ from sqlalchemy.sql._typing import (
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
 
-    from backend.api.base._sqlalchemy._model import Model
+    from backend.base.sqlalchemy._model import Model
 
 T = TypeVar("T")
 type AnyType = any
