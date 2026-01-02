@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from celery import Task
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class FlaskTask[**P, R](Task):
     """Integre tarefas Celery ao contexto Flask nesta classe."""
+
+    run: Callable[P, R]
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         """Executa a tarefa Celery dentro do contexto Flask.
