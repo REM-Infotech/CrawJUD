@@ -2,18 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from celery import Task
 
-if TYPE_CHECKING:
-    from backend.types_app import AnyType
 
-
-class FlaskTask(Task):
+class FlaskTask[**P, R](Task):
     """Integre tarefas Celery ao contexto Flask nesta classe."""
 
-    def __call__(self, *args: AnyType, **kwargs: AnyType) -> AnyType:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         """Executa a tarefa Celery dentro do contexto Flask.
 
         Args:
@@ -26,5 +21,5 @@ class FlaskTask(Task):
         """
         return self.run(*args, **kwargs)
 
-    async def _run(self, *args, **kwargs) -> AnyType:
+    async def _run(self, *args: P.args, **kwargs: P.kwargs) -> R:
         return await self.run(*args, **kwargs)
