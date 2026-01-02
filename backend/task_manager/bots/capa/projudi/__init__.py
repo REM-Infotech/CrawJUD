@@ -1,3 +1,5 @@
+# ruff: noqa: BLE001
+
 """Extração de informações de processos no Projudi.
 
 Este pacote contém classes e funções para automatizar a

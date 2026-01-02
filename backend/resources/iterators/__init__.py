@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from io import BytesIO
 from typing import TYPE_CHECKING, Self
 
 from pandas import read_excel
@@ -29,7 +30,7 @@ class BotIterator[T: BotData]:
         )
 
         if path_xlsx.exists():
-            df = read_excel(path_xlsx.read_bytes(), engine="openpyxl")
+            df = read_excel(BytesIO(path_xlsx.read_bytes()), engine="openpyxl")
             df.columns = df.columns.str.upper()
 
             for col in df.columns:
