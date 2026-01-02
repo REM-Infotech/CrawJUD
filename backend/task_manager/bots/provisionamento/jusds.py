@@ -9,17 +9,15 @@ from backend.controllers.jusds import JusDsBot
 
 if TYPE_CHECKING:
     from backend.controllers.head import BotIterator
-    from backend.interfaces import BotData
+    from backend.dicionarios import JusdsProvisionamento
 
 
 class Provisionamento(JusDsBot):
     name = "jusds_provisionamento"
 
-    bot_data: BotData
-
     def execution(self) -> None:
 
-        list_item: BotIterator[BotData] = self.frame
+        list_item: BotIterator[JusdsProvisionamento] = self.frame
         for pos, item in enumerate(list_item):
             self.bot_data = item
             self.row = pos

@@ -1,16 +1,18 @@
+# ruff: noqa: N802
+
 """Módulo de controle de protocolos."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol
 
-from backend.types_app import AnyType, P
-
 if TYPE_CHECKING:
     from celery import Celery
 
+type Any = any
 
-class CeleryTask[T](Protocol[P, T]):
+
+class CeleryTask[**P, R](Protocol[P, R]):
     """Defina o protocolo para tasks Celery genéricas."""
 
     @classmethod
@@ -34,24 +36,24 @@ class CeleryTask[T](Protocol[P, T]):
         ...
 
     @classmethod
-    def add_around(cls, attr: str, around: AnyType) -> None:
+    def add_around(cls, attr: str, around: Any) -> None:
         """Adicione lógica ao redor de um atributo da task."""
         ...
 
-    def run(self, *args: AnyType, **kwargs: AnyType) -> None:
+    def run(self, *args: Any, **kwargs: Any) -> None:
         """Execute o corpo da task Celery."""
         ...
 
     def start_strategy(
         self,
-        app: AnyType,
-        consumer: AnyType,
-        **kwargs: AnyType,
+        app: Any,
+        consumer: Any,
+        **kwargs: Any,
     ) -> None:
         """Inicie a estratégia de execução da task."""
         ...
 
-    def delay(self, *args: AnyType, **kwargs: AnyType) -> AnyType:
+    def delay(self, *args: Any, **kwargs: Any) -> Any:
         """Execute a task de forma assíncrona (atalho para apply_async).
 
         Retorna:
@@ -62,24 +64,24 @@ class CeleryTask[T](Protocol[P, T]):
     def apply_async(
         self,
         *,
-        args: tuple[AnyType, ...] | None = None,
-        kwargs: dict[str, AnyType] | None = None,
+        args: tuple[Any, ...] | None = None,
+        kwargs: dict[str, Any] | None = None,
         task_id: str | None = None,
-        producer: AnyType | None = None,
-        link: AnyType | None = None,
-        link_error: AnyType | None = None,
+        producer: Any | None = None,
+        link: Any | None = None,
+        link_error: Any | None = None,
         shadow: str | None = None,
-        **options: AnyType,
-    ) -> AnyType:
+        **options: Any,
+    ) -> Any:
         """Agende a execução assíncrona da task.
 
         Args:
             args (Tuple): Argumentos posicionais.
             kwargs (Dict): Argumentos nomeados.
             task_id (str, opcional): Id da task.
-            producer (AnyType, opcional): Produtor customizado.
-            link (AnyType, opcional): Task(s) a executar em sucesso.
-            link_error (AnyType, opcional): Task(s) a executar em erro.
+            producer (Any, opcional): Produtor customizado.
+            link (Any, opcional): Task(s) a executar em sucesso.
+            link_error (Any, opcional): Task(s) a executar em erro.
             shadow (str, opcional): Nome alternativo para logs.
             **options: Opções adicionais.
 
@@ -96,24 +98,24 @@ class CeleryTask[T](Protocol[P, T]):
 
     def shadow_name(
         self,
-        args: tuple[AnyType, ...],
-        kwargs: dict[str, AnyType],
-        options: dict[str, AnyType],
-    ) -> AnyType:
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+        options: dict[str, Any],
+    ) -> Any:
         """Retorne nome customizado da task para logs/monitoramento."""
         ...
 
     def retry(
         self,
         *,
-        args: tuple[AnyType, ...] | None = None,
-        kwargs: dict[str, AnyType] | None = None,
+        args: tuple[Any, ...] | None = None,
+        kwargs: dict[str, Any] | None = None,
         exc: Exception | None = None,
         throw: bool = True,
-        eta: AnyType | None = None,
+        eta: Any | None = None,
         countdown: float | None = None,
         max_retries: int | None = None,
-        **options: AnyType,
+        **options: Any,
     ) -> None:
         """Reagende a execução da task para nova tentativa.
 
@@ -122,7 +124,7 @@ class CeleryTask[T](Protocol[P, T]):
             kwargs (Dict, opcional): Argumentos nomeados.
             exc (Exception, opcional): Exceção customizada.
             throw (bool, opcional): Lança exceção Retry.
-            eta (AnyType, opcional): Data/hora para retry.
+            eta (Any, opcional): Data/hora para retry.
             countdown (float, opcional): Segundos para retry.
             max_retries (int, opcional): Máximo de tentativas.
             **options: Opções extras.
@@ -136,30 +138,30 @@ class CeleryTask[T](Protocol[P, T]):
     def apply(
         self,
         *,
-        args: tuple[AnyType, ...] | None = None,
-        kwargs: dict[str, AnyType] | None = None,
-        link: AnyType | None = None,
-        link_error: AnyType | None = None,
+        args: tuple[Any, ...] | None = None,
+        kwargs: dict[str, Any] | None = None,
+        link: Any | None = None,
+        link_error: Any | None = None,
         task_id: str | None = None,
         retries: int | None = None,
         throw: bool | None = None,
-        logfile: AnyType | None = None,
-        loglevel: AnyType | None = None,
-        headers: dict[str, AnyType] | None = None,
-        **options: AnyType,
-    ) -> AnyType:
+        logfile: Any | None = None,
+        loglevel: Any | None = None,
+        headers: dict[str, Any] | None = None,
+        **options: Any,
+    ) -> Any:
         """Execute a task localmente e bloqueie até o retorno.
 
         Args:
             args (Tuple, opcional): Argumentos posicionais.
             kwargs (Dict, opcional): Argumentos nomeados.
-            link (AnyType, opcional): Task(s) a executar em sucesso.
-            link_error (AnyType, opcional): Task(s) a executar em erro.
+            link (Any, opcional): Task(s) a executar em sucesso.
+            link_error (Any, opcional): Task(s) a executar em erro.
             task_id (str, opcional): Id da task.
             retries (int, opcional): Tentativas.
             throw (bool, opcional): Propaga exceção.
-            logfile (AnyType, opcional): Log customizado.
-            loglevel (AnyType, opcional): Nível do log.
+            logfile (Any, opcional): Log customizado.
+            loglevel (Any, opcional): Nível do log.
             headers (Dict, opcional): Cabeçalhos customizados.
             **options: Opções extras.
 
@@ -169,7 +171,7 @@ class CeleryTask[T](Protocol[P, T]):
         """
         ...
 
-    def AsyncResult(self, task_id: str, **kwargs: AnyType) -> None:
+    def AsyncResult(self, task_id: str, **kwargs: Any) -> None:
         """Obtenha AsyncResult para o id da tarefa especificada.
 
         Args:
@@ -181,32 +183,32 @@ class CeleryTask[T](Protocol[P, T]):
 
     def signature(
         self,
-        args: tuple[AnyType, ...] | None = None,
-        *starargs: AnyType,
-        **starkwargs: AnyType,
+        args: tuple[Any, ...] | None = None,
+        *starargs: Any,
+        **starkwargs: Any,
     ) -> None:
         """Crie uma assinatura para a task."""
         ...
 
     subtask = signature
 
-    def s(self, *args: AnyType, **kwargs: AnyType) -> None:
+    def s(self, *args: Any, **kwargs: Any) -> None:
         """Crie uma assinatura para a task (atalho)."""
         ...
 
-    def si(self, *args: AnyType, **kwargs: AnyType) -> None:
+    def si(self, *args: Any, **kwargs: Any) -> None:
         """Crie assinatura imutável para a task."""
         ...
 
-    def chunks(self, it: AnyType, n: int) -> AnyType:
+    def chunks(self, it: Any, n: int) -> Any:
         """Crie task de chunks para processamento em lotes."""
         ...
 
-    def map(self, it: AnyType) -> AnyType:
+    def map(self, it: Any) -> Any:
         """Crie task de map para processamento iterativo."""
         ...
 
-    def starmap(self, it: AnyType) -> AnyType:
+    def starmap(self, it: Any) -> Any:
         """Crie task de starmap para processamento iterativo."""
         ...
 
@@ -215,34 +217,34 @@ class CeleryTask[T](Protocol[P, T]):
         *,
         type_: str,
         retry: bool = True,
-        retry_policy: AnyType | None = None,
-        **fields: AnyType,
+        retry_policy: Any | None = None,
+        **fields: Any,
     ) -> None:
         """Envie evento de monitoramento customizado.
 
         Args:
             type_ (str): Tipo do evento.
             retry (bool, opcional): Tentar novamente em falha.
-            retry_policy (AnyType, opcional): Política de retry.
+            retry_policy (Any, opcional): Política de retry.
             **fields: Campos adicionais do evento.
 
         """
         ...
 
-    def replace(self, sig: AnyType) -> None:
+    def replace(self, sig: Any) -> None:
         """Substitua esta task por outra mantendo o mesmo id.
 
         Args:
-            sig (AnyType): Assinatura substituta.
+            sig (Any): Assinatura substituta.
 
         """
         ...
 
-    def add_to_chord(self, sig: AnyType, *, lazy: bool = False) -> None:
+    def add_to_chord(self, sig: Any, *, lazy: bool = False) -> None:
         """Adicione assinatura ao chord da task.
 
         Args:
-            sig (AnyType): Assinatura a adicionar.
+            sig (Any): Assinatura a adicionar.
             lazy (bool, opcional): Não executar imediatamente.
 
         """
@@ -252,8 +254,8 @@ class CeleryTask[T](Protocol[P, T]):
         self,
         task_id: str | None = None,
         state: str | None = None,
-        meta: dict[str, AnyType] | None = None,
-        **kwargs: AnyType,
+        meta: dict[str, Any] | None = None,
+        **kwargs: Any,
     ) -> None:
         """Atualize o estado da task.
 
@@ -269,8 +271,8 @@ class CeleryTask[T](Protocol[P, T]):
     def before_start(
         self,
         task_id: str,
-        args: tuple[AnyType, ...],
-        kwargs: dict[str, AnyType],
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
     ) -> None:
         """Execute ação antes de iniciar a task.
 
@@ -284,15 +286,15 @@ class CeleryTask[T](Protocol[P, T]):
 
     def on_success(
         self,
-        retval: AnyType,
+        retval: Any,
         task_id: str,
-        args: tuple[AnyType, ...],
-        kwargs: dict[str, AnyType],
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
     ) -> None:
         """Execute ação ao finalizar a task com sucesso.
 
         Args:
-            retval (AnyType): Valor de retorno.
+            retval (Any): Valor de retorno.
             task_id (str): Id da task.
             args (Tuple): Argumentos originais.
             kwargs (Dict): Argumentos nomeados originais.
@@ -304,9 +306,9 @@ class CeleryTask[T](Protocol[P, T]):
         self,
         exc: Exception,
         task_id: str,
-        args: tuple[AnyType, ...],
-        kwargs: dict[str, AnyType],
-        einfo: AnyType,
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+        einfo: Any,
     ) -> None:
         """Execute ação ao tentar novamente a task.
 
@@ -315,7 +317,7 @@ class CeleryTask[T](Protocol[P, T]):
             task_id (str): Id da task.
             args (Tuple): Argumentos originais.
             kwargs (Dict): Argumentos nomeados originais.
-            einfo (AnyType): Informações da exceção.
+            einfo (Any): Informações da exceção.
 
         """
         ...
@@ -324,9 +326,9 @@ class CeleryTask[T](Protocol[P, T]):
         self,
         exc: Exception,
         task_id: str,
-        args: tuple[AnyType, ...],
-        kwargs: dict[str, AnyType],
-        einfo: AnyType,
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+        einfo: Any,
     ) -> None:
         """Execute ação ao falhar a task.
 
@@ -335,7 +337,7 @@ class CeleryTask[T](Protocol[P, T]):
             task_id (str): Id da task.
             args (Tuple): Argumentos originais.
             kwargs (Dict): Argumentos nomeados originais.
-            einfo (AnyType): Informações da exceção.
+            einfo (Any): Informações da exceção.
 
         """
         ...
@@ -343,55 +345,55 @@ class CeleryTask[T](Protocol[P, T]):
     def after_return(
         self,
         status: str,
-        retval: AnyType,
+        retval: Any,
         task_id: str,
-        args: tuple[AnyType, ...],
-        kwargs: dict[str, AnyType],
-        einfo: AnyType,
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+        einfo: Any,
     ) -> None:
         """Execute ação após o retorno da task.
 
         Args:
             status (str): Estado atual.
-            retval (AnyType): Valor/erro retornado.
+            retval (Any): Valor/erro retornado.
             task_id (str): Id da task.
             args (Tuple): Argumentos originais.
             kwargs (Dict): Argumentos nomeados originais.
-            einfo (AnyType): Informações da exceção.
+            einfo (Any): Informações da exceção.
 
         """
         ...
 
-    def on_replace(self, sig: AnyType) -> None:
+    def on_replace(self, sig: Any) -> None:
         """Execute ação ao substituir a task."""
         ...
 
-    def add_trail(self, result: AnyType) -> None:
+    def add_trail(self, result: Any) -> None:
         """Adicione resultado ao trail da task."""
         ...
 
-    def push_request(self, *args: AnyType, **kwargs: AnyType) -> None:
+    def push_request(self, *args: Any, **kwargs: Any) -> None:
         """Empilhe uma nova requisição para a task."""
         ...
 
-    def pop_request(self) -> AnyType:
+    def pop_request(self) -> Any:
         """Remova a requisição do topo da pilha."""
         ...
 
-    def _get_request(self) -> AnyType:
+    def _get_request(self) -> Any:
         """Obtenha a requisição atual da task."""
         ...
 
-    def _get_exec_options(self) -> AnyType:
+    def _get_exec_options(self) -> Any:
         """Obtenha opções de execução da task."""
         ...
 
     @property
-    def backend(self) -> AnyType:
+    def backend(self) -> Any:
         """Obtenha o backend da task."""
         ...
 
     @backend.setter
-    def backend(self, value: AnyType) -> None:
+    def backend(self, value: Any) -> None:
         """Defina o backend da task."""
         ...
