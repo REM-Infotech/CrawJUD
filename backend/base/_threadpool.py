@@ -15,4 +15,8 @@ class CrawJudPoolExecutor[**P, R](ThreadPoolExecutor):
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Future[R]:
+
+        self._args = args
+        self._kwargs = kwargs
+
         return super().submit(fn, *args, **kwargs)
