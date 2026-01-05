@@ -52,11 +52,11 @@ class Movimentacao(PJeBot):
             with suppress(Exception):
                 if self.auth():
                     driver_closed = True
-                    self.driver.quit()
+
                     self.queue_regiao(data=data_regiao)
 
-            if not driver_closed:
-                self.driver.quit()
+                if not driver_closed:
+                    self.driver.quit()
 
         self.finalizar_execucao()
 
@@ -71,6 +71,8 @@ class Movimentacao(PJeBot):
         cookies = self.auth.get_cookies()
         headers = self.auth.get_headers(url=url)
         client_context = Client(cookies=cookies, headers=headers)
+
+        self.driver.quit()
         self.executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)
 
         with client_context as client, self.executor as pool:
