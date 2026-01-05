@@ -1,3 +1,10 @@
+"""Dicionários TypedDict usados para mapear movimentações e documentos do PJe.
+
+Este módulo fornece definições de TypedDict para estrutura de dados
+retornadas pelo sistema PJe: DocumentoPJe, ExpedienteDocumentoPJe e
+MovimentacaoPJe.
+"""
+
 from typing import TypedDict
 
 
@@ -89,6 +96,36 @@ class DocumentoPJe(TypedDict):
 
 
 class MovimentacaoPJe(TypedDict):
+    """Defina o dicionário para os dados de uma movimentação do PJe.
+
+    Campos:
+        id (int): Identificador da movimentação.
+        processo (str): Identificador ou número do processo.
+        titulo (str): Título ou descrição da movimentação.
+        data (str): Data da movimentação no formato ISO.
+        documento (bool): Indica se há documento associado à movimentação.
+        idUsuario (int): Identificador do usuário responsável.
+        especializacoes (int): Código de especializações.
+        nomeResponsavel (str): Nome do responsável pela movimentação.
+        tipoPolo (str): Tipo de polo processual.
+        favorito (bool): Indica se está marcado como favorito.
+        ativo (bool): Indica se a movimentação está ativa.
+        documentoSigiloso (bool): Indica se o documento é sigiloso.
+        usuarioInterno (bool): Indica se o usuário é interno.
+        documentoApreciavel (bool): Indica se o documento é apreciável.
+        expediente (bool): Indica se é expediente.
+        numeroOrdem (int): Número de ordem da movimentação.
+        codigoInstancia (int): Código da instância processual.
+        pendenciaDocInstanciaOrigem (bool): Pendência na instância de origem.
+        copia (bool): Indica se é cópia.
+        codigoMovimentoCNJ (int): Código do movimento conforme CNJ.
+        permiteCooperacaoJudiciaria (bool): Permite cooperação judiciária.
+        movimentoPermiteExclusao (bool): Indica se permite exclusão.
+        movimentoPermiteRetificacao (bool): Indica se permite retificação.
+        movimentoFoiRetificado (bool): Indica se já foi retificado.
+        dataJuntadaFutura (bool): Indica juntada futura.
+    """
+
     id: int
     processo: str
     titulo: str

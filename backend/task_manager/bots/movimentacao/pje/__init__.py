@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import traceback
-from concurrent.futures import Future, ThreadPoolExecutor
 from time import sleep
 from typing import TYPE_CHECKING
 
-from httpx import Client
 from tqdm import tqdm
 
 from backend.controllers.pje import PJeBot
@@ -16,6 +14,7 @@ from ._timeline import TimeLinePJe
 if TYPE_CHECKING:
     from queue import Queue
 
+    from httpx import Client
     from seleniumwire.webdriver import Chrome
 
     from backend.dicionarios import DocumentoPJe, PJeMovimentacao
@@ -31,36 +30,6 @@ class Movimentacao(PJeBot):
     queue_files: Queue
     name = "movimentacao_pje"
     driver: Chrome
-
-    def queue_regiao(self, data: list[PJeMovimentacao]) -> None:
-        """Enfileire processos judiciais para processamento.
-
-        Args:
-            data (list[PJeMovimentacao]): Lista de dados dos processos.
-
-        """
-        url = f"https://pje.trt{self.regiao}.jus.br/pjekz"
-        cookies = self.auth.get_cookies()
-        headers = self.auth.get_headers(url=url)
-        client_context = Client(cookies=cookies, headers=headers)
-
-        self.driver.quit()
-        self.executor = ThreadPoolExecutor(WORKERS_QTD, THREAD_PREFIX)
-
-        with client_context as client, self.executor as pool:
-            futures: list[Future[None]] = []
-            for item in data:
-                if self.bot_stopped.is_set():
-                    break
-
-                futures.append(pool.submit(self.queue, item=item, client=client))
-                sleep(2.5)
-
-            _results = [future.result() for future in futures]
-
-    def set_event(self) -> None:
-
-        self.executor.shutdown(wait=False, cancel_futures=True)
 
     def queue(self, item: PJeMovimentacao, client: Client) -> None:
         """Enfileire e processe um processo judicial PJE.

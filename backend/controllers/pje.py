@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from abc import abstractmethod
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
 from typing import TYPE_CHECKING, ClassVar
 
 from dotenv import load_dotenv
+from httpx import Client
 
 from backend.controllers.head import CrawJUD
 from backend.resources import RegioesIterator
@@ -127,11 +128,23 @@ class PJeBot(CrawJUD):
 
         self.finalizar_execucao()
 
-    @abstractmethod
-    def queue_regiao(self, data: list[dict]) -> None:
+    def queue_regiao(self, data: list[BotData]) -> None:
         """Enfileire processos judiciais para processamento.
 
         Args:
-            data (list[PJeCapa]): Lista de dados dos processos.
+            data (list[BotData]): Lista de dados dos processos.
 
         """
+        url = f"https://pje.trt{self.regiao}.jus.br/pjekz"
+        cookies = self.auth.get_cookies()
+        headers = self.auth.get_headers(url=url)
+        client_context = Client(cookies=cookies, headers=headers)
+        _thread_pool = ThreadPoolExecutor(2)
+
+        self.driver.quit()
+
+        with client_context as client:
+            for item in data:
+                if self.bot_stopped.is_set():
+                    break
+                self.queue(item=item, client=client)

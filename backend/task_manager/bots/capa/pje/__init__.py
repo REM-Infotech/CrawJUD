@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import traceback
-from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar
 
-from httpx import Client
 from tqdm import tqdm
 
 from backend.common.exceptions import (
@@ -26,6 +24,8 @@ from ._timeline import TimeLinePJe
 if TYPE_CHECKING:
     from queue import Queue
 
+    from httpx import Client
+
     from backend.dicionarios import PJeCapa
     from backend.types_app import Dict
 
@@ -35,27 +35,6 @@ class Capa(PJeBot):
 
     queue_files: Queue
     name: ClassVar[str] = "capa_pje"
-
-    def queue_regiao(self, data: list[PJeCapa]) -> None:
-        """Enfileire processos judiciais para processamento.
-
-        Args:
-            data (list[PJeCapa]): Lista de dados dos processos.
-
-        """
-        url = f"https://pje.trt{self.regiao}.jus.br/pjekz"
-        cookies = self.auth.get_cookies()
-        headers = self.auth.get_headers(url=url)
-        client_context = Client(cookies=cookies, headers=headers)
-        _thread_pool = ThreadPoolExecutor(2)
-
-        self.driver.quit()
-
-        with client_context as client:
-            for item in data:
-                if self.bot_stopped.is_set():
-                    break
-                self.queue(item=item, client=client)
 
     def queue(self, item: PJeCapa, client: Client) -> None:
         """Enfileire e processe um processo judicial PJE.
