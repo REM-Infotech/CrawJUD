@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
 if TYPE_CHECKING:
-    from ._dicionarios import DocumentoPJe
+    from backend.dicionarios import DocumentoPJe
+
     from ._timeline import TimeLinePJe
     from ._typing import ReprLinkTimeline
 

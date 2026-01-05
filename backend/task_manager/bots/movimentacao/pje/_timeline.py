@@ -9,8 +9,7 @@ if TYPE_CHECKING:
     from httpx import Client
 
     from backend.controllers import PJeBot
-
-    from ._dicionarios import DocumentoPJe
+    from backend.dicionarios import DocumentoPJe
 
 
 type AnyType = Any

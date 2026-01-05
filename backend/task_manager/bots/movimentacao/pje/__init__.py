@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import traceback
 from concurrent.futures import Future, ThreadPoolExecutor
-from contextlib import suppress
 from time import sleep
 from typing import TYPE_CHECKING
 
@@ -11,10 +10,7 @@ from tqdm import tqdm
 
 from backend.controllers.pje import PJeBot
 from backend.interfaces.pje import CapaPJe, DictResults
-from backend.resources import RegioesIterator
-from backend.resources.driver import BotDriver
 
-from ._dicionarios import PJeMovimentacao
 from ._timeline import TimeLinePJe
 
 if TYPE_CHECKING:
@@ -22,9 +18,8 @@ if TYPE_CHECKING:
 
     from seleniumwire.webdriver import Chrome
 
+    from backend.dicionarios import DocumentoPJe, PJeMovimentacao
     from backend.types_app import Dict
-
-    from ._dicionarios import DocumentoPJe
 
 
 THREAD_PREFIX = "Fila região {regiao}"
@@ -35,30 +30,6 @@ class Movimentacao(PJeBot):
     queue_files: Queue
     name = "movimentacao_pje"
     driver: Chrome
-
-    def execution(self) -> None:
-
-        self.driver.quit()
-        generator_regioes = RegioesIterator[PJeMovimentacao](bot=self)
-        self.total_rows = len(self.posicoes_processos)
-
-        for data_regiao in generator_regioes:
-            driver_closed = False
-
-            self.bot_driver = BotDriver(self)
-            if self.bot_stopped.is_set():
-                break
-
-            with suppress(Exception):
-                if self.auth():
-                    driver_closed = True
-
-                    self.queue_regiao(data=data_regiao)
-
-                if not driver_closed:
-                    self.driver.quit()
-
-        self.finalizar_execucao()
 
     def queue_regiao(self, data: list[PJeMovimentacao]) -> None:
         """Enfileire processos judiciais para processamento.
