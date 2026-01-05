@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
 from typing import TYPE_CHECKING, ClassVar
 
 from dotenv import load_dotenv
@@ -9,6 +10,7 @@ from dotenv import load_dotenv
 from backend.controllers.head import CrawJUD
 from backend.resources import RegioesIterator
 from backend.resources.auth.pje import AutenticadorPJe
+from backend.resources.driver import BotDriver
 from backend.resources.search.pje import PjeSeach
 
 if TYPE_CHECKING:
@@ -99,3 +101,27 @@ class PJeBot(CrawJUD):
         """
         # Retorna um iterador das regiões
         return RegioesIterator(self)
+
+    def execution(self) -> None:
+
+        self.driver.quit()
+        generator_regioes = RegioesIterator(bot=self)
+        self.total_rows = len(self.posicoes_processos)
+
+        for data_regiao in generator_regioes:
+            driver_closed = False
+
+            self.bot_driver = BotDriver(self)
+            if self.bot_stopped.is_set():
+                break
+
+            with suppress(Exception):
+                if self.auth():
+                    driver_closed = True
+
+                    self.queue_regiao(data=data_regiao)
+
+                if not driver_closed:
+                    self.driver.quit()
+
+        self.finalizar_execucao()
