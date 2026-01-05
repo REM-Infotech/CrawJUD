@@ -46,7 +46,7 @@ class Capa(PJeBot):
         row = int(pos_processo) + 1
         grau = str(item.get("GRAU", 1))
         try:
-            sleep(1)
+            sleep(2.5)
             kw = {
                 "item": item,
                 "grau": grau,
@@ -88,6 +88,7 @@ class Capa(PJeBot):
     ) -> None:
 
         try:
+            sleep(2.5)
             resultados = self.search(
                 data=item,
                 row=row,
@@ -189,7 +190,7 @@ class Capa(PJeBot):
         return CapaPJe(
             ID_PJE=id_,
             LINK_CONSULTA=link_consulta,
-            processo=result["numero"],
+            NUMERO_PROCESSO=result["numero"],
             CLASSE=result["classeJudicial"]["descricao"],
             SIGLA_CLASSE=result["classeJudicial"]["sigla"],
             ORGAO_JULGADOR=result["orgaoJulgador"]["descricao"],

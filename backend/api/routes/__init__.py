@@ -34,7 +34,6 @@ def register_routes(app: Flask) -> None:
     with app.app_context():
         for ns in [adminNS, botNS, fileNS]:
             sio.on_namespace(ns)
-            sio.on_namespace(ns)
 
 
 @app.after_request

@@ -39,33 +39,33 @@ class Movimentacao(PJeBot):
             client (Client): Cliente HTTP autenticado.
 
         """
+        termos: str = item.get("TERMOS", "")
         processo = item["NUMERO_PROCESSO"]
         pos_processo = self.posicoes_processos[processo]
-        termos: str = item.get("TERMOS", "")
         row = int(pos_processo) + 1
-        self._is_grau_list = False
-        if self.bot_stopped.is_set() or not termos:
-            return
-
+        grau = str(item.get("GRAU", 1))
         try:
             sleep(1)
-            grau = str(item.get("GRAU", "1"))
-            client.headers.update({"X-Grau-Instancia": grau})
-            kw = {"item": item, "row": row, "client": client, "termos": termos}
-
+            kw = {
+                "item": item,
+                "grau": grau,
+                "row": row,
+                "client": client,
+                "processo": processo,
+                "termos": termos,
+            }
             if "," in grau:
                 grau = grau.replace(" ", "").split(",")
                 self._is_grau_list = True
                 for g in grau:
                     msg_ = f"Buscando proceso na {g}a instância"
                     m_type = "log"
-
-                    client.headers.update({"X-Grau-Instancia": g})
                     self.print_message(msg_, m_type, row)
+                    kw.update({"grau": g})
                     self.extrair_processo(**kw)
+
                 return
 
-            kw.update({"grau": grau})
             self.extrair_processo(**kw)
             sleep(1)
 
@@ -81,10 +81,11 @@ class Movimentacao(PJeBot):
     def extrair_processo(
         self,
         item: PJeMovimentacao,
+        grau: str,
         row: int,
         client: Client,
+        processo: str,
         termos: list[str],
-        grau: str,
     ) -> None:
         sleep(1.5)
         kw = {"data": item, "row": row, "client": client}

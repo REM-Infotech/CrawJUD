@@ -2,21 +2,15 @@
 
 from __future__ import annotations
 
-import json
-from contextlib import suppress
-from datetime import datetime
-from pathlib import Path
-from tempfile import gettempdir
 from threading import Semaphore
 from typing import TYPE_CHECKING, Literal, TypedDict
-from zoneinfo import ZoneInfo
 
 from flask_jwt_extended import get_current_user
 from flask_socketio import join_room
 
 from backend.api.decorators import jwt_sio_required
 from backend.api.routes._blueprints import botNS
-from backend.utilities import format_time, load_timezone, update_timezone
+from backend.utilities import format_time, update_timezone
 
 if TYPE_CHECKING:
     from backend.base import BlueprintNamespace
@@ -105,23 +99,6 @@ def on_logbot(self: BlueprintNamespace, data: Message) -> None:
     updated = update_timezone(data["time_message"])
     data["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
     # Define diretório temporário para logs
-
-    with semaphore2:
-        temp_dir: Path = Path(gettempdir()).joinpath("crawjud", "logs")
-        log_file: Path = temp_dir.joinpath(f"{data['pid']}.log")
-        # Cria diretório e arquivo de log se não existirem
-        if not temp_dir.exists():
-            temp_dir.mkdir(parents=True, exist_ok=True)
-
-        if not log_file.exists():
-            log_file.write_text(json.dumps([]), encoding="utf-8")
-
-        # Lê mensagens existentes, adiciona nova e salva novamente
-        read_file: str = log_file.read_text(encoding="utf-8")
-        list_messages: list[Message] = json.loads(read_file)
-        list_messages.append(data)
-        log_file.write_text(json.dumps(list_messages), encoding="utf-8")
-
     self.emit(
         "logbot",
         data=data,
@@ -172,35 +149,8 @@ def on_bot_stop(self: BlueprintNamespace, data: dict[str, str]) -> None:
 @jwt_sio_required
 def on_join_room(self: BlueprintNamespace, data: dict[str, str]) -> list[str]:
     """Adicione usuário à sala e retorne logs."""
-    with semaphore:
-        # Adiciona o usuário à sala especificada
-        join_room(data["room"])
-
-        # Inicializa a lista de mensagens
-        messages: list[Message] = []
-        temp_dir = Path(gettempdir()).joinpath("crawjud", "logs")
-        log_file = temp_dir.joinpath(f"{data['room']}.log")
-        _str_dir = str(log_file)
-        now = datetime.now(ZoneInfo(load_timezone()))
-
-        def map_messages(msg: Message) -> Message:
-            updt = update_timezone(msg["time_message"])
-            updated = updt.replace(
-                day=now.day,
-                month=now.month,
-                year=now.year,
-            )
-            msg["time_message"] = updated.strftime("%H:%M:%S")
-            return msg
-
-        # # Se o diretório e o arquivo de log existem, carrega as mensagens
-        if temp_dir.exists() and log_file.exists():
-            text_file = log_file.read_text(encoding="utf-8").replace("null", '""')
-
-            with suppress(json.JSONDecodeError):
-                messages.extend(json.loads(text_file))
-
-    return [map_messages(msg) for msg in messages]
+    # Adiciona o usuário à sala especificada
+    join_room(data["room"])
 
 
 @botNS.on("provide_credentials")
@@ -239,6 +189,8 @@ def on_provide_credentials(
 @jwt_sio_required
 def on_connect(self: BlueprintNamespace, *args: AnyType, **kwargs: AnyType) -> None:
     """Log bot."""
+    print(args)
+    print(kwargs)
 
 
 @botNS.on("disconnect")

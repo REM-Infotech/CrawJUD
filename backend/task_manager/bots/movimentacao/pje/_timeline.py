@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Self, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Self, cast
+
+from backend.dicionarios import DocumentoPJe, MovimentacaoPJe
 
 from ._strings import LinkPJe, NomeDocumentoPJe
 
@@ -9,7 +11,6 @@ if TYPE_CHECKING:
     from httpx import Client
 
     from backend.controllers import PJeBot
-    from backend.dicionarios import DocumentoPJe
 
 
 type AnyType = Any
@@ -20,7 +21,9 @@ CHUNK_8MB = 8192 * 1024
 
 
 class TimeLinePJe:
-    documentos: list[DocumentoPJe]
+    documentos: ClassVar[list[DocumentoPJe]] = []
+    result: ClassVar[list[DocumentoPJe | MovimentacaoPJe]] = []
+    movimentacoes: ClassVar[list[MovimentacaoPJe]] = []
 
     def __init__(
         self,
@@ -39,15 +42,16 @@ class TimeLinePJe:
     @classmethod
     def load(
         cls,
+        *,
         bot: PJeBot,
         cliente: Client,
         id_processo: int | str,
         regiao: str,
         processo: str,
-        *,
         apenas_assinados: bool = True,
         buscar_movimentos: bool = True,
         buscar_documentos: bool = True,
+        grau: int,
     ) -> Self:
         self = cls(
             id_processo=id_processo,
@@ -67,13 +71,21 @@ class TimeLinePJe:
         ])
 
         link = str(LinkPJe(regiao, id_processo, query_arguments, "timeline"))
-
-        self.result = cliente.get(link)
         with suppress(Exception):
-            self.result = cast("list[DocumentoPJe]", self.result.json())
-            self.documentos = list(
+            self.result = cast(
+                "list[DocumentoPJe | MovimentacaoPJe]",
+                cliente.get(link).json(),
+            )
+            result2 = list(
                 filter(lambda x: x.get("idUnicoDocumento"), self.result),
             )
+            self.documentos = [DocumentoPJe(**item) for item in result2]
+            self.movimentacoes = [
+                MovimentacaoPJe(NUMERO_PROCESSO=processo, INSTANCIA=grau, **item)
+                for item in list(
+                    filter(lambda x: not x.get("idUnicoDocumento"), self.result),
+                )
+            ]
 
         return self
 

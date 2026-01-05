@@ -31,7 +31,7 @@ class PJeBot(CrawJUD):
     _regiao: ClassVar[int] = 1
     _is_grau_list: ClassVar[bool] = False
     download_file: FileDownloader
-    posicoes_processos: ClassVar[Dict] = {}
+    posicoes_processos: ClassVar[dict[str, str]] = {}
 
     auth: AutenticadorPJe
 

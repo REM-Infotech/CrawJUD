@@ -34,14 +34,7 @@ app: Flask = create_app()
 
 def _api() -> None:
     from backend.api import routes as routes
-    from backend.resources import setup_logger
 
-    fmt = app.logger.handlers[0].formatter._fmt  # noqa: SLF001
-
-    logger = logging.getLogger("werkzeug")
-    logger.level = 20
-
-    app.logger = setup_logger(logger=logger, name="crawjud-api.log", format=fmt)
     io: SocketIO = app.extensions["socketio"]
     port: int = int(environ.get("FLASK_PORT", FLASK_PORT)) or FLASK_PORT
     io.run(app, host="localhost", port=port, allow_unsafe_werkzeug=True)
