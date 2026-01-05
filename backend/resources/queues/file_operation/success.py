@@ -34,18 +34,23 @@ class SaveSuccess(FileOperator):
         self.thead_save = Thread(target=self.save_success, daemon=True)
         self.thead_save.start()
 
-    def __call__(self, worksheet: str, data_save: list[DataSucesso]) -> None:
+    def __call__(
+        self,
+        worksheet: str,
+        data_save: list[DataSucesso] | None = None,
+    ) -> None:
         """Adicione dados de sucesso à fila para processamento assíncrono.
 
         Args:
             worksheet (str): Nome da planilha de destino.
-            data_save (str): Dados a serem salvos na planilha.
+            data_save (list[dict]): Dados a serem salvos na planilha.
 
         """
-        self.queue_save.put_nowait({
-            "worksheet": worksheet,
-            "data_save": DataFrame(data_save).to_dict(orient="records"),
-        })
+        if data_save:
+            self.queue_save.put_nowait({
+                "worksheet": worksheet,
+                "data_save": DataFrame(data_save).to_dict(orient="records"),
+            })
 
     def save_success(self) -> NoReturn:
         """Salve dados de sucesso em arquivo Excel de forma assíncrona."""

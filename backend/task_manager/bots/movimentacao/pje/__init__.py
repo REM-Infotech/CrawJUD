@@ -9,7 +9,7 @@ from httpx import Client
 from tqdm import tqdm
 
 from backend.controllers.pje import PJeBot
-from backend.interfaces.pje import CapaPJe, DictResults
+from backend.dicionarios import CapaPJe
 
 from ._timeline import TimeLinePJe
 
@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from seleniumwire.webdriver import Chrome
 
     from backend.dicionarios import DocumentoPJe, PJeMovimentacao
+    from backend.interfaces.pje import DictResults
     from backend.types_app import Dict
 
 

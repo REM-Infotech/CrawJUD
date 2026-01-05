@@ -89,7 +89,7 @@ class AutenticadorPJe(AutenticadorBot):
             self.driver.get(url)
 
             if "https://sso.cloud.pje.jus.br/" not in self.driver.current_url:
-                return True
+                return url not in self.driver.current_url
 
             self.wait.until(
                 ec.presence_of_element_located((

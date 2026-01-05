@@ -9,8 +9,10 @@ from .planilhas_robos import (
 from .robos import (
     AssuntoPJe,
     AudienciaProcessoPJe,
+    CapaPJe,
     DocumentoPJe,
     ExpedienteDocumentoPJe,
+    MovimentacaoPJe,
     PartePJe,
     RepresentantePJe,
 )
@@ -18,10 +20,12 @@ from .robos import (
 __all__ = [
     "AssuntoPJe",
     "AudienciaProcessoPJe",
+    "CapaPJe",
     "DocumentoPJe",
     "ElawProvisionamento",
     "ExpedienteDocumentoPJe",
     "JusdsProvisionamento",
+    "MovimentacaoPJe",
     "PJeCapa",
     "PJeMovimentacao",
     "PartePJe",

@@ -3,10 +3,10 @@ from __future__ import annotations
 from collections import UserString
 from contextlib import suppress
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Literal, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, cast
 from zoneinfo import ZoneInfo
 
-from backend.dicionarios import DocumentoPJe
+from backend.dicionarios import DocumentoPJe, MovimentacaoPJe
 
 if TYPE_CHECKING:
     from httpx import Client
@@ -66,8 +66,9 @@ class NomeDocumentoPJe(UserString):
 
 
 class TimeLinePJe:
-    documentos: list[DocumentoPJe]
-    result: list[DocumentoPJe]
+    documentos: ClassVar[list[DocumentoPJe]] = []
+    result: ClassVar[list[DocumentoPJe | MovimentacaoPJe]] = []
+    movimentacoes: ClassVar[list[MovimentacaoPJe]] = []
 
     def __init__(
         self,
@@ -86,12 +87,12 @@ class TimeLinePJe:
     @classmethod
     def load(
         cls,
+        *,
         bot: PJeBot,
         cliente: Client,
         id_processo: int | str,
         regiao: str,
         processo: str,
-        *,
         apenas_assinados: bool = True,
         buscar_movimentos: bool = True,
         buscar_documentos: bool = True,
@@ -115,11 +116,20 @@ class TimeLinePJe:
 
         link = str(LinkPJe(regiao, id_processo, query_arguments, "timeline"))
         with suppress(Exception):
-            self.result = cliente.get(link).json()
+            self.result = cast(
+                "list[DocumentoPJe | MovimentacaoPJe]",
+                cliente.get(link).json(),
+            )
             result2 = list(
                 filter(lambda x: x.get("idUnicoDocumento"), self.result),
             )
             self.documentos = [DocumentoPJe(**item) for item in result2]
+            self.movimentacoes = [
+                MovimentacaoPJe(processo=processo, **item)
+                for item in list(
+                    filter(lambda x: not x.get("idUnicoDocumento"), self.result),
+                )
+            ]
 
         return self
 

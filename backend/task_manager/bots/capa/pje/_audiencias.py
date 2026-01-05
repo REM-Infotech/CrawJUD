@@ -14,15 +14,16 @@ class AudienciasPJe:
     @classmethod
     def extrair(
         cls,
+        *,
         cliente: Client,
         regiao: str,
         id_processo: str,
+        processo: str,
     ) -> list[AudienciaProcessoPJe]:
         link_audiencias = el.LINK_AUDIENCIAS.format(
             trt_id=regiao,
             id_processo=id_processo,
         )
-        processo: str = ""
         with suppress(Exception):
             request_audiencias = cliente.get(url=link_audiencias)
             if request_audiencias:

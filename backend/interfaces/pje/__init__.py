@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TypedDict
 
-from .worksheet import CapaPJe
-
 if TYPE_CHECKING:
     from backend.types_app import Dict
 
@@ -30,8 +28,3 @@ class DictResults(TypedDict):
 
     id_processo: str
     data_request: Dict
-
-
-__all__ = [
-    "CapaPJe",
-]

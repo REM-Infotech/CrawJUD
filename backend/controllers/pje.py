@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from abc import abstractmethod
 from contextlib import suppress
 from typing import TYPE_CHECKING, ClassVar
 
@@ -109,11 +110,11 @@ class PJeBot(CrawJUD):
         self.total_rows = len(self.posicoes_processos)
 
         for data_regiao in generator_regioes:
-            driver_closed = False
-
-            self.bot_driver = BotDriver(self)
             if self.bot_stopped.is_set():
                 break
+
+            driver_closed = False
+            self.bot_driver = BotDriver(self)
 
             with suppress(Exception):
                 if self.auth():
@@ -125,3 +126,12 @@ class PJeBot(CrawJUD):
                     self.driver.quit()
 
         self.finalizar_execucao()
+
+    @abstractmethod
+    def queue_regiao(self, data: list[dict]) -> None:
+        """Enfileire processos judiciais para processamento.
+
+        Args:
+            data (list[PJeCapa]): Lista de dados dos processos.
+
+        """

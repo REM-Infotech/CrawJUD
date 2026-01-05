@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import traceback
-from concurrent.futures import Future, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar
 
@@ -15,12 +15,8 @@ from backend.common.exceptions import (
 )
 from backend.common.exceptions._fatal import FatalError
 from backend.controllers.pje import PJeBot
-from backend.dicionarios import PJeCapa
-from backend.interfaces.pje import (
-    CapaPJe,
-)
-from backend.resources import RegioesIterator
-from backend.resources.queues.file_downloader import FileDownloader
+from backend.dicionarios import CapaPJe
+from backend.resources import RegioesIterator as RegioesIterator
 
 from ._assuntos import AssuntosPJe
 from ._audiencias import AudienciasPJe
@@ -30,6 +26,7 @@ from ._timeline import TimeLinePJe
 if TYPE_CHECKING:
     from queue import Queue
 
+    from backend.dicionarios import PJeCapa
     from backend.types_app import Dict
 
 
@@ -38,23 +35,6 @@ class Capa(PJeBot):
 
     queue_files: Queue
     name: ClassVar[str] = "capa_pje"
-
-    def execution(self) -> None:
-        """Execute o processamento dos processos judiciais PJE."""
-        self.download_file = FileDownloader()
-        generator_regioes = RegioesIterator[PJeCapa](bot=self)
-
-        self.total_rows = len(self.posicoes_processos)
-
-        for data_regiao in generator_regioes:
-            if self.bot_stopped.is_set():
-                break
-
-            if not self.auth():
-                continue
-
-            self.queue_regiao(data=data_regiao)
-        self.finalizar_execucao()
 
     def queue_regiao(self, data: list[PJeCapa]) -> None:
         """Enfileire processos judiciais para processamento.
@@ -68,6 +48,8 @@ class Capa(PJeBot):
         headers = self.auth.get_headers(url=url)
         client_context = Client(cookies=cookies, headers=headers)
         _thread_pool = ThreadPoolExecutor(2)
+
+        self.driver.quit()
 
         with client_context as client:
             for item in data:
@@ -85,7 +67,6 @@ class Capa(PJeBot):
         """
 
         processo = item["NUMERO_PROCESSO"]
-        proc = processo
         pos_processo = self.posicoes_processos[processo]
 
         row = int(pos_processo) + 1
@@ -108,36 +89,52 @@ class Capa(PJeBot):
                 )
 
                 id_processo = resultados["id_processo"]
-                id_proc = id_processo
-
                 data_ = resultados["data_request"]
                 self.append_success("Capa", [self.capa_processual(result=data_)])
 
                 if str(item.get("TRAZER_ASSUNTOS", "sim")).lower() == "sim":
-                    assuntos = AssuntosPJe.extrair(client, self.regiao, id_processo)
+                    assuntos = AssuntosPJe.extrair(
+                        cliente=client,
+                        regiao=self.regiao,
+                        id_processo=id_processo,
+                        processo=processo,
+                    )
                     self.append_success("Assuntos", assuntos)
 
+                if str(item.get("TRAZER_AUDIENCIAS", "sim")).lower() == "sim":
+                    audiencias = AudienciasPJe.extrair(
+                        cliente=client,
+                        regiao=self.regiao,
+                        id_processo=id_processo,
+                        processo=processo,
+                    )
+                    self.append_success("Audiências", audiencias)
+
                 if str(item.get("TRAZER_PARTES", "sim")).lower() == "sim":
-                    partes_cls = PartesPJe.extrair(client, self.regiao, id_proc, proc)
+                    partes_cls = PartesPJe.extrair(
+                        cliente=client,
+                        regiao=self.regiao,
+                        id_processo=id_processo,
+                        processo=processo,
+                    )
                     if partes_cls:
                         self.append_success("Partes", partes_cls.formata_partes())
 
                         representantes = partes_cls.formata_representantes()
                         self.append_success("Representantes", representantes)
 
-                if str(item.get("TRAZER_AUDIENCIAS", "sim")).lower() == "sim":
-                    audiencias = AudienciasPJe.extrair(client, self.regiao, id_processo)
-                    self.append_success("Representantes", audiencias)
-
-                if str(item.get("TRAZER_MOVIMENTACOES", "não")).lower() == "sim":
-                    _tl = TimeLinePJe.load(
-                        self,
-                        client,
-                        id_proc,
-                        self.regiao,
-                        proc,
+                if str(item.get("TRAZER_MOVIMENTACOES", "sim")).lower() == "sim":
+                    tl = TimeLinePJe.load(
+                        bot=self,
+                        cliente=client,
+                        id_processo=id_processo,
+                        regiao=self.regiao,
+                        processo=processo,
                         apenas_assinados=False,
                     )
+
+                    if tl.result:
+                        self.append_success("Movimentações", tl.movimentacoes)
 
                 type_ = "success"
                 msg_ = "Execução Efetuada com sucesso!"
@@ -164,11 +161,11 @@ class Capa(PJeBot):
             CapaPJe: Dados da capa processual gerados.
 
         """
-        link_consulta = (
-            f"https://pje.trt{self.regiao}.jus.br/pjekz/processo/{result['id']}/detalhe"
-        )
+        id_ = result["id"]
+        reg = self.regiao
+        link_consulta = f"https://pje.trt{reg}.jus.br/pjekz/processo/{id_}/detalhe"
         return CapaPJe(
-            ID_PJE=result["id"],
+            ID_PJE=id_,
             LINK_CONSULTA=link_consulta,
             processo=result["numero"],
             CLASSE=result["classeJudicial"]["descricao"],

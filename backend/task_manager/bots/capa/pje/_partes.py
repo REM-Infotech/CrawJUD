@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, cast
 
 from backend.dicionarios import PartePJe, RepresentantePJe
 from backend.resources.elements import pje as el
@@ -12,11 +12,13 @@ if TYPE_CHECKING:
 
 
 type AnyType = Any
+type PartesList = list[dict[str, str]]
+type PartesPorPolos = dict[Literal["ATIVO", "PASSIVO", "OUTROS"], PartesList]
 
 
 class PartesPJe:
-    representantes_unformatted: ClassVar[list[dict[int, dict[str, str]]]] = []
-    partes_list: list[dict[str, str]]
+    representantes_unformatted: ClassVar[list[dict[int, list[dict[str, str]]]]] = []
+    partes_list: PartesList
 
     def __init__(self, partes: list[dict[str, str]], processo: str) -> None:
         self.partes_list = partes
@@ -26,6 +28,7 @@ class PartesPJe:
     @classmethod
     def extrair(
         cls,
+        *,
         cliente: Client,
         regiao: str,
         id_processo: str,
@@ -35,9 +38,6 @@ class PartesPJe:
             trt_id=regiao,
             id_processo=id_processo,
         )
-
-        processo: str = ""
-
         with suppress(Exception):
             request_partes = cliente.get(url=link_partes)
             if request_partes:
@@ -50,6 +50,15 @@ class PartesPJe:
     ) -> list[PartePJe]:
         partes = []
         representantes_unformatted = []
+
+        if isinstance(self.partes_list, dict):
+            partes_polos = cast("PartesPorPolos", self.partes_list)
+            partes_formatted = []
+            for v in list(partes_polos.values()):
+                partes_formatted.extend(v)
+
+            self.partes_list = partes_formatted
+
         for pos, parte in enumerate(self.partes_list):
             partes.append(
                 PartePJe(
@@ -74,7 +83,7 @@ class PartesPJe:
             )
             representantes = parte.get("representantes")
             if representantes:
-                representantes_unformatted.append({pos, representantes})
+                representantes_unformatted.append({pos: representantes})
 
         self.representantes_unformatted = representantes_unformatted
         return partes
@@ -82,14 +91,13 @@ class PartesPJe:
     def formata_representantes(self) -> list[RepresentantePJe]:
         representantes: list[RepresentantePJe] = []
         for item in self.representantes_unformatted:
-            pos, representante = next(iter(item.items()))
+            pos, representantes_list = next(iter(item.items()))
             parte = self.partes_list[int(pos)]
 
-            processo = ""
-            representantes.append(
+            representantes.extend(
                 RepresentantePJe(
                     ID_PJE=representante.get("id", ""),
-                    PROCESSO=processo,
+                    PROCESSO=self.processo,
                     NOME=representante.get("nome", ""),
                     DOCUMENTO=representante.get(
                         "documento",
@@ -111,7 +119,8 @@ class PartesPJe:
                         representante.get("emails", []),
                     ),
                     TELEFONE=PartesPJe.__formata_numero_representante(representante),
-                ),
+                )
+                for representante in representantes_list
             )
 
         return representantes

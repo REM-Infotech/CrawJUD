@@ -88,4 +88,32 @@ class DocumentoPJe(TypedDict):
     dataJuntadaFutura: bool
 
 
-__all__ = ["DocumentoPJe", "ExpedienteDocumentoPJe"]
+class MovimentacaoPJe(TypedDict):
+    id: int
+    processo: str
+    titulo: str
+    data: str
+    documento: bool
+    idUsuario: int
+    especializacoes: int
+    nomeResponsavel: str
+    tipoPolo: str
+    favorito: bool
+    ativo: bool
+    documentoSigiloso: bool
+    usuarioInterno: bool
+    documentoApreciavel: bool
+    expediente: bool
+    numeroOrdem: int
+    codigoInstancia: int
+    pendenciaDocInstanciaOrigem: bool
+    copia: bool
+    codigoMovimentoCNJ: int
+    permiteCooperacaoJudiciaria: bool
+    movimentoPermiteExclusao: bool
+    movimentoPermiteRetificacao: bool
+    movimentoFoiRetificado: bool
+    dataJuntadaFutura: bool
+
+
+__all__ = ["DocumentoPJe", "ExpedienteDocumentoPJe", "MovimentacaoPJe"]

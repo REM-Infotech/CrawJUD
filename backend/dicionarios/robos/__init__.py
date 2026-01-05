@@ -3,8 +3,10 @@
 from .pje import (
     AssuntoPJe,
     AudienciaProcessoPJe,
+    CapaPJe,
     DocumentoPJe,
     ExpedienteDocumentoPJe,
+    MovimentacaoPJe,
     PartePJe,
     RepresentantePJe,
 )
@@ -12,8 +14,10 @@ from .pje import (
 __all__ = [
     "AssuntoPJe",
     "AudienciaProcessoPJe",
+    "CapaPJe",
     "DocumentoPJe",
     "ExpedienteDocumentoPJe",
+    "MovimentacaoPJe",
     "PartePJe",
     "RepresentantePJe",
 ]
