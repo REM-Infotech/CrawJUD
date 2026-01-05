@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 from threading import Thread
+from time import sleep
 from typing import TYPE_CHECKING, NoReturn
 
 from celery.apps.worker import Worker
@@ -33,10 +34,16 @@ app: Flask = create_app()
 
 def _api() -> None:
     from backend.api import routes as routes
+    from backend.resources import setup_logger
 
+    fmt = app.logger.handlers[0].formatter._fmt  # noqa: SLF001
+
+    logger = logging.getLogger("werkzeug")
+    logger.level = 20
+
+    app.logger = setup_logger(logger=logger, name="crawjud-api.log", format=fmt)
     io: SocketIO = app.extensions["socketio"]
     port: int = int(environ.get("FLASK_PORT", FLASK_PORT)) or FLASK_PORT
-
     io.run(app, host="localhost", port=port, allow_unsafe_werkzeug=True)
 
 
@@ -44,17 +51,11 @@ def _celery_worker() -> None:
     from backend.task_manager import make_celery
 
     celery_app: Celery = make_celery(app)
-    celery_app.conf.update(
-        worker_hijack_root_logger=False,
-        CELERY_REDIRECT_STDOUTS=False,
-    )
 
     worker = Worker(
         app=celery_app,
         pool="threads",
         loglevel=logging.INFO,
-        redirect_stdouts=False,
-        redirect_stdouts_level=logging.CRITICAL,
     )
 
     worker.start()
@@ -65,6 +66,8 @@ def _thread_api() -> NoReturn:
 
     api_ = Thread(target=_api, daemon=True)
     api_.start()
+
+    sleep(5)
 
     while True:
         ...
