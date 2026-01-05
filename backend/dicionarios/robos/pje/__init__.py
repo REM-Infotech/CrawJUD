@@ -3,21 +3,16 @@
 from .capa import (
     AssuntoPJe,
     AudienciaProcessoPJe,
-    DocumentoPJe,
-    ExpedienteDocumentoPJe,
     PartePJe,
-    PJeCapa,
     RepresentantePJe,
 )
-from .movimentacao import PJeMovimentacao
+from .movimentacao import DocumentoPJe, ExpedienteDocumentoPJe
 
 __all__ = [
     "AssuntoPJe",
     "AudienciaProcessoPJe",
     "DocumentoPJe",
     "ExpedienteDocumentoPJe",
-    "PJeCapa",
-    "PJeMovimentacao",
     "PartePJe",
     "RepresentantePJe",
 ]
