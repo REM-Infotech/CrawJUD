@@ -1,24 +1,21 @@
 # ruff: noqa: D104
 
-from .planilhas_robos import ElawProvisionamento, JusdsProvisionamento
-from .robos import (
+from .capa import (
     AssuntoPJe,
     AudienciaProcessoPJe,
     DocumentoPJe,
     ExpedienteDocumentoPJe,
     PartePJe,
     PJeCapa,
-    PJeMovimentacao,
     RepresentantePJe,
 )
+from .movimentacao import PJeMovimentacao
 
 __all__ = [
     "AssuntoPJe",
     "AudienciaProcessoPJe",
     "DocumentoPJe",
-    "ElawProvisionamento",
     "ExpedienteDocumentoPJe",
-    "JusdsProvisionamento",
     "PJeCapa",
     "PJeMovimentacao",
     "PartePJe",
