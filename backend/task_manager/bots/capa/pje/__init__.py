@@ -3,18 +3,13 @@
 from __future__ import annotations
 
 import traceback
-from time import sleep
 from typing import TYPE_CHECKING, ClassVar
 
 from tqdm import tqdm
 
-from backend.common.exceptions import (
-    ExecutionError as ExecutionError,
-)
 from backend.common.exceptions._fatal import FatalError
 from backend.controllers.pje import PJeBot
 from backend.dicionarios import CapaPJe
-from backend.resources import RegioesIterator as RegioesIterator
 
 from ._assuntos import AssuntosPJe
 from ._audiencias import AudienciasPJe
@@ -47,88 +42,85 @@ class Capa(PJeBot):
 
         processo = item["NUMERO_PROCESSO"]
         pos_processo = self.posicoes_processos[processo]
-
         row = int(pos_processo) + 1
-        if not self.bot_stopped.is_set():
-            sleep(0.5)
 
-            try:
-                resultados = self.search(
-                    data=item,
-                    row=row,
-                    client=client,
+        try:
+            resultados = self.search(
+                data=item,
+                row=row,
+                client=client,
+            )
+            if not resultados:
+                return
+
+            self.print_message(
+                message="Processo encontrado!",
+                message_type="info",
+                row=row,
+            )
+
+            id_processo = resultados["id_processo"]
+            data_ = resultados["data_request"]
+            self.append_success("Capa", [self.capa_processual(result=data_)])
+
+            if str(item.get("TRAZER_ASSUNTOS", "sim")).lower() == "sim":
+                assuntos = AssuntosPJe.extrair(
+                    cliente=client,
+                    regiao=self.regiao,
+                    id_processo=id_processo,
+                    processo=processo,
                 )
-                if not resultados:
-                    return
+                self.append_success("Assuntos", assuntos)
 
-                self.print_message(
-                    message="Processo encontrado!",
-                    message_type="info",
-                    row=row,
+            if str(item.get("TRAZER_AUDIENCIAS", "sim")).lower() == "sim":
+                audiencias = AudienciasPJe.extrair(
+                    cliente=client,
+                    regiao=self.regiao,
+                    id_processo=id_processo,
+                    processo=processo,
                 )
+                self.append_success("Audiências", audiencias)
 
-                id_processo = resultados["id_processo"]
-                data_ = resultados["data_request"]
-                self.append_success("Capa", [self.capa_processual(result=data_)])
+            if str(item.get("TRAZER_PARTES", "sim")).lower() == "sim":
+                partes_cls = PartesPJe.extrair(
+                    cliente=client,
+                    regiao=self.regiao,
+                    id_processo=id_processo,
+                    processo=processo,
+                )
+                if partes_cls:
+                    self.append_success("Partes", partes_cls.formata_partes())
 
-                if str(item.get("TRAZER_ASSUNTOS", "sim")).lower() == "sim":
-                    assuntos = AssuntosPJe.extrair(
-                        cliente=client,
-                        regiao=self.regiao,
-                        id_processo=id_processo,
-                        processo=processo,
-                    )
-                    self.append_success("Assuntos", assuntos)
+                    representantes = partes_cls.formata_representantes()
+                    self.append_success("Representantes", representantes)
 
-                if str(item.get("TRAZER_AUDIENCIAS", "sim")).lower() == "sim":
-                    audiencias = AudienciasPJe.extrair(
-                        cliente=client,
-                        regiao=self.regiao,
-                        id_processo=id_processo,
-                        processo=processo,
-                    )
-                    self.append_success("Audiências", audiencias)
-
-                if str(item.get("TRAZER_PARTES", "sim")).lower() == "sim":
-                    partes_cls = PartesPJe.extrair(
-                        cliente=client,
-                        regiao=self.regiao,
-                        id_processo=id_processo,
-                        processo=processo,
-                    )
-                    if partes_cls:
-                        self.append_success("Partes", partes_cls.formata_partes())
-
-                        representantes = partes_cls.formata_representantes()
-                        self.append_success("Representantes", representantes)
-
-                if str(item.get("TRAZER_MOVIMENTACOES", "sim")).lower() == "sim":
-                    tl = TimeLinePJe.load(
-                        bot=self,
-                        cliente=client,
-                        id_processo=id_processo,
-                        regiao=self.regiao,
-                        processo=processo,
-                        apenas_assinados=False,
-                    )
-
-                    if tl.result:
-                        self.append_success("Movimentações", tl.movimentacoes)
-
-                type_ = "success"
-                msg_ = "Execução Efetuada com sucesso!"
-                self.print_message(msg_, type_, row)
-
-            except Exception as e:
-                exc = "\n".join(traceback.format_exception(e))
-                tqdm.write(exc)
-                self.print_message(
-                    message="Erro ao extrair informações do processo",
-                    message_type="error",
-                    row=row,
+            if str(item.get("TRAZER_MOVIMENTACOES", "sim")).lower() == "sim":
+                tl = TimeLinePJe.load(
+                    bot=self,
+                    cliente=client,
+                    id_processo=id_processo,
+                    regiao=self.regiao,
+                    processo=processo,
+                    apenas_assinados=False,
                 )
 
-                raise FatalError(e) from e
+                if tl.result:
+                    self.append_success("Movimentações", tl.movimentacoes)
+
+            type_ = "success"
+            msg_ = "Execução Efetuada com sucesso!"
+            self.print_message(msg_, type_, row)
+
+        except Exception as e:
+            exc = "\n".join(traceback.format_exception(e))
+            tqdm.write(exc)
+            self.print_message(
+                message="Erro ao extrair informações do processo",
+                message_type="error",
+                row=row,
+            )
+
+            raise FatalError(e) from e
 
     def capa_processual(self, result: Dict) -> CapaPJe:
         """Gere a capa processual do processo judicial PJE.

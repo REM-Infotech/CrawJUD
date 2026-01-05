@@ -12,7 +12,6 @@ from httpx import Client
 from backend.controllers.head import CrawJUD
 from backend.resources import RegioesIterator
 from backend.resources.auth.pje import AutenticadorPJe
-from backend.resources.driver import BotDriver
 from backend.resources.search.pje import PjeSeach
 
 if TYPE_CHECKING:
@@ -106,7 +105,6 @@ class PJeBot(CrawJUD):
 
     def execution(self) -> None:
 
-        self.driver.quit()
         generator_regioes = RegioesIterator(bot=self)
         self.total_rows = len(self.posicoes_processos)
 
@@ -114,17 +112,9 @@ class PJeBot(CrawJUD):
             if self.bot_stopped.is_set():
                 break
 
-            driver_closed = False
-            self.bot_driver = BotDriver(self)
-
             with suppress(Exception):
                 if self.auth():
-                    driver_closed = True
-
                     self.queue_regiao(data=data_regiao)
-
-                if not driver_closed:
-                    self.driver.quit()
 
         self.finalizar_execucao()
 
@@ -140,8 +130,6 @@ class PJeBot(CrawJUD):
         headers = self.auth.get_headers(url=url)
         client_context = Client(cookies=cookies, headers=headers)
         _thread_pool = ThreadPoolExecutor(2)
-
-        self.driver.quit()
 
         with client_context as client:
             for item in data:
