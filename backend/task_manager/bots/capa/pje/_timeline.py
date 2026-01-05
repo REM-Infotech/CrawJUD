@@ -3,15 +3,16 @@ from __future__ import annotations
 from collections import UserString
 from contextlib import suppress
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Literal, Self, cast
+from typing import TYPE_CHECKING, Any, Literal, Self
 from zoneinfo import ZoneInfo
+
+from backend.dicionarios import DocumentoPJe
 
 if TYPE_CHECKING:
     from httpx import Client
 
     from backend.controllers import PJeBot
 
-    from ._dicionarios import DocumentoPJe
 
 type AnyType = Any
 
@@ -66,6 +67,7 @@ class NomeDocumentoPJe(UserString):
 
 class TimeLinePJe:
     documentos: list[DocumentoPJe]
+    result: list[DocumentoPJe]
 
     def __init__(
         self,
@@ -112,13 +114,12 @@ class TimeLinePJe:
         ])
 
         link = str(LinkPJe(regiao, id_processo, query_arguments, "timeline"))
-
-        self.result = cliente.get(link)
         with suppress(Exception):
-            self.result = cast("list[DocumentoPJe]", self.result.json())
-            self.documentos = list(
+            self.result = cliente.get(link).json()
+            result2 = list(
                 filter(lambda x: x.get("idUnicoDocumento"), self.result),
             )
+            self.documentos = [DocumentoPJe(**item) for item in result2]
 
         return self
 

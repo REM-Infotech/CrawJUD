@@ -1,42 +1,23 @@
 from __future__ import annotations
 
 from contextlib import suppress
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
+from backend.dicionarios import AudienciaProcessoPJe
 from backend.resources.elements import pje as el
 
 if TYPE_CHECKING:
     from httpx import Client
 
 
-class AudienciasProcessos(TypedDict):
-    """Defina os campos das audiências do processo no padrão PJe.
-
-    Args:
-        ID_PJE (int): Identificador único do processo no PJE.
-        NUMERO_PROCESSO (str): Número do processo judicial.
-        TIPO_AUDIENCIA (str): Tipo da audiência.
-        MODO_AUDIENCIA (str): Modo de realização da audiência.
-        STATUS (str): Status da audiência.
-        DATA_INICIO (str): Data de início da audiência.
-        DATA_FIM (str): Data de término da audiência.
-        DATA_MARCACAO (str): Data de marcação da audiência.
-
-    """
-
-    ID_PJE: int
-    NUMERO_PROCESSO: str
-    TIPO_AUDIENCIA: str
-    MODO_AUDIENCIA: str
-    STATUS: str
-    DATA_INICIO: str
-    DATA_FIM: str
-    DATA_MARCACAO: str
-
-
-class InformacoesAudiencias:
+class AudienciasPJe:
     @classmethod
-    def audiencias(cls, regiao: str, id_processo: str, cliente: Client) -> None:
+    def extrair(
+        cls,
+        cliente: Client,
+        regiao: str,
+        id_processo: str,
+    ) -> list[AudienciaProcessoPJe]:
         link_audiencias = el.LINK_AUDIENCIAS.format(
             trt_id=regiao,
             id_processo=id_processo,
@@ -50,16 +31,16 @@ class InformacoesAudiencias:
                     data_audiencia=request_audiencias.json(),
                 )
 
-        return {}
+        return []
 
     @classmethod
     def _formata_audiencias(
         cls,
         processo: str,
         data_audiencia: list[dict],
-    ) -> list[AudienciasProcessos]:
+    ) -> list[AudienciaProcessoPJe]:
         return [
-            AudienciasProcessos(
+            AudienciaProcessoPJe(
                 ID_PJE=audiencia["id"],
                 processo=processo,
                 TIPO_AUDIENCIA=audiencia["tipo"]["descricao"],
