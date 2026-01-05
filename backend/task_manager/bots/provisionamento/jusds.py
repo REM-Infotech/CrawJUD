@@ -1,4 +1,4 @@
-# ruff: noqa: T201, BLE001
+# ruff: noqa: BLE001
 from __future__ import annotations
 
 from time import sleep
@@ -168,6 +168,5 @@ class Provisionamento(JusdsBot):
             ),
         )
 
-        item_provisao = next(iter(table))
-        print(item_provisao)
+        _item_provisao = next(iter(table))
         btn_editar_risco.click()

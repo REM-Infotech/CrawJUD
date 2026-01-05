@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from io import BytesIO
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, ClassVar, Self
 
 from pandas import read_excel
 
@@ -21,10 +21,11 @@ if TYPE_CHECKING:
 class BotIterator[T: BotData]:
     """Iterator para os dados inputados na planilha."""
 
+    _frame: ClassVar[list[BotData]] = []
+    _index: ClassVar[int] = 0
+
     def __init__(self, bot: CrawJUD) -> None:
         """Instancia o iterator para os dados inputados na planilha."""
-        self._index = 0
-
         path_xlsx = bot.output_dir_path.joinpath(
             formata_string(bot.xlsx),
         )

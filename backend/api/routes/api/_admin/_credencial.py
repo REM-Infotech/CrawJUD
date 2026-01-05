@@ -1,6 +1,8 @@
+# ruff: noqa: BLE001
+
 from __future__ import annotations
 
-from contextlib import suppress
+import traceback
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Self, TypedDict, Unpack, cast
 from uuid import uuid4
@@ -72,7 +74,7 @@ class CredencialBot:
             setattr(self, item, kwargs.get(item, cred_empty.get(item)))
 
         if self.login_metodo == "cert":
-            self.certificado = request.files["certificado"]
+            self.certificado = request.files.get("certificado")
 
     def cadastro(self) -> None:
 
@@ -96,6 +98,7 @@ class CredencialBot:
 
         if entry:
             rastreio = getattr(entry, "notes", None)
+
         elif not entry:
             rastreio = str(uuid4())
             entry = keepass.add_entry(
@@ -173,7 +176,7 @@ class CredencialBot:
         status_code = 500
 
         if form_:
-            with suppress(Exception):
+            try:
                 self: Self = cls(app=current_app, **form_)
                 id_credencial = form_.get("Id")
 
@@ -202,5 +205,8 @@ class CredencialBot:
                     }
 
                     status_code = 200
+
+            except Exception as e:
+                _exc = traceback.format_exception(e)
 
         return make_response(jsonify(payload, status_code))
