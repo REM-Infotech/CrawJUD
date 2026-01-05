@@ -26,9 +26,8 @@ class BotIterator[T: BotData]:
 
     def __init__(self, bot: CrawJUD) -> None:
         """Instancia o iterator para os dados inputados na planilha."""
-        path_xlsx = bot.output_dir_path.joinpath(
-            formata_string(bot.xlsx),
-        )
+        xlsx_formatado = formata_string(bot.xlsx)
+        path_xlsx = bot.output_dir_path.joinpath(xlsx_formatado)
 
         if path_xlsx.exists():
             df = read_excel(BytesIO(path_xlsx.read_bytes()), engine="openpyxl")

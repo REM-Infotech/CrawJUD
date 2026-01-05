@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 THREAD_PREFIX = "Fila região {regiao}"
-WORKERS_QTD = 4
+WORKERS_QTD = 2
 
 
 class Movimentacao(PJeBot):
@@ -43,16 +43,20 @@ class Movimentacao(PJeBot):
         self.total_rows = len(self.posicoes_processos)
 
         for data_regiao in generator_regioes:
-            self.bot_driver = BotDriver(self)
+            driver_closed = False
 
+            self.bot_driver = BotDriver(self)
             if self.bot_stopped.is_set():
                 break
 
             with suppress(Exception):
                 if self.auth():
+                    driver_closed = True
+                    self.driver.quit()
                     self.queue_regiao(data=data_regiao)
 
-            self.driver.quit()
+            if not driver_closed:
+                self.driver.quit()
 
         self.finalizar_execucao()
 
@@ -101,6 +105,7 @@ class Movimentacao(PJeBot):
             return
 
         try:
+            sleep(1)
             grau = str(item.get("GRAU", "1"))
             kw = {"item": item, "row": row, "client": client, "termos": termos}
 
@@ -121,6 +126,7 @@ class Movimentacao(PJeBot):
             kw.update({"grau": grau})
             client.headers.update({"x-grau-instancia": grau})
             self.extrair_processo(**kw)
+            sleep(1)
 
         except Exception as e:
             exc = "\n".join(traceback.format_exception(e))

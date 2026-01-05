@@ -74,6 +74,8 @@ class CredencialBot:
             setattr(self, item, kwargs.get(item, cred_empty.get(item)))
 
         if self.login_metodo == "cert":
+            self.login = self.cpf_cnpj_certificado
+            self.password = self.senha_certificado
             self.certificado = request.files.get("certificado")
 
     def cadastro(self) -> None:

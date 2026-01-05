@@ -46,12 +46,8 @@ def login() -> Response:
 
         # Verifica se os campos obrigatórios estão presentes
         if not data or not data.get("username") or not data.get("password"):
-            return make_response(
-                jsonify(
-                    message="Login e senha são obrigatórios.",
-                ),
-                401,
-            )
+            payload = jsonify(message="Login e senha são obrigatórios.")
+            return make_response(payload, 401)
 
         user = db.session.query(User).filter_by(login=data["username"]).first()
         authenticated = User.authenticate(
@@ -59,16 +55,12 @@ def login() -> Response:
             data["password"],
         )
         if not authenticated:
-            return make_response(
-                jsonify({"message": "Credenciais inválidas"}),
-                401,
-            )
+            payload = jsonify({"message": "Credenciais inválidas"})
+            return make_response(payload, 401)
 
         if not user:
-            return make_response(
-                jsonify({"message": "Usuário não encontrado."}),
-                401,
-            )
+            payload = jsonify({"message": "Usuário não encontrado."})
+            return make_response(payload, 401)
 
         access_token = create_access_token(identity=str(user.Id))
         response = make_response(
