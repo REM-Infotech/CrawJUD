@@ -5,6 +5,8 @@ retornadas pelo sistema PJe: DocumentoPJe, ExpedienteDocumentoPJe e
 MovimentacaoPJe.
 """
 
+from __future__ import annotations
+
 from typing import TypedDict
 
 

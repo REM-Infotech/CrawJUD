@@ -50,6 +50,7 @@ class Movimentacao(PJeBot):
         try:
             sleep(1)
             grau = str(item.get("GRAU", "1"))
+            client.headers.update({"X-Grau-Instancia": grau})
             kw = {"item": item, "row": row, "client": client, "termos": termos}
 
             if "," in grau:
@@ -58,20 +59,17 @@ class Movimentacao(PJeBot):
                 for g in grau:
                     msg_ = f"Buscando proceso na {g}a instância"
                     m_type = "log"
-                    kw.update({"grau": g})
-                    self.print_message(msg_, m_type, row)
 
                     client.headers.update({"X-Grau-Instancia": g})
-
+                    self.print_message(msg_, m_type, row)
                     self.extrair_processo(**kw)
                 return
 
             kw.update({"grau": grau})
-            client.headers.update({"x-grau-instancia": grau})
             self.extrair_processo(**kw)
             sleep(1)
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             exc = "\n".join(traceback.format_exception(e))
             tqdm.write(exc)
             self.print_message(
@@ -79,7 +77,6 @@ class Movimentacao(PJeBot):
                 message_type="error",
                 row=row,
             )
-            raise
 
     def extrair_processo(
         self,

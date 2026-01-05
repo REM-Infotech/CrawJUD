@@ -19,6 +19,7 @@ class AssuntosPJe:
         regiao: str,
         id_processo: str,
         processo: str,
+        grau: int,
     ) -> list[AssuntoPJe]:
         link_assuntos = el.LINK_CONSULTA_ASSUNTOS.format(
             trt_id=regiao,
@@ -30,7 +31,8 @@ class AssuntosPJe:
                 return [
                     AssuntoPJe(
                         ID_PJE=assunto["id"],
-                        PROCESSO=processo,
+                        NUMERO_PROCESSO=processo,
+                        INSTANCIA=grau,
                         ASSUNTO_COMPLETO=assunto["assunto"]["assuntoCompleto"],
                         ASSUNTO_RESUMIDO=assunto["assunto"]["assuntoResumido"],
                     )

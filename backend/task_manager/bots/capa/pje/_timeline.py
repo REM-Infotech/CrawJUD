@@ -96,6 +96,7 @@ class TimeLinePJe:
         apenas_assinados: bool = True,
         buscar_movimentos: bool = True,
         buscar_documentos: bool = True,
+        grau: int,
     ) -> Self:
         self = cls(
             id_processo=id_processo,
@@ -125,7 +126,7 @@ class TimeLinePJe:
             )
             self.documentos = [DocumentoPJe(**item) for item in result2]
             self.movimentacoes = [
-                MovimentacaoPJe(processo=processo, **item)
+                MovimentacaoPJe(NUMERO_PROCESSO=processo, INSTANCIA=grau, **item)
                 for item in list(
                     filter(lambda x: not x.get("idUnicoDocumento"), self.result),
                 )

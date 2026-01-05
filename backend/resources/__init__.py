@@ -4,7 +4,7 @@ Contém arquivos e utilitários de recursos compartilhados.
 """
 
 import re
-from logging import FileHandler, Formatter, Logger, StreamHandler
+from logging import FileHandler, Formatter, Logger, StreamHandler  # noqa: F401
 from pathlib import Path
 
 from backend.task_manager.constants import MAIOR_60_ANOS, VER_RECURSO
@@ -73,6 +73,8 @@ def setup_logger(
         format_ = logger.handlers[0].formatter._fmt  # noqa: SLF001
 
     name: str = str(kwargs.get("name", "crawjud.log"))
+    if kwargs.get("signal"):
+        name = "crawjud-celery.log"
 
     path_log = Path.cwd().joinpath("logs", name)
     if not path_log.parent.exists():
@@ -85,10 +87,6 @@ def setup_logger(
     file_handler.level = logger.level
     file_handler.formatter = Formatter(format_)
 
-    stream_handler = StreamHandler()
-    stream_handler.level = file_handler.level
-
     logger.addHandler(file_handler)
-    logger.addHandler(stream_handler)
 
     return logger

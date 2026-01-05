@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import traceback
+from time import sleep
 from typing import TYPE_CHECKING, ClassVar
 
 from tqdm import tqdm
@@ -43,6 +44,48 @@ class Capa(PJeBot):
         processo = item["NUMERO_PROCESSO"]
         pos_processo = self.posicoes_processos[processo]
         row = int(pos_processo) + 1
+        grau = str(item.get("GRAU", 1))
+        try:
+            sleep(1)
+            kw = {
+                "item": item,
+                "grau": grau,
+                "row": row,
+                "client": client,
+                "processo": processo,
+            }
+            if "," in grau:
+                grau = grau.replace(" ", "").split(",")
+                self._is_grau_list = True
+                for g in grau:
+                    msg_ = f"Buscando proceso na {g}a instância"
+                    m_type = "log"
+                    self.print_message(msg_, m_type, row)
+                    kw.update({"grau": g})
+                    self.extrair_processo(**kw)
+
+                return
+
+            self.extrair_processo(**kw)
+            sleep(1)
+
+        except Exception as e:  # noqa: BLE001
+            exc = "\n".join(traceback.format_exception(e))
+            tqdm.write(exc)
+            self.print_message(
+                message="Erro ao extrair informações do processo",
+                message_type="error",
+                row=row,
+            )
+
+    def extrair_processo(
+        self,
+        item: PJeCapa,
+        row: int,
+        client: Client,
+        processo: str,
+        grau: str,
+    ) -> None:
 
         try:
             resultados = self.search(
@@ -50,6 +93,7 @@ class Capa(PJeBot):
                 row=row,
                 client=client,
             )
+            sleep(2.5)
             if not resultados:
                 return
 
@@ -61,32 +105,37 @@ class Capa(PJeBot):
 
             id_processo = resultados["id_processo"]
             data_ = resultados["data_request"]
-            self.append_success("Capa", [self.capa_processual(result=data_)])
-
+            self.append_success("Capa", [self.capa_processual(result=data_, grau=grau)])
+            sleep(1.5)
             if str(item.get("TRAZER_ASSUNTOS", "sim")).lower() == "sim":
                 assuntos = AssuntosPJe.extrair(
                     cliente=client,
                     regiao=self.regiao,
                     id_processo=id_processo,
                     processo=processo,
+                    grau=grau,
                 )
                 self.append_success("Assuntos", assuntos)
 
+            sleep(1.5)
             if str(item.get("TRAZER_AUDIENCIAS", "sim")).lower() == "sim":
                 audiencias = AudienciasPJe.extrair(
                     cliente=client,
                     regiao=self.regiao,
                     id_processo=id_processo,
                     processo=processo,
+                    grau=grau,
                 )
                 self.append_success("Audiências", audiencias)
 
+            sleep(1.5)
             if str(item.get("TRAZER_PARTES", "sim")).lower() == "sim":
                 partes_cls = PartesPJe.extrair(
                     cliente=client,
                     regiao=self.regiao,
                     id_processo=id_processo,
                     processo=processo,
+                    grau=grau,
                 )
                 if partes_cls:
                     self.append_success("Partes", partes_cls.formata_partes())
@@ -94,6 +143,7 @@ class Capa(PJeBot):
                     representantes = partes_cls.formata_representantes()
                     self.append_success("Representantes", representantes)
 
+            sleep(1.5)
             if str(item.get("TRAZER_MOVIMENTACOES", "sim")).lower() == "sim":
                 tl = TimeLinePJe.load(
                     bot=self,
@@ -102,6 +152,7 @@ class Capa(PJeBot):
                     regiao=self.regiao,
                     processo=processo,
                     apenas_assinados=False,
+                    grau=grau,
                 )
 
                 if tl.result:
@@ -122,7 +173,7 @@ class Capa(PJeBot):
 
             raise FatalError(e) from e
 
-    def capa_processual(self, result: Dict) -> CapaPJe:
+    def capa_processual(self, result: Dict, grau: int) -> CapaPJe:
         """Gere a capa processual do processo judicial PJE.
 
         Args:
@@ -147,4 +198,5 @@ class Capa(PJeBot):
             STATUS_PROCESSO=result["labelStatusProcesso"],
             SEGREDO_JUSTICA=result["segredoDeJustica"],
             VALOR_CAUSA=result["valorDaCausa"],
+            GRAU=grau,
         )

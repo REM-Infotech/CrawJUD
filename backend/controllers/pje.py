@@ -128,6 +128,7 @@ class PJeBot(CrawJUD):
         url = f"https://pje.trt{self.regiao}.jus.br/pjekz"
         cookies = self.auth.get_cookies()
         headers = self.auth.get_headers(url=url)
+
         client_context = Client(cookies=cookies, headers=headers)
         _thread_pool = ThreadPoolExecutor(2)
 

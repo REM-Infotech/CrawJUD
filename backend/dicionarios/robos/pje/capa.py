@@ -1,3 +1,5 @@
+# ruff: noqa:  D100
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, TypedDict
@@ -50,7 +52,7 @@ class AssuntoPJe(TypedDict):
     """
 
     ID_PJE: int
-    PROCESSO: str
+    NUMERO_PROCESSO: str
     ASSUNTO_COMPLETO: str
     ASSUNTO_RESUMIDO: str
 
@@ -97,12 +99,12 @@ class PartePJe(TypedDict):
     """
 
     ID_PJE: int
+    NUMERO_PROCESSO: str
     NOME: str
     DOCUMENTO: str
     TIPO_DOCUMENTO: str
     TIPO_PARTE: str
     TIPO_PESSOA: str
-    PROCESSO: str
     POLO: str
     PARTE_PRINCIPAL: bool
 

@@ -19,6 +19,7 @@ class AudienciasPJe:
         regiao: str,
         id_processo: str,
         processo: str,
+        grau: int,
     ) -> list[AudienciaProcessoPJe]:
         link_audiencias = el.LINK_AUDIENCIAS.format(
             trt_id=regiao,
@@ -30,6 +31,7 @@ class AudienciasPJe:
                 return cls._formata_audiencias(
                     processo=processo,
                     data_audiencia=request_audiencias.json(),
+                    grau=grau,
                 )
 
         return []
@@ -39,11 +41,13 @@ class AudienciasPJe:
         cls,
         processo: str,
         data_audiencia: list[dict],
+        grau: int,
     ) -> list[AudienciaProcessoPJe]:
         return [
             AudienciaProcessoPJe(
                 ID_PJE=audiencia["id"],
-                processo=processo,
+                NUMERO_PROCESSO=processo,
+                INSTANCIA=grau,
                 TIPO_AUDIENCIA=audiencia["tipo"]["descricao"],
                 MODO_AUDIENCIA="PRESENCIAL"
                 if audiencia["tipo"]["isVirtual"]
