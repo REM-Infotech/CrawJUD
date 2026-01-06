@@ -11,12 +11,11 @@ from celery import shared_task
 from dynaconf import FlaskDynaconf
 from flask import Flask, current_app
 
-from backend.base import FlaskTask
+from backend.base import CeleryTask
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from backend.task_manager.proto import CeleryTask
     from typings import Any as Any
     from typings import P
 
@@ -63,9 +62,9 @@ class SharedClassMethodTask:
         """
         self._name = name
         self._bind = bind
-        self._base = base or FlaskTask
+        self._base = base or CeleryTask
 
-    def __call__[**P, T](self, fn: Callable[P, T]) -> CeleryTask:
+    def __call__[**P, T](self, fn: Callable[P, T]) -> CeleryTask[P, T]:
         """Decora classmethod como tarefa Celery compartilhada.
 
         Args:
@@ -155,9 +154,9 @@ class SharedTask:
         """
         self._name = name
         self._bind = bind
-        self._base = base or FlaskTask
+        self._base = base or CeleryTask
 
-    def __call__[**P, T](self, fn: Callable[P, T]) -> CeleryTask[..., T]:
+    def __call__[**P, T](self, fn: Callable[P, T]) -> CeleryTask[P, T]:
         """Decora função como tarefa Celery compartilhada.
 
         Args:

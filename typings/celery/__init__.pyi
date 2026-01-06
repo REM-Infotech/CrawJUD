@@ -3,26 +3,26 @@ from typing import overload
 
 from celery.app.base import Celery as BaseCelery
 
-from backend.base.task import FlaskTask
+from backend.base.task import CeleryTask
 
 class Celery(BaseCelery): ...
 
 @overload
 def shared_task[**P, T](
     name: str,
-) -> Callable[[Callable[P, T]], FlaskTask[P, T]]: ...
+) -> Callable[[Callable[P, T]], CeleryTask[P, T]]: ...
 @overload
 def shared_task[**P, T](
     name: str,
     *,
     bind: bool,
-) -> Callable[[Callable[P, T]], FlaskTask[P, T]]: ...
+) -> Callable[[Callable[P, T]], CeleryTask[P, T]]: ...
 @overload
 def shared_task[**P, T](
     name: str,
     *,
     bind: bool,
-    base: FlaskTask,
-) -> Callable[[Callable[P, T]], FlaskTask[P, T]]: ...
+    base: CeleryTask,
+) -> Callable[[Callable[P, T]], CeleryTask[P, T]]: ...
 @overload
-def shared_task[**P, T](fn: Callable[P, T]) -> FlaskTask[P, T]: ...
+def shared_task[**P, T](fn: Callable[P, T]) -> CeleryTask[P, T]: ...

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 
-class FlaskTask[**P, R](Task):
+class CeleryTask[**P, R](Task):
     """Integre tarefas Celery ao contexto Flask nesta classe."""
 
     run: Callable[P, R]

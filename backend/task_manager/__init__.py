@@ -8,7 +8,7 @@ from celery import Celery
 from celery.signals import after_setup_logger
 
 from backend import _hook
-from backend.base import FlaskTask
+from backend.base import CeleryTask
 from backend.config import CeleryConfig, settings
 from backend.resources import setup_logger
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 __all__ = ["_hook", "settings"]
 
 
-celery_app = Celery(__name__, task_cls=FlaskTask)
+celery_app = Celery(__name__, task_cls=CeleryTask)
 after_setup_logger.connect(setup_logger)
 
 
