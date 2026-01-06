@@ -98,6 +98,7 @@ class Movimentacao(PJeBot):
             )
 
             kw_tl = self.kw_timeline(resultados, item, client)
+            kw_tl.update({"grau": grau})
             sleep(2.5)
             timeline = TimeLinePJe.load(**kw_tl)
 
