@@ -5,7 +5,6 @@ from __future__ import annotations
 import traceback
 from contextlib import suppress
 from typing import TYPE_CHECKING
-from zoneinfo import available_timezones
 
 from flask import (
     Response,
@@ -24,7 +23,6 @@ from werkzeug.exceptions import HTTPException
 
 from backend.api.routes._blueprints import auth
 from backend.models import User
-from backend.utilities import load_timezone
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy
@@ -75,17 +73,6 @@ def login() -> Response:
             response=response,
             encoded_access_token=access_token,
         )
-
-        timezone = load_timezone()
-        if timezone in available_timezones():
-            response.set_cookie(
-                "TimeZone",
-                timezone,
-                httponly=current_app.config.get("JWT_COOKIE_HTTPONLY", True),
-                samesite=current_app.config.get("JWT_COOKIE_SAMESITE", "Lax"),
-                secure=current_app.config.get("JWT_COOKIE_SECURE", False),
-                domain=current_app.config.get("JWT_COOKIE_DOMAIN"),
-            )
 
     except HTTPException as e:
         response = make_response(

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from threading import Semaphore
 from typing import TYPE_CHECKING, Literal, TypedDict
 
 from flask_jwt_extended import get_current_user
@@ -10,17 +9,14 @@ from flask_socketio import join_room
 
 from backend.api.decorators import jwt_sio_required
 from backend.api.routes._blueprints import botNS
-from backend.utilities import format_time, update_timezone
 
 if TYPE_CHECKING:
     from backend.base import BlueprintNamespace
     from backend.interfaces import Message
     from backend.interfaces.payloads import BotInfo
     from backend.models import User
-    from typings import Sistemas
+    from typings import Any, Sistemas
 
-semaphore = Semaphore(1)
-semaphore2 = Semaphore(1)
 
 SISTEMAS: set[Sistemas] = {
     "PROJUDI",
@@ -83,8 +79,8 @@ def on_listagem_execucoes(self: BlueprintNamespace) -> list[Execucao]:
                 bot=item.bot.display_name,
                 pid=item.pid,
                 status=item.status,
-                data_inicio=format_time(item.data_inicio),
-                data_fim=format_time(item.data_fim),
+                data_inicio=item.data_inicio.strftime("%d/%m/%Y, %H:%M:%S"),
+                data_fim=item.data_fim.strftime("%d/%m/%Y, %H:%M:%S"),
             )
             for item in execucao
         ]
@@ -96,9 +92,6 @@ def on_listagem_execucoes(self: BlueprintNamespace) -> list[Execucao]:
 @jwt_sio_required
 def on_logbot(self: BlueprintNamespace, data: Message) -> None:
     """Log bot."""
-    updated = update_timezone(data["time_message"])
-    data["time_message"] = f"{updated.strftime('%H:%M:%S')} ({updated.tzname()})"
-    # Define diretório temporário para logs
     self.emit(
         "logbot",
         data=data,
@@ -196,8 +189,6 @@ def on_connect(
     **kwargs: Any,
 ) -> None:
     """Log bot."""
-    print(args)
-    print(kwargs)
 
 
 @botNS.on("disconnect")

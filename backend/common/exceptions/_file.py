@@ -19,7 +19,11 @@ class ArquivoNaoEncontradoError(BaseCrawJUDError):
         return self._caminho_arquivo
 
     def __repr__(self) -> str:
-        return f"ArquivoNaoEncontradoError<caminho={self._caminho_arquivo}, message={self.message}, exc={self.repr_exc}>"
+
+        caminho = self._caminho_arquivo
+        msg = self.message
+        repr_ = self.repr_exc
+        return f"ArquivoNaoEncontradoError<caminho={caminho}, message={msg}, exc={repr_}>"
 
     def __getstate__(self) -> dict[str, str]:
         return {

@@ -1,9 +1,8 @@
-"""Module for user-related models and authentication utilities."""
-
 from __future__ import annotations
 
 from contextlib import suppress
 from datetime import datetime
+from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
 from flask_jwt_extended import get_current_user
@@ -13,6 +12,9 @@ from sqlalchemy.orm import Mapped  # noqa: TC002
 from backend.extensions import db, jwt
 
 from ._users import User
+
+if TYPE_CHECKING:
+    from typings import Any
 
 
 @jwt.user_identity_loader

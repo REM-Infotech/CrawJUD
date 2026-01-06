@@ -1,5 +1,4 @@
-"""Module for managing WebDriver instances and related utilities."""
-
+# noqa: D100
 from __future__ import annotations
 
 import platform
@@ -24,6 +23,8 @@ from backend.common.raises import raise_execution_error
 if TYPE_CHECKING:
     from selenium.webdriver.remote.webdriver import WebDriver
     from seleniumwire.webdriver import Chrome
+
+    from typings import Any
 
 
 class RectWebElement(TypedDict):

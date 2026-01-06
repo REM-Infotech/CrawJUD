@@ -1,4 +1,3 @@
-# ruff: noqa: D104
 from .capa import PJeCapa
 from .movimentacao import PJeMovimentacao
 from .provisionamento import ElawProvisionamento, JusdsProvisionamento

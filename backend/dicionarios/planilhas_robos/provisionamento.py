@@ -1,4 +1,3 @@
-# ruff: noqa: D100, D101
 from __future__ import annotations
 
 from ._main import BotData
