@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, cast
+from typing import TYPE_CHECKING, ClassVar, Literal, Self, cast
 
 from backend.dicionarios import PartePJe, RepresentantePJe
 from backend.resources.elements import pje as el
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from httpx import Client
 
 
-type AnyType = Any
+type Any = any
 type PartesList = list[dict[str, str]]
 type PartesPorPolos = dict[Literal["ATIVO", "PASSIVO", "OUTROS"], PartesList]
 
@@ -135,7 +135,7 @@ class PartesPJe:
 
     @staticmethod
     def __formata_numero_representante(
-        representante: AnyType,
+        representante: Any,
     ) -> str:
         if "dddCelular" in representante and "numeroCelular" in representante:
             numero = representante.get("numeroCelular")
