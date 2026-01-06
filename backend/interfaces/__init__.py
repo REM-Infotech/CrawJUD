@@ -8,9 +8,7 @@ from backend.dicionarios import BotData
 
 if TYPE_CHECKING:
     from typings import (
-        MessageType,
         Sistemas,
-        StatusBot,
     )
 
 
@@ -55,22 +53,6 @@ class DataSave(TypedDict):
 
     worksheet: str
     data_save: list[BotData]
-
-
-class Message(TypedDict, total=False):
-    """Defina estrutura para mensagens do bot."""
-
-    pid: str
-    message: str
-    time_message: str
-    message_type: MessageType
-    status: StatusBot
-    start_time: str
-    row: int
-    total: int
-    erros: int
-    sucessos: int
-    restantes: int
 
 
 class ColorsDict(TypedDict):

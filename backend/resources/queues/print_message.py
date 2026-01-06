@@ -21,7 +21,7 @@ from socketio.exceptions import BadNamespaceError
 from tqdm import tqdm
 
 from backend.config import settings
-from backend.interfaces import Message
+from backend.dicionarios import Message
 from backend.resources.iterators.queues import QueueIterator
 
 if TYPE_CHECKING:
