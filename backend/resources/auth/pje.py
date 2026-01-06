@@ -28,8 +28,6 @@ from backend.resources.assinador import Assinador
 from backend.resources.auth.main import AutenticadorBot
 from backend.resources.elements import pje as el
 from backend.resources.formatadores import random_base36
-from backend.task_manager.constants import NO_CONTENT_STATUS
-from backend.task_manager.constants.pje import ENDPOINT_DESAFIO
 
 if TYPE_CHECKING:
     from cryptography.x509 import Certificate
@@ -46,6 +44,9 @@ environ = dotenv_values()
 ByteArrayInputStream = JClass("java.io.ByteArrayInputStream")
 CertificateFactory = JClass("java.security.cert.CertificateFactory")
 ArrayList = JClass("java.util.ArrayList")
+
+NO_CONTENT_STATUS = 204
+ENDPOINT_DESAFIO = "https://sso.cloud.pje.jus.br/auth/realms/pje/pjeoffice-rest"
 
 
 class AutenticadorPJe(AutenticadorBot):

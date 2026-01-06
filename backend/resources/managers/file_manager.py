@@ -12,13 +12,14 @@ from tqdm import tqdm
 
 from backend.config import settings
 from backend.resources.formatadores import formata_string
-from backend.task_manager.constants import WORKDIR
 
 if TYPE_CHECKING:
     from celery import Celery
     from minio.datatypes import Object
 
     from backend.controllers.head import CrawJUD
+
+WORKDIR = Path.cwd()
 load_dotenv()
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from threading import Event
 from typing import TYPE_CHECKING, TypedDict, Unpack
 
@@ -14,8 +15,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
 from backend.resources.driver.web_element import WebElement
-from backend.task_manager.constants import WORKDIR
-from backend.task_manager.constants.webdriver import (
+
+from .constants import (
     ARGUMENTS,
     PREFERENCES,
     SETTINGS,
@@ -23,6 +24,9 @@ from backend.task_manager.constants.webdriver import (
 
 if TYPE_CHECKING:
     from backend.controllers.head import CrawJUD
+
+
+WORKDIR = Path.cwd()
 
 
 class ChromeDriverKwargs(TypedDict):  # noqa: D101

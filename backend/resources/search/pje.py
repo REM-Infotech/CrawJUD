@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, TypedDict
 
 from backend.resources.elements import pje as el
 from backend.resources.search.main import SearchBot
-from backend.task_manager.constants import HTTP_OK_STATUS
 
 if TYPE_CHECKING:
     from httpx import Client, Response
@@ -20,6 +19,9 @@ if TYPE_CHECKING:
     from backend.controllers import PJeBot
     from backend.dicionarios import BotData
     from typings import Dict
+
+
+HTTP_OK_STATUS = 200
 
 
 class _ResponseDadosBasicos(TypedDict):

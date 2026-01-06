@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 from backend.common.exceptions import StartError
 from backend.common.exceptions._fatal import FatalError
 from backend.common.exceptions._file import ArquivoNaoEncontradoError
+from backend.config import WORKDIR
 from backend.extensions import celery
 from backend.resources.driver import BotDriver
 from backend.resources.iterators import BotIterator
@@ -32,7 +33,6 @@ from backend.resources.queues.file_operation import (
     SaveSuccess,
 )
 from backend.resources.queues.print_message import PrintMessage
-from backend.task_manager.constants import WORKDIR
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -42,6 +42,7 @@ if TYPE_CHECKING:
     from seleniumwire.webdriver import Chrome
 
     from typings import Any, Dict
+
 
 MODULE_SPLIT_SIZE = 3
 TZ = ZoneInfo("America/Sao_Paulo")

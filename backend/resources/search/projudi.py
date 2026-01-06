@@ -21,7 +21,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from backend.common.exceptions import ExecutionError
 from backend.resources.elements import projudi as el
 from backend.resources.search.main import SearchBot
-from backend.task_manager.constants import CSS_INPUT_PROCESSO
 
 if TYPE_CHECKING:
     from backend.controllers.projudi import ProjudiBot
@@ -31,6 +30,11 @@ if TYPE_CHECKING:
 
 GRAU_PRIMEIRA_INSTANCIA = 1
 GRAU_SEGUNDA_INSTANCIA = 2
+
+CSS_INPUT_PROCESSO = {
+    "1": "#numeroProcesso",
+    "2": "#numeroRecurso",
+}
 
 
 class ProjudiSearch(SearchBot):

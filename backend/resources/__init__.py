@@ -3,15 +3,19 @@
 Contém arquivos e utilitários de recursos compartilhados.
 """
 
+from __future__ import annotations
+
 import re
 from logging import FileHandler, Formatter, Logger, StreamHandler  # noqa: F401
 from pathlib import Path
-
-from backend.task_manager.constants import MAIOR_60_ANOS, VER_RECURSO
+from typing import TYPE_CHECKING
 
 from .auth.pje import AutenticadorPJe
 from .formatadores import formata_string
 from .iterators.pje import RegioesIterator
+
+if TYPE_CHECKING:
+    from typings import Any
 
 __all__ = [
     "AutenticadorPJe",
@@ -19,7 +23,9 @@ __all__ = [
     "formata_string",
 ]
 
-type Any = any
+
+MAIOR_60_ANOS = "Maior que 60 anos (conforme Lei 10.741/2003)"
+VER_RECURSO = "Clique aqui para visualizar os recursos relacionados"
 
 
 def camel_to_snake(name: str) -> str:

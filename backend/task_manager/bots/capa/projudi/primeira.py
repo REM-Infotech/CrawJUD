@@ -14,10 +14,12 @@ from backend.dicionarios import (
     RepresentantesProjudiDict,
 )
 from backend.resources.elements import projudi as el
-from backend.task_manager.constants import INTIMACAO_ELETRONICA
 
 if TYPE_CHECKING:
     from typings import Dict
+
+
+INTIMACAO_ELETRONICA = "Sistema de Citação e Intimação Eletrônica"
 
 
 class PrimeiraInstancia(ProjudiBot):

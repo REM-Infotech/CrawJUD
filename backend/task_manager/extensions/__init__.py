@@ -10,7 +10,6 @@ from flask_sqlalchemy import SQLAlchemy
 from passlib.context import CryptContext
 
 from backend.base import Model, Query
-from backend.task_manager.constants import WORKDIR as WORKDIR
 
 if TYPE_CHECKING:
     from flask import Flask
