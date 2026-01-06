@@ -48,6 +48,7 @@ def random_base36() -> str:
     while random_number:
         random_number, remainder = divmod(random_number, 36)
         result = chars[remainder] + result
+
     return "0." + result or "0.0"
 
 

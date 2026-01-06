@@ -1,3 +1,5 @@
+# ruff: noqa: BLE001
+
 """Gerencie o pagamento de custas judiciais no sistema Elaw.
 
 Este módulo contém classes e funções para automatizar o fluxo de
@@ -10,7 +12,7 @@ from __future__ import annotations
 import traceback
 
 from backend.common.raises import raise_execution_error
-from backend.interfaces.elaw.main import ElawData
+from backend.dicionarios import ElawData
 from backend.resources.elements.elaw import PgtoCustas as Element
 
 from .inicializacao import Inicializacao

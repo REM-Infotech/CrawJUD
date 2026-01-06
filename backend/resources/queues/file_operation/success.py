@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from pandas import DataFrame
 
-from backend.interfaces import DataSave, DataSucesso
+from backend.dicionarios import DataSave, DataSucesso
 from backend.resources.iterators.queues import QueueIterator
 from backend.resources.queues.file_operation.main import (
     FileOperator,

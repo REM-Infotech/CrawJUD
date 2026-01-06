@@ -1,9 +1,3 @@
-"""Defina interfaces para dados do Projudi.
-
-Este pacote contém dicionários tipados para estruturar
-informações de processos, partes e representantes do Projudi.
-"""
-
 from __future__ import annotations
 
 from typing import TypedDict

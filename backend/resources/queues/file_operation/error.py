@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from pandas import DataFrame
 
-from backend.interfaces import DataSave
+from backend.dicionarios import DataSave
 from backend.resources.iterators.queues import QueueIterator
 from backend.resources.queues.file_operation.main import (
     FileOperator,
@@ -49,7 +49,7 @@ class SaveError(FileOperator):
             self.queue_save.put_nowait({
                 "worksheet": worksheet,
                 "data_save": DataFrame(data_save).to_dict(
-                    orient="records"
+                    orient="records",
                 ),
             })
 

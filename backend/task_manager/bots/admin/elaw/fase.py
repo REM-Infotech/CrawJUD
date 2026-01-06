@@ -1,3 +1,4 @@
+# ruff: noqa: BLE001
 """Gerencie atualização de fases processuais no sistema ELAW."""
 
 from __future__ import annotations

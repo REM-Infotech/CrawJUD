@@ -16,10 +16,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.raises import raise_execution_error
 from backend.controllers.head import CrawJUD
-from backend.interfaces import DataSucesso
+from backend.dicionarios import DataSucesso
+from backend.dicionarios.robos._cidades import cidades_amazonas
 from backend.resources.auth import AutenticadorElaw
 from backend.resources.search import ElawSearch
-from backend.task_manager.constants.data._bots.cidades import cidades_amazonas
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -20,14 +20,17 @@ from .robos import (
     AudienciaProcessoPJe,
     CapaPJe,
     DocumentoPJe,
+    ElawData,
     ExpedienteDocumentoPJe,
     MovimentacaoPJe,
     PartePJe,
+    PartesProjudiDict,
     RepresentantePJe,
+    RepresentantesProjudiDict,
 )
 
 if TYPE_CHECKING:
-    from typings import MessageType, StatusBot
+    from typings import MessageType, Sistemas, StatusBot
 
 
 class Message(TypedDict, total=False):
@@ -46,14 +49,78 @@ class Message(TypedDict, total=False):
     restantes: int
 
 
+class DictUsers(TypedDict):
+    Id: int
+    login: str
+    nome_usuario: str
+    email: str
+    password: str
+    login_time: str
+    verification_code: str
+    login_id: str
+    filename: str
+    blob_doc: bytes
+    licenseus_id: int
+
+
+class DictCredencial(TypedDict):
+    Id: int
+    nome_credencial: str
+    sistema: Sistemas
+    login_metodo: str
+    login: str
+    password: str
+
+
+class DataSave(TypedDict):
+    """Estrutura para salvar dados do bot em planilhas do sistema.
+
+    Args:
+        worksheet (str): Nome da planilha onde os dados serão salvos.
+        data_save (list[BotData]): Lista de dados do bot a serem
+            armazenados.
+
+    Returns:
+        TypedDict: Estrutura contendo nome da planilha e dados do bot.
+
+    Raises:
+        KeyError: Se uma das chaves obrigatórias estiver ausente.
+
+    """
+
+    worksheet: str
+    data_save: list[BotData]
+
+
+class DataSucesso(TypedDict):
+    """Defina estrutura para dados de sucesso do bot.
+
+    Args:
+        NUMERO_PROCESSO (str): Número do processo.
+        MENSAGEM (str): Mensagem de sucesso.
+        NOME_COMPROVANTE (str): Nome do comprovante.
+        NOME_COMPROVANTE_2 (str): Nome do segundo comprovante.
+
+    """
+
+    NUMERO_PROCESSO: str
+    MENSAGEM: str
+    NOME_COMPROVANTE: str
+    NOME_COMPROVANTE_2: str
+
+
 __all__ = [
     "AssuntoPJe",
     "AudienciaProcessoPJe",
     "BotData",
     "CapaPJe",
+    "DataSave",
+    "DictCredencial",
+    "DictUsers",
     "DocumentoPJe",
     "ElawCondenacao",
     "ElawCustas",
+    "ElawData",
     "ElawProvisionamento",
     "EsajCapa",
     "ExpedienteDocumentoPJe",
@@ -65,7 +132,9 @@ __all__ = [
     "PJeCapa",
     "PJeMovimentacao",
     "PartePJe",
+    "PartesProjudiDict",
     "ProjudiCapa",
     "ProjudiMovimentacao",
     "RepresentantePJe",
+    "RepresentantesProjudiDict",
 ]

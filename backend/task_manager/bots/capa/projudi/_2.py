@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.controllers.projudi import ProjudiBot
-from backend.interfaces.projudi import (
+from backend.dicionarios import (
     PartesProjudiDict,
     RepresentantesProjudiDict,
 )

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Self
 
-from backend.interfaces.elaw.main import ElawData
+from backend.dicionarios import ElawData
 
 if TYPE_CHECKING:
     from backend.controllers.elaw import ElawBot

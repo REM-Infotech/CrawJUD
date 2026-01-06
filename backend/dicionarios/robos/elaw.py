@@ -1,19 +1,9 @@
-"""Gerencie e manipule dados do eLaw com utilitários.
-
-Este módulo fornece a classe ElawData para manipulação de dados
-relacionados ao sistema eLaw, incluindo métodos para limpeza,
-atualização e formatação de informações.
-
-"""
-
 from __future__ import annotations
 
 from collections import UserDict
 from typing import TYPE_CHECKING
 
-from backend.task_manager.constants.data._bots.cidades import (
-    cidades_amazonas,
-)
+from backend.dicionarios.robos._cidades import cidades_amazonas
 
 if TYPE_CHECKING:
     from typings import Any, Dict
@@ -78,3 +68,6 @@ class ElawData(UserDict):
         for key, value in loop_data:
             if isinstance(value, (int, float)):
                 self.data[key] = f"{value:.2f}".replace(".", ",")
+
+
+__all__ = ["ElawData"]

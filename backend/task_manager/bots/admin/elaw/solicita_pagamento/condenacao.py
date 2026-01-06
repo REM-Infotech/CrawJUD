@@ -1,3 +1,5 @@
+# ruff: noqa: BLE001
+
 """Define bot para solicitação de pagamento de condenação no Elaw."""
 
 from __future__ import annotations
@@ -5,7 +7,7 @@ from __future__ import annotations
 import traceback
 
 from backend.common.raises import raise_execution_error
-from backend.interfaces.elaw.main import ElawData
+from backend.dicionarios import ElawData
 from backend.resources.elements.elaw import (
     PgtoCondenacao as Element,
 )
