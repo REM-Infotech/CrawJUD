@@ -272,7 +272,7 @@ Redis runs on port 6380 (host) → 6379 (container) with password from `.env`.
 4. ✅ Check docstrings follow `.github/instructions/doc-python.instructions.md`
 5. ✅ No secrets in code or committed files
 6. ✅ No new blind except without justification
-7. ✅ Type annotations on new functions (avoid `Any`, use `AnyType = any` alias)
+7. ✅ Type annotations on new functions (avoid `Any`, use `type Any = any` alias)
 
 ---
 
