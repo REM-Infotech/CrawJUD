@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, ClassVar, Self
 from warnings import warn
 from zoneinfo import ZoneInfo
 
+from celery import shared_task
 from clear import clear
 from dotenv import load_dotenv
 
@@ -32,7 +33,6 @@ from backend.resources.queues.file_operation import (
 )
 from backend.resources.queues.print_message import PrintMessage
 from backend.task_manager.constants import WORKDIR
-from backend.task_manager.decorators import SharedTask
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -138,10 +138,7 @@ class CrawJUD:
 
         self.credenciais.load_credenciais(credenciais)
 
-        if (
-            credenciais.get("username")
-            and config.get("sistema").upper() != "PJE"
-        ):
+        if credenciais.get("username") and config.get("sistema").upper() != "PJE":
             auth_ = self.auth()
             if not auth_:
                 with suppress(Exception):
@@ -298,7 +295,7 @@ class BotUtil:  # noqa: D101
         return exc
 
 
-@SharedTask(name="crawjud")
+@shared_task(name="crawjud")
 def start_bot(config: Dict) -> None:
     """Inicie o bot CrawJUD com a configuração fornecida.
 

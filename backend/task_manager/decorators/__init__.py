@@ -65,7 +65,7 @@ class SharedClassMethodTask:
         self._bind = bind
         self._base = base or FlaskTask
 
-    def __call__[T](self, fn: Callable[P, T]) -> CeleryTask[P, T]:
+    def __call__[**P, T](self, fn: Callable[P, T]) -> CeleryTask:
         """Decora classmethod como tarefa Celery compartilhada.
 
         Args:
@@ -157,7 +157,7 @@ class SharedTask:
         self._bind = bind
         self._base = base or FlaskTask
 
-    def __call__[T](self, fn: Callable[P, T]) -> CeleryTask[P, T]:
+    def __call__[**P, T](self, fn: Callable[P, T]) -> CeleryTask[..., T]:
         """Decora função como tarefa Celery compartilhada.
 
         Args:

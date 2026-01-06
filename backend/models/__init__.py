@@ -41,11 +41,7 @@ def init_database(app: Flask) -> None:
         db.drop_all()
         db.create_all()
 
-        user = (
-            db.session.query(User)
-            .filter_by(login=app.config["ROOT_USERNAME"])
-            .first()
-        )
+        user = db.session.query(User).filter_by(login=app.config["ROOT_USERNAME"]).first()
 
         if not user:
             root_user = User(
@@ -60,9 +56,7 @@ def init_database(app: Flask) -> None:
             root_user.admin = True
 
             root_license = (
-                db.session.query(LicenseUser)
-                .filter(LicenseUser.Nome == "Root License")
-                .first()
+                db.session.query(LicenseUser).filter(LicenseUser.Nome == "Root License").first()
             )
             if not root_license:
                 root_license = LicenseUser(
@@ -79,11 +73,7 @@ def create_bots(app: Flask) -> None:
     with app.app_context():
         path_export = parent_path.joinpath("export.json")
 
-        lic = (
-            db.session.query(LicenseUser)
-            .filter(LicenseUser.Nome == "Root License")
-            .first()
-        )
+        lic = db.session.query(LicenseUser).filter(LicenseUser.Nome == "Root License").first()
 
         with path_export.open("r", encoding="utf-8") as fp:
             list_data: list[Dict] = json.load(fp)
@@ -91,9 +81,7 @@ def create_bots(app: Flask) -> None:
             list_bot_add = [
                 Bots(**bot)
                 for bot in list_data
-                if not db.session.query(Bots)
-                .filter(Bots.Id == bot["Id"])
-                .first()
+                if not db.session.query(Bots).filter(Bots.Id == bot["Id"]).first()
             ]
 
             lic.bots.extend(list_bot_add)
@@ -110,19 +98,13 @@ def load_credentials(app: Flask) -> None:
             path_credentials.read_text(),
         )
         with app.app_context():
-            lic = (
-                db.session.query(LicenseUser)
-                .filter(LicenseUser.Nome == "Root License")
-                .first()
-            )
+            lic = db.session.query(LicenseUser).filter(LicenseUser.Nome == "Root License").first()
 
             keepass: KeepassManager = app.extensions["keepass"]
 
             sistemas = {}
             for item in list_data:
-                sistemas[item["sistema"]] = (
-                    sistemas.get(item["sistema"], 0) + 1
-                )
+                sistemas[item["sistema"]] = sistemas.get(item["sistema"], 0) + 1
 
             list_cred_add: list[CredenciaisRobo] = []
             for sistema in sistemas:
@@ -211,11 +193,7 @@ def import_users(app: Flask) -> None:
             list_users: list[User] = []
 
             for user in users:
-                existing_user = (
-                    db.session.query(User)
-                    .filter(User.login == user["login"])
-                    .first()
-                )
+                existing_user = db.session.query(User).filter(User.login == user["login"]).first()
 
                 if not existing_user:
                     new_user = User(

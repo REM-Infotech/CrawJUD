@@ -19,11 +19,11 @@ class FlaskTask[**P, R](Task):
         """Executa a tarefa Celery dentro do contexto Flask.
 
         Args:
-            *args (AnyType): Argumentos posicionais da tarefa.
-            **kwargs (AnyType): Argumentos nomeados da tarefa.
+            *args (Any): Argumentos posicionais da tarefa.
+            **kwargs (Any): Argumentos nomeados da tarefa.
 
         Returns:
-            AnyType: Resultado da execução da tarefa.
+            Any: Resultado da execução da tarefa.
 
         """
         return self.run(*args, **kwargs)

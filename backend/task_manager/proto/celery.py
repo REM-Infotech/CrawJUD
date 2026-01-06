@@ -15,6 +15,8 @@ type Any = any
 class CeleryTask[**P, R](Protocol[P, R]):
     """Defina o protocolo para tasks Celery genéricas."""
 
+    def __call__[**P, T](self, *args: P.args, **kwargs: P.kwargs) -> R: ...
+
     @classmethod
     def bind(cls, app: Celery) -> None:
         """Vincule a task ao app Celery."""
