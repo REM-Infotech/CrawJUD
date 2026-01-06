@@ -1,7 +1,11 @@
 from collections.abc import Callable
 from typing import overload
 
+from celery.app.base import Celery as BaseCelery
+
 from backend.base.task import FlaskTask
+
+class Celery(BaseCelery): ...
 
 @overload
 def shared_task[**P, T](
