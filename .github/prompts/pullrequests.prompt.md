@@ -1,5 +1,5 @@
 ---
-name: "gerar-desc-pr"
+name: "gerar-descricao-pr"
 description: "Geração de titulo e descrição em um arquivo .md para pull-requests."
 
 tools:
@@ -11,12 +11,20 @@ tools:
     "search/listDirectory",
     "search/usages",
     "web/githubRepo",
+    "github.vscode-pull-request-github/copilotCodingAgent",
+    "github.vscode-pull-request-github/issue_fetch",
+    "github.vscode-pull-request-github/suggest-fix",
+    "github.vscode-pull-request-github/searchSyntax",
+    "github.vscode-pull-request-github/doSearch",
+    "github.vscode-pull-request-github/renderIssues",
     "github.vscode-pull-request-github/activePullRequest",
+    "github.vscode-pull-request-github/openPullRequest",
   ]
 ---
 
 Instruções para geração de titulo e descrição de Pull requests.
-Essas instruções são para edição de titulo e corpo de uma pull request ativa no momento
+Essas instruções são para edição de titulo e corpo de uma pull request ativa
+Caso não tenha pull request ativa, verifique se o usuario passou alguma e use esta.
 
 ## 1. Context gathering and research:
 
@@ -30,7 +38,9 @@ Siga este template (**não inclua as orientações entre `{}`**):
 ```markdown
 ## {
 
-## [GH-{numero_pullrequest}] {Tipo de alteração (bugfixes, refact, feature, etc)} - Breve resumo (2–10 palavras)
+---
+
+## [GH-{numero_pullrequest}] {Tipo de alteração (bugfixes, refact, feature, etc) capitalizado} - Breve resumo (2–10 palavras)
 
 ---
 
