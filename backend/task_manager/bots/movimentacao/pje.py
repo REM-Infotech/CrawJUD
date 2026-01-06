@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from backend.dicionarios import DocumentoPJe, PJeMovimentacao
     from backend.interfaces.pje import DictResults
-    from backend.types_app import Dict
+    from typings import Dict
 
 
 THREAD_PREFIX = "Fila região {regiao}"
@@ -104,7 +104,9 @@ class Movimentacao(PJeBot):
             termos: list[str] = self.formata_termos(termos)
             arquivos = self.filtrar_arquivos(timeline, termos)
             movimentacoes = self.filtrar_movimentacoes(timeline, termos)
-            capa = self.capa_processual(result=resultados["data_request"])
+            capa = self.capa_processual(
+                result=resultados["data_request"]
+            )
 
             for file in arquivos:
                 if self.bot_stopped.is_set():
@@ -149,11 +151,20 @@ class Movimentacao(PJeBot):
 
     def formata_termos(self, termos: str) -> list[str]:
 
-        return termos.replace(", ", ",").split(",") if ", " in termos else [termos]
+        return (
+            termos.replace(", ", ",").split(",")
+            if ", " in termos
+            else [termos]
+        )
 
-    def filtrar_arquivos(self, tl: TimeLinePJe, termos: list[str]) -> list[DocumentoPJe]:
+    def filtrar_arquivos(
+        self, tl: TimeLinePJe, termos: list[str]
+    ) -> list[DocumentoPJe]:
         def termo_in_tipo(file: DocumentoPJe) -> bool:
-            return any(termo.lower() in file["tipo"].lower() for termo in termos)
+            return any(
+                termo.lower() in file["tipo"].lower()
+                for termo in termos
+            )
 
         return list(filter(termo_in_tipo, tl.documentos))
 
@@ -164,7 +175,10 @@ class Movimentacao(PJeBot):
     ) -> list[MovimentacaoPJe]:
 
         def termo_in_tipo(mov: MovimentacaoPJe) -> bool:
-            return any(termo.lower() in mov["titulo"].lower() for termo in termos)
+            return any(
+                termo.lower() in mov["titulo"].lower()
+                for termo in termos
+            )
 
         return list(filter(termo_in_tipo, tl.movimentacoes))
 
@@ -178,9 +192,7 @@ class Movimentacao(PJeBot):
             CapaPJe: Dados da capa processual gerados.
 
         """
-        link_consulta = (
-            f"https://pje.trt{self.regiao}.jus.br/pjekz/processo/{result['id']}/detalhe"
-        )
+        link_consulta = f"https://pje.trt{self.regiao}.jus.br/pjekz/processo/{result['id']}/detalhe"
         return CapaPJe(
             ID_PJE=result["id"],
             LINK_CONSULTA=link_consulta,

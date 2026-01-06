@@ -22,8 +22,9 @@ if TYPE_CHECKING:
     from celery import Celery
     from flask import Flask
 
+    from typings import Any
 
-type AnyType = any
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +44,7 @@ class MailTasks(BotTasks):
         user_id: int,
         tipo_notificacao: Literal["start", "stop"],
         xlsx: str | None = None,
-        **kwargs: str | AnyType,
+        **kwargs: str | Any,
     ) -> Literal["E-mail enviado com sucesso!"]:
         """Envie notificação de início de tarefa por e-mail.
 
@@ -89,7 +90,9 @@ class MailTasks(BotTasks):
                 )
 
                 if not user.admin:
-                    email_admin = db.session.query(User).filter(User.admin).all()
+                    email_admin = (
+                        db.session.query(User).filter(User.admin).all()
+                    )
                     msg.cc = [email.email for email in email_admin[:3]]
 
                 template = cls.notificacoes.get(tipo_notificacao)

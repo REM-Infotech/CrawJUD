@@ -1,6 +1,7 @@
 preview = true
 extend-include = ["*.ipynb"]
-line-length = 89
+line-length = 98
+# line-length = 72
 indent-width = 4
 
 [lint.extend-per-file-ignores]
@@ -9,6 +10,8 @@ indent-width = 4
 
 "**/_hook.py" = ["INP001", "PLR6301"]
 "**/bots/**" = ["D"]
+"**/typings/**" = ["D"]
+"**/backend/dicionarios/**" = ["D"]
 
 [lint]
 select = ["ALL"]

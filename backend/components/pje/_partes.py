@@ -13,14 +13,24 @@ if TYPE_CHECKING:
 
 type Any = any
 type PartesList = list[dict[str, str]]
-type PartesPorPolos = dict[Literal["ATIVO", "PASSIVO", "OUTROS"], PartesList]
+type PartesPorPolos = dict[
+    Literal["ATIVO", "PASSIVO", "OUTROS"],
+    PartesList,
+]
 
 
 class PartesPJe:
-    representantes_unformatted: ClassVar[list[dict[int, list[dict[str, str]]]]] = []
+    representantes_unformatted: ClassVar[
+        list[dict[int, list[dict[str, str]]]]
+    ] = []
     partes_list: PartesList
 
-    def __init__(self, partes: list[dict[str, str]], processo: str, grau: int) -> None:
+    def __init__(
+        self,
+        partes: list[dict[str, str]],
+        processo: str,
+        grau: int,
+    ) -> None:
         self.partes_list = partes
         self.processo: str = processo
         self.representantes_unformatted = []
@@ -126,7 +136,9 @@ class PartesPJe:
                     EMAILS=",".join(
                         representante.get("emails", []),
                     ),
-                    TELEFONE=PartesPJe.__formata_numero_representante(representante),
+                    TELEFONE=PartesPJe.__formata_numero_representante(
+                        representante,
+                    ),
                 )
                 for representante in representantes_list
             )
@@ -137,7 +149,10 @@ class PartesPJe:
     def __formata_numero_representante(
         representante: Any,
     ) -> str:
-        if "dddCelular" in representante and "numeroCelular" in representante:
+        if (
+            "dddCelular" in representante
+            and "numeroCelular" in representante
+        ):
             numero = representante.get("numeroCelular")
             ddd = representante.get("dddCelular")
             return f"({ddd}) {numero}"

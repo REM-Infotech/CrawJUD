@@ -11,21 +11,27 @@ from __future__ import annotations
 from collections import UserDict
 from typing import TYPE_CHECKING
 
-from backend.task_manager.constants.data._bots.cidades import cidades_amazonas
+from backend.task_manager.constants.data._bots.cidades import (
+    cidades_amazonas,
+)
 
 if TYPE_CHECKING:
-    from backend.types_app import AnyType, Dict
+    from typings import Dict
 
 
 class ElawData(UserDict):
     """Gerencie e manipule dados do eLaw com métodos utilitários."""
 
-    def __init__(self, values: Dict | None = None, **kwargs: AnyType) -> None:
+    def __init__(
+        self,
+        values: Dict | None = None,
+        **kwargs: Any,
+    ) -> None:
         """Inicialize a instância ElawData com dados fornecidos.
 
         Args:
             values (Dict | None): Dados iniciais do eLaw.
-            **kwargs (AnyType): Argumentos adicionais.
+            **kwargs (Any): Argumentos adicionais.
 
         """
         super().__init__(values, **kwargs)
@@ -61,7 +67,9 @@ class ElawData(UserDict):
 
     def _set_data_inicio(self) -> Dict[str, str]:
         """Defina 'DATA_INICIO' se ausente e 'DATA_LIMITE' presente."""
-        if "DATA_LIMITE" in self.data and not self.data.get("DATA_INICIO"):
+        if "DATA_LIMITE" in self.data and not self.data.get(
+            "DATA_INICIO",
+        ):
             self.data["DATA_INICIO"] = self.data["DATA_LIMITE"]
 
     def _format_numeric_values(self) -> None:

@@ -41,7 +41,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
-    from backend.types_app import AnyType, Dict
+    from typings import Any, Dict
 
 MODULE_SPLIT_SIZE = 3
 TZ = ZoneInfo("America/Sao_Paulo")
@@ -87,7 +87,11 @@ class CrawJUD:
         celery.send_task("notifica_usuario", kwargs=kw)
 
     @classmethod
-    def __subclasshook__(cls, *args: AnyType, **kwargs: AnyType) -> None:
+    def __subclasshook__(
+        cls,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
         """Registre subclasses do CrawJUD automaticamente."""
         if not hasattr(cls, "name"):
             warn(
@@ -134,13 +138,18 @@ class CrawJUD:
 
         self.credenciais.load_credenciais(credenciais)
 
-        if credenciais.get("username") and config.get("sistema").upper() != "PJE":
+        if (
+            credenciais.get("username")
+            and config.get("sistema").upper() != "PJE"
+        ):
             auth_ = self.auth()
             if not auth_:
                 with suppress(Exception):
                     self.driver.quit()
 
-                raise StartError(message="Falha na autenticação do bot CrawJUD.")
+                raise StartError(
+                    message="Falha na autenticação do bot CrawJUD.",
+                )
 
         if config.get("xlsx"):
             self.file_manager.download_files()

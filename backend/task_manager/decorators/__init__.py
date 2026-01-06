@@ -17,7 +17,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from backend.task_manager.proto import CeleryTask
-    from backend.types_app import AnyType, P
+    from typings import Any as Any
+    from typings import P
 
 
 def import_class(path: str) -> object:
@@ -77,20 +78,24 @@ class SharedClassMethodTask:
         self._path_cls = f"{fn.__module__}.{fn.__qualname__.split('.')[0]}"
         self.has_app = "app" in fn.__annotations__
         self._fn = fn
-        decorar = shared_task(name=self._name, bind=self._bind, base=self._base)
+        decorar = shared_task(
+            name=self._name,
+            bind=self._bind,
+            base=self._base,
+        )
         return decorar(self._run)
 
     def _run[T](
         self,
-        *args: AnyType,
-        **kwargs: AnyType,
+        *args: Any,
+        **kwargs: Any,
     ) -> T:
         """Executa o classmethod decorado, suportando async.
 
         Args:
             cls: Classe do classmethod.
-            *args (AnyType): Argumentos posicionais.
-            **kwargs (AnyType): Argumentos nomeados.
+            *args (Any): Argumentos posicionais.
+            **kwargs (Any): Argumentos nomeados.
 
         Returns:
             T: Resultado do classmethod.
@@ -163,10 +168,14 @@ class SharedTask:
 
         """
         self._fn = fn
-        decorar = shared_task(name=self._name, bind=self._bind, base=self._base)
+        decorar = shared_task(
+            name=self._name,
+            bind=self._bind,
+            base=self._base,
+        )
         return decorar(self._run)
 
-    def _run[T](self, *args: AnyType, **kwargs: AnyType) -> T:
+    def _run[T](self, *args: Any, **kwargs: Any) -> T:
         is_async = iscoroutine(self._fn)
         if is_async:
             return asyncio.run(self._fn(*args, **kwargs))

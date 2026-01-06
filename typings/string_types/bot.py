@@ -6,17 +6,16 @@ import re
 from collections import UserString
 from contextlib import suppress
 from datetime import datetime
-from typing import TYPE_CHECKING, Literal, Self
+from typing import TYPE_CHECKING, Self
 from zoneinfo import ZoneInfo
 
 from backend.common.raises import value_error
-from backend.task_manager.constants import PADRAO_CNJ
 
 if TYPE_CHECKING:
-    from backend.types_app import AnyType
+    from typings import Any, ListPattern, MessageType
 
 
-type MessageType = Literal["info", "log", "error", "warning", "success"]
+PADRAO_CNJ: ListPattern = [r"^\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}$"]
 
 
 class ProcessoCNJ(UserString):
@@ -34,7 +33,9 @@ class ProcessoCNJ(UserString):
         )
 
     def __validate_str(self) -> bool:
-        matches = [re.match(pattern, self.data) for pattern in PADRAO_CNJ]
+        matches = [
+            re.match(pattern, self.data) for pattern in PADRAO_CNJ
+        ]
 
         return any(matches) or value_error()
 
@@ -66,7 +67,7 @@ class ProcessoCNJ(UserString):
         """
         return self.data
 
-    def __instancecheck__(self, instance: AnyType) -> bool:
+    def __instancecheck__(self, instance: Any) -> bool:
         """Verifique se a instância corresponde a padrões de string CNJ.
 
         Args:
@@ -78,7 +79,9 @@ class ProcessoCNJ(UserString):
 
         """
         with suppress(ValueError):
-            matches = [re.match(pattern, instance) for pattern in PADRAO_CNJ]
+            matches = [
+                re.match(pattern, instance) for pattern in PADRAO_CNJ
+            ]
             return any(matches) or value_error()
 
         return False

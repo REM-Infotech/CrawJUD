@@ -21,8 +21,7 @@ if TYPE_CHECKING:
     from backend.resources.queues.file_downloader import (
         FileDownloader,
     )
-    from backend.types_app import Dict
-    from backend.types_app.bot import ProcessoCNJ
+    from typings import Dict, ProcessoCNJ
 
 load_dotenv()
 

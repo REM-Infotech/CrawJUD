@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from backend.controllers.head import CrawJUD
     from backend.interfaces import BotData
     from backend.resources.queues.print_message import PrintMessage
-    from backend.types_app import Dict
+    from typings import Dict
 
 
 class SearchBot:

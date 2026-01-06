@@ -9,7 +9,6 @@ if TYPE_CHECKING:
     from backend.dicionarios import DocumentoPJe
 
     from ._timeline import TimeLinePJe
-    from ._typing import ReprLinkTimeline
 
 TZ_SAO_PAULO = ZoneInfo("America/Sao_Paulo")
 
@@ -19,13 +18,13 @@ class LinkPJe(UserString):
         self,
         regiao: str,
         id_proc: str,
-        query: dict,
+        query: str,
         endpoint: str,
     ) -> None:
         seq = f"https://pje.trt{regiao}.jus.br/pje-comum-api/api/processos/id/{id_proc}/{endpoint}?{query}"
         super().__init__(seq)
 
-    def __repr__(self) -> ReprLinkTimeline:
+    def __repr__(self) -> str:
         return f"<LinkPJe({self.data})>"
 
 

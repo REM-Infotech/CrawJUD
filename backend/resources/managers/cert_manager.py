@@ -6,10 +6,6 @@ Inclui funções para instalar e remover certificados PFX via PowerShell.
 from __future__ import annotations
 
 import subprocess
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from backend.types_app import AnyType
 
 
 class CertManagerError(Exception):
@@ -18,8 +14,8 @@ class CertManagerError(Exception):
     def __init__(  # noqa: D107
         self,
         mensagem: str,
-        *args: AnyType,
-        **kwargs: AnyType,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         self.__str__ = lambda: mensagem
         super().__init__(*args, **kwargs)

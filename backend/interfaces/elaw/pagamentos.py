@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, TypedDict
 
-from backend.types_app import P
+from typings import P
 
 if TYPE_CHECKING:
-    from backend.types_app.bot import ProcessoCNJ
+    from typings.bot import ProcessoCNJ
 
 
 class ISolicitacaoPagamentos[T](Protocol[P, T]):

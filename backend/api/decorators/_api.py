@@ -17,7 +17,7 @@ from flask import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from backend.types_app import AnyType, Methods, P
+    from typings import Methods, P
 
 MAX_AGE = 21600
 
@@ -129,9 +129,7 @@ class CrossDomain:
             str | None: Métodos HTTP normalizados em string ou None.
 
         """
-        return (
-            ", ".join(sorted(x.upper() for x in methods)) if methods else None
-        )
+        return ", ".join(sorted(x.upper() for x in methods)) if methods else None
 
     @classmethod
     def _normalize_headers(
@@ -179,11 +177,7 @@ class CrossDomain:
             int: Tempo máximo de cache em segundos.
 
         """
-        return (
-            int(max_age.total_seconds())
-            if isinstance(max_age, timedelta)
-            else max_age
-        )
+        return int(max_age.total_seconds()) if isinstance(max_age, timedelta) else max_age
 
     @classmethod
     def _get_methods(cls, normalized_methods: str | None) -> str:
@@ -211,8 +205,8 @@ class CrossDomain:
     def _handle_request(
         self,
         function: Callable,
-        *args: AnyType,
-        **kwargs: AnyType,
+        *args: Any,
+        **kwargs: Any,
     ) -> Response:
         """Processa requisição com verificação de XSRF.
 

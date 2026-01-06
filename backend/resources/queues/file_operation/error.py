@@ -18,7 +18,7 @@ from backend.resources.queues.file_operation.main import (
 
 if TYPE_CHECKING:
     from backend.controllers.head import CrawJUD
-    from backend.types_app import Dict
+    from typings import Dict
 
 DATASAVE = []
 
@@ -48,7 +48,9 @@ class SaveError(FileOperator):
         if data_save:
             self.queue_save.put_nowait({
                 "worksheet": worksheet,
-                "data_save": DataFrame(data_save).to_dict(orient="records"),
+                "data_save": DataFrame(data_save).to_dict(
+                    orient="records"
+                ),
             })
 
     def save_error(self) -> NoReturn:

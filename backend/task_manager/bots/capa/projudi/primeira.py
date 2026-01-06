@@ -17,7 +17,7 @@ from backend.resources.elements import projudi as el
 from backend.task_manager.constants import INTIMACAO_ELETRONICA
 
 if TYPE_CHECKING:
-    from backend.types_app import Dict
+    from typings import Dict
 
 
 class PrimeiraInstancia(ProjudiBot):

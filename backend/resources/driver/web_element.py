@@ -14,7 +14,9 @@ from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.utils import keys_to_typing
 from selenium.webdriver.remote.command import Command
-from selenium.webdriver.remote.webelement import WebElement as SEWebElement
+from selenium.webdriver.remote.webelement import (
+    WebElement as SEWebElement,
+)
 from selenium.webdriver.support.ui import Select
 
 from backend.common.raises import raise_execution_error
@@ -22,8 +24,6 @@ from backend.common.raises import raise_execution_error
 if TYPE_CHECKING:
     from selenium.webdriver.remote.webdriver import WebDriver
     from seleniumwire.webdriver import Chrome
-
-    from backend.types_app import AnyType
 
 
 class RectWebElement(TypedDict):
@@ -42,12 +42,12 @@ class WebElement(SEWebElement):
     _action: ActionChains = None
     parent: WebDriver | Chrome
 
-    def __call__(self, *args: AnyType, **kwargs: AnyType) -> None:
+    def __call__(self, *args: Any, **kwargs: Any) -> None:
         """Execute um clique no elemento ao chamar a instância.
 
         Args:
-            *args (AnyType): Argumentos posicionais.
-            **kwargs (AnyType): Argumentos nomeados.
+            *args (Any): Argumentos posicionais.
+            **kwargs (Any): Argumentos nomeados.
 
         """
         return super().click()
@@ -124,13 +124,13 @@ class WebElement(SEWebElement):
     def find_element(
         self,
         by: str = By.ID,
-        value: AnyType | None = None,
+        value: Any | None = None,
     ) -> WebElement:
         """Localize e retorne um elemento filho deste elemento.
 
         Args:
             by (str): Estratégia de localização (ex: By.ID).
-            value (AnyType | None): Valor a ser buscado.
+            value (Any | None): Valor a ser buscado.
 
         Returns:
             WebElement: Elemento encontrado.
@@ -141,13 +141,13 @@ class WebElement(SEWebElement):
     def find_elements(
         self,
         by: str = By.ID,
-        value: AnyType | None = None,
+        value: Any | None = None,
     ) -> list[WebElement]:
         """Localize e retorne uma lista de elementos filhos deste elemento.
 
         Args:
             by (str): Estratégia de localização (ex: By.ID).
-            value (AnyType | None): Valor a ser buscado.
+            value (Any | None): Valor a ser buscado.
 
         Returns:
             list[WebElement]: Lista de elementos encontrados.
@@ -155,11 +155,11 @@ class WebElement(SEWebElement):
         """
         return super().find_elements(by=by, value=value)
 
-    def send_keys(self, word: AnyType) -> None:
+    def send_keys(self, word: Any) -> None:
         """Envie teclas ou texto para o elemento web.
 
         Args:
-            word (AnyType): Tecla ou texto a ser enviado.
+            word (Any): Tecla ou texto a ser enviado.
 
         """
         send = False
@@ -243,11 +243,17 @@ class WebElement(SEWebElement):
             selector.val([arguments[1]]);
             selector.trigger("change");
             """
-            self.parent.execute_script(command, select_element, value_opt)
+            self.parent.execute_script(
+                command,
+                select_element,
+                value_opt,
+            )
             sleep(5)
             return
 
-        raise_execution_error(message=f'Opção "{to_search}" não encontrada!')
+        raise_execution_error(
+            message=f'Opção "{to_search}" não encontrada!',
+        )
 
     def scroll_from_origin(
         self,

@@ -12,11 +12,11 @@ from .upload import uploader
 
 if TYPE_CHECKING:
     from backend.base import BlueprintNamespace
-    from backend.types_app import AnyType
+    from typings import Any as Any
 
 
 @fileNS.on("add_file")
 @jwt_required()
-def add_file(self: BlueprintNamespace, data: AnyType = None) -> None:
+def add_file(self: BlueprintNamespace, data: Any = None) -> None:
     """Log bot."""
     uploader(data)

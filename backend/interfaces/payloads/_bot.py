@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypedDict
 
 if TYPE_CHECKING:
-    from backend.types_app.payloads import ConfigForm, SystemBots
+    from typings.payloads import ConfigForm, SystemBots
 
 
 class BotInfo(TypedDict):

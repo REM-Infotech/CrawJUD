@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from flask_keepass import KeepassManager
     from pykeepass import Attachment
 
-    from backend.types_app import Dict
+    from typings import Dict
 
 
 class FormBot:
@@ -42,7 +42,9 @@ class FormBot:
         """
         # Obtém os dados do request e identifica o formulário a ser carregado
         request_data: Dict = json.loads(request.get_data())
-        form_name: str = camel_to_snake(request_data["configuracao_form"])
+        form_name: str = camel_to_snake(
+            request_data["configuracao_form"],
+        )
         kwargs: dict = {
             k.lower(): v
             for k, v in list(request_data.items())
@@ -78,7 +80,9 @@ class FormBot:
             for k, v in keyword_args:
                 if k in ["xlsx", "anexos", "kdbx", "certificado"]:
                     if isinstance(v, list):
-                        kwargs.update({k: [formata_string(i) for i in v]})
+                        kwargs.update({
+                            k: [formata_string(i) for i in v],
+                        })
                         continue
 
                     kwargs.update({k: formata_string(v)})
@@ -123,8 +127,7 @@ class FormBot:
         # Filtra atributos públicos e não métodos
         keys = list(
             filter(
-                lambda key: not key.startswith("_")
-                and not callable(getattr(self, key, None)),
+                lambda key: not key.startswith("_") and not callable(getattr(self, key, None)),
                 dir(self),
             ),
         )
@@ -178,7 +181,9 @@ class FormBot:
                     attachment: Attachment = entry.attachments[0]
                     data_cred.update({
                         "nome_certificado": attachment.filename,
-                        "certificado": b64encode(attachment.data).decode(),
+                        "certificado": b64encode(
+                            attachment.data,
+                        ).decode(),
                     })
 
                 data.update({

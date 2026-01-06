@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from backend.interfaces import Message
     from backend.interfaces.payloads import BotInfo
     from backend.models import User
-    from backend.types_app import AnyType, Sistemas
+    from typings import Sistemas
 
 semaphore = Semaphore(1)
 semaphore2 = Semaphore(1)
@@ -111,8 +111,8 @@ def on_logbot(self: BlueprintNamespace, data: Message) -> None:
 @jwt_sio_required
 def on_listagem(
     self: BlueprintNamespace,
-    *args: AnyType,
-    **kwargs: AnyType,
+    *args: Any,
+    **kwargs: Any,
 ) -> list[BotInfo]:
     """Lista todos os bots disponíveis para o usuário autenticado.
 
@@ -147,7 +147,10 @@ def on_bot_stop(self: BlueprintNamespace, data: dict[str, str]) -> None:
 
 @botNS.on("join_room")
 @jwt_sio_required
-def on_join_room(self: BlueprintNamespace, data: dict[str, str]) -> list[str]:
+def on_join_room(
+    self: BlueprintNamespace,
+    data: dict[str, str],
+) -> list[str]:
     """Adicione usuário à sala e retorne logs."""
     # Adiciona o usuário à sala especificada
     join_room(data["room"])
@@ -187,7 +190,11 @@ def on_provide_credentials(
 
 @botNS.on("connect")
 @jwt_sio_required
-def on_connect(self: BlueprintNamespace, *args: AnyType, **kwargs: AnyType) -> None:
+def on_connect(
+    self: BlueprintNamespace,
+    *args: Any,
+    **kwargs: Any,
+) -> None:
     """Log bot."""
     print(args)
     print(kwargs)
@@ -195,5 +202,9 @@ def on_connect(self: BlueprintNamespace, *args: AnyType, **kwargs: AnyType) -> N
 
 @botNS.on("disconnect")
 @jwt_sio_required
-def on_disconnect(self: BlueprintNamespace, *args: AnyType, **kwargs: AnyType) -> None:
+def on_disconnect(
+    self: BlueprintNamespace,
+    *args: Any,
+    **kwargs: Any,
+) -> None:
     """Log bot."""

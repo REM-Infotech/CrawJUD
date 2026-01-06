@@ -8,14 +8,10 @@ from __future__ import annotations
 
 import secrets
 from datetime import datetime
-from typing import TYPE_CHECKING
 from unicodedata import combining, normalize
 
 from pandas import Timestamp
 from werkzeug.utils import secure_filename
-
-if TYPE_CHECKING:
-    from backend.types_app import AnyType
 
 
 def formata_string(string: str) -> str:
@@ -29,9 +25,7 @@ def formata_string(string: str) -> str:
             de arquivo.
 
     """
-    normalized_string = "".join([
-        c for c in normalize("NFKD", string) if not combining(c)
-    ])
+    normalized_string = "".join([c for c in normalize("NFKD", string) if not combining(c)])
 
     return secure_filename(normalized_string)
 
@@ -66,11 +60,11 @@ def normalizar(txt: str) -> str:
     return " ".join(txt.split())
 
 
-def format_data(value: AnyType) -> str:
+def format_data(value: Any) -> str:
     """Formata datas ou valores nulos para string legível.
 
     Args:
-        value (AnyType): Valor a ser formatado.
+        value (Any): Valor a ser formatado.
 
     Returns:
         str: Data formatada ou string vazia se nulo.
@@ -85,11 +79,11 @@ def format_data(value: AnyType) -> str:
     return value
 
 
-def format_float(value: AnyType) -> str:
+def format_float(value: Any) -> str:
     """Formata número float para string com duas casas decimais.
 
     Args:
-        value (AnyType): Número a ser formatado.
+        value (Any): Número a ser formatado.
 
     Returns:
         str: Número formatado com vírgula como separador decimal.

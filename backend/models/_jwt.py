@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from contextlib import suppress
 from datetime import datetime
-from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
 from flask_jwt_extended import get_current_user
@@ -15,12 +14,9 @@ from backend.extensions import db, jwt
 
 from ._users import User
 
-if TYPE_CHECKING:
-    from backend.types_app import AnyType
-
 
 @jwt.user_identity_loader
-def user_identity_lookup(usr_id: int, *args: AnyType) -> int:
+def user_identity_lookup(usr_id: int, *args: Any) -> int:
     """Get the user's identity.
 
     Returns:
@@ -33,7 +29,7 @@ def user_identity_lookup(usr_id: int, *args: AnyType) -> int:
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(
     *args: str,
-    **kwargs: AnyType,
+    **kwargs: Any,
 ) -> bool:
     """Check if the token is in the blocklist.
 
@@ -54,7 +50,10 @@ def check_if_token_revoked(
 
 
 @jwt.user_lookup_loader
-def user_lookup_callback(*args: AnyType, **kwargs: AnyType) -> User | None:
+def user_lookup_callback(
+    *args: Any,
+    **kwargs: Any,
+) -> User | None:
     """Get the user from the JWT data.
 
     Returns:

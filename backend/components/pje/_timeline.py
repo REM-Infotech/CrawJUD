@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, ClassVar, Self, cast
+from typing import TYPE_CHECKING, ClassVar, Self
 
 from backend.dicionarios import DocumentoPJe, MovimentacaoPJe
 
@@ -11,9 +11,6 @@ if TYPE_CHECKING:
     from httpx import Client
 
     from backend.controllers import PJeBot
-
-
-type AnyType = Any
 
 
 BUFFER_1MB = 1024 * 1024
@@ -47,7 +44,7 @@ class TimeLinePJe:
         *,
         bot: PJeBot,
         cliente: Client,
-        id_processo: int | str,
+        id_processo: str,
         regiao: str,
         processo: str,
         apenas_assinados: bool = True,
@@ -65,30 +62,48 @@ class TimeLinePJe:
         )
 
         query_arguments = "&".join([
-            "=".join(["buscarMovimentos", str(buscar_movimentos).lower()]),
-            "=".join(["buscarDocumentos", str(buscar_documentos).lower()]),
+            "=".join([
+                "buscarMovimentos",
+                str(buscar_movimentos).lower(),
+            ]),
+            "=".join([
+                "buscarDocumentos",
+                str(buscar_documentos).lower(),
+            ]),
             "=".join([
                 "somenteDocumentosAssinados",
                 str(apenas_assinados).lower(),
             ]),
         ])
 
-        link = str(LinkPJe(regiao, id_processo, query_arguments, "timeline"))
+        link = str(
+            LinkPJe(regiao, id_processo, query_arguments, "timeline"),
+        )
         with suppress(Exception):
-            self.result = cast(
-                "list[DocumentoPJe | MovimentacaoPJe]",
-                cliente.get(link).json(),
-            )
+            self.result.extend(cliente.get(link).json())
             result2 = list(
-                filter(lambda x: x.get("idUnicoDocumento"), self.result),
+                filter(
+                    lambda x: x.get("idUnicoDocumento"),
+                    self.result,
+                ),
             )
-            self.documentos = [DocumentoPJe(**item) for item in result2]
-            self.movimentacoes = [
-                MovimentacaoPJe(NUMERO_PROCESSO=processo, INSTANCIA=grau, **item)
+            documentos = [DocumentoPJe(**item) for item in result2]  # pyright: ignore[reportArgumentType]
+            self.documentos.extend(documentos)
+
+            movs = [
+                MovimentacaoPJe(
+                    NUMERO_PROCESSO=processo,
+                    INSTANCIA=grau,
+                    **item,
+                )  # pyright: ignore[reportCallIssue]
                 for item in list(
-                    filter(lambda x: not x.get("idUnicoDocumento"), self.result),
+                    filter(
+                        lambda x: not x.get("idUnicoDocumento"),
+                        self.result,
+                    ),
                 )
             ]
+            self.movimentacoes.extend(movs)
 
         return self
 
@@ -102,7 +117,9 @@ class TimeLinePJe:
         inclur_assinatura: bool = False,
     ) -> None:
 
-        nome_arquivo = str(NomeDocumentoPJe(tl=self, documento=documento))
+        nome_arquivo = str(
+            NomeDocumentoPJe(tl=self, documento=documento),
+        )
         msg_ = f'Baixando arquivo "{nome_arquivo}"'
         type_ = "log"
         self.bot.print_message(msg_, type_, row)
@@ -111,7 +128,10 @@ class TimeLinePJe:
         query = "&".join([
             f"grau={grau}",
             "=".join(["incluirCapa", str(incluir_capa).lower()]),
-            "=".join(["incluir_assinatura", str(inclur_assinatura).lower()]),
+            "=".join([
+                "incluir_assinatura",
+                str(inclur_assinatura).lower(),
+            ]),
         ])
 
         # Região processo

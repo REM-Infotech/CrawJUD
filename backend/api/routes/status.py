@@ -19,7 +19,7 @@ from backend.api import app
 from backend.extensions import db
 
 if TYPE_CHECKING:
-    from backend.types_app import HealtCheck
+    from typings import HealtCheck
 
 __all__ = ["app"]
 

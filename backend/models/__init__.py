@@ -10,7 +10,6 @@ from uuid import uuid4
 from backend.extensions import db
 from backend.models._bot import Bots, CredenciaisRobo, ExecucoesBot
 from backend.models._users import LicenseUser, User
-from backend.types_app.payloads import SystemBots
 
 from ._jwt import TokenBlocklist
 
@@ -20,7 +19,7 @@ if TYPE_CHECKING:
     from pykeepass import Group
 
     from backend.interfaces import DictCredencial, DictUsers
-    from backend.types_app import Dict
+    from typings import Dict
 
 
 __all__ = [
@@ -28,7 +27,6 @@ __all__ = [
     "CredenciaisRobo",
     "ExecucoesBot",
     "LicenseUser",
-    "SystemBots",
     "TokenBlocklist",
     "User",
 ]
@@ -44,14 +42,19 @@ def init_database(app: Flask) -> None:
         db.create_all()
 
         user = (
-            db.session.query(User).filter_by(login=app.config["ROOT_USERNAME"]).first()
+            db.session.query(User)
+            .filter_by(login=app.config["ROOT_USERNAME"])
+            .first()
         )
 
         if not user:
             root_user = User(
                 login=app.config["ROOT_USERNAME"],
                 email=app.config["ROOT_EMAIL"],
-                nome_usuario=app.config.get("ROOT_DISPLAY_NAME", "Root User"),
+                nome_usuario=app.config.get(
+                    "ROOT_DISPLAY_NAME",
+                    "Root User",
+                ),
             )
             root_user.senhacrip = app.config["ROOT_PASSWORD"]
             root_user.admin = True
@@ -88,7 +91,9 @@ def create_bots(app: Flask) -> None:
             list_bot_add = [
                 Bots(**bot)
                 for bot in list_data
-                if not db.session.query(Bots).filter(Bots.Id == bot["Id"]).first()
+                if not db.session.query(Bots)
+                .filter(Bots.Id == bot["Id"])
+                .first()
             ]
 
             lic.bots.extend(list_bot_add)
@@ -101,7 +106,9 @@ def load_credentials(app: Flask) -> None:
     path_credentials = parent_path.joinpath("credentials.json")
 
     if path_credentials.exists():
-        list_data: list[DictCredencial] = json.loads(path_credentials.read_text())
+        list_data: list[DictCredencial] = json.loads(
+            path_credentials.read_text(),
+        )
         with app.app_context():
             lic = (
                 db.session.query(LicenseUser)
@@ -113,13 +120,18 @@ def load_credentials(app: Flask) -> None:
 
             sistemas = {}
             for item in list_data:
-                sistemas[item["sistema"]] = sistemas.get(item["sistema"], 0) + 1
+                sistemas[item["sistema"]] = (
+                    sistemas.get(item["sistema"], 0) + 1
+                )
 
             list_cred_add: list[CredenciaisRobo] = []
             for sistema in sistemas:
                 group = cast(
                     "Group",
-                    keepass.find_groups(name=sistema.upper(), first=True),
+                    keepass.find_groups(
+                        name=sistema.upper(),
+                        first=True,
+                    ),
                 )
                 if not group:
                     group = keepass.add_group(
@@ -128,7 +140,10 @@ def load_credentials(app: Flask) -> None:
                     )
 
                 filtered_list: list[DictCredencial] = list(
-                    filter(lambda x: x["sistema"] == str(sistema), list_data),
+                    filter(
+                        lambda x: x["sistema"] == str(sistema),
+                        list_data,
+                    ),
                 )
                 for item in filtered_list:
                     entry = keepass.find_entries(
@@ -155,10 +170,14 @@ def load_credentials(app: Flask) -> None:
                         path_cert = Path(item.get("certificado"))
                         attachment_name = path_cert.name
 
-                        if not keepass.find_attachments(filename=attachment_name):
+                        if not keepass.find_attachments(
+                            filename=attachment_name,
+                        ):
                             attachment_data = path_cert.read_bytes()
 
-                            binary_id = keepass.add_binary(attachment_data)
+                            binary_id = keepass.add_binary(
+                                attachment_data,
+                            )
                             entry.add_attachment(
                                 id=binary_id,
                                 filename=attachment_name,
@@ -193,7 +212,9 @@ def import_users(app: Flask) -> None:
 
             for user in users:
                 existing_user = (
-                    db.session.query(User).filter(User.login == user["login"]).first()
+                    db.session.query(User)
+                    .filter(User.login == user["login"])
+                    .first()
                 )
 
                 if not existing_user:

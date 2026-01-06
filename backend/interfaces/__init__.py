@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING, Literal, TypedDict
 from .datasheet import BotData
 
 if TYPE_CHECKING:
-    from backend.types_app import (
+    from typings import (
         MessageType,
+        Sistemas,
         StatusBot,
     )
-    from backend.types_app.payloads import SystemBots
 
 
 class DictUsers(TypedDict):
@@ -29,9 +29,9 @@ class DictUsers(TypedDict):
 
 
 class DictCredencial(TypedDict):
-    Id: 8
+    Id: int
     nome_credencial: str
-    system: SystemBots
+    system: Sistemas
     login_metodo: str
     login: str
     password: str
@@ -71,7 +71,6 @@ class Message(TypedDict, total=False):
     erros: int
     sucessos: int
     restantes: int
-    link: str
 
 
 class ColorsDict(TypedDict):

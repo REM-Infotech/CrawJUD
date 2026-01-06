@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from flask import Flask
 
-    from backend.types_app import P
+    from typings import P
 
 
 load_dotenv()

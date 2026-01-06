@@ -21,7 +21,7 @@ from ._2 import SegundaInstancia
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from backend.types_app import Dict
+    from typings import Dict
 
 
 class Capa(PrimeiraInstancia, SegundaInstancia):

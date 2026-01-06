@@ -23,10 +23,10 @@ from backend.api.routes._blueprints import bots
 
 if TYPE_CHECKING:
     from backend.extensions._minio import Minio
-    from backend.types_app import Sistemas
-    from backend.types_app.responses import (
+    from typings import (
         PayloadDownloadExecucao,
         Response,
+        Sistemas,
     )
 
 

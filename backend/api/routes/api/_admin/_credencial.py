@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from pykeepass import Attachment
     from pykeepass.group import Group
 
-    from backend.types_app import Sistemas
+    from typings import Sistemas
 
 type LoginMetodoSimplificado = Literal["pw", "cert"]
 
@@ -52,7 +52,9 @@ class CredencialBot:
 
     db: SQLAlchemy
 
-    def __init__(self, app: Flask, **kwargs: Unpack[CredencialBotDict]) -> None:
+    def __init__(
+        self, app: Flask, **kwargs: Unpack[CredencialBotDict]
+    ) -> None:
 
         self.db = current_app.extensions["sqlalchemy"]
         self.keepass: KeepassManager = app.extensions["keepass"]
@@ -120,7 +122,9 @@ class CredencialBot:
                 path_temp = Path.cwd().joinpath("temp")
                 path_temp.mkdir(exist_ok=True, parents=True)
 
-                path_cert = path_temp.joinpath(self.certificado.filename)
+                path_cert = path_temp.joinpath(
+                    self.certificado.filename
+                )
 
                 self.certificado.save(str(path_cert))
                 self.certificado = str(path_cert)

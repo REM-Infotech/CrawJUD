@@ -9,7 +9,12 @@ from typing import TYPE_CHECKING, ClassVar
 from tqdm import tqdm
 
 from backend.common.exceptions._fatal import FatalError
-from backend.components import AssuntosPJe, AudienciasPJe, PartesPJe, TimeLinePJe
+from backend.components import (
+    AssuntosPJe,
+    AudienciasPJe,
+    PartesPJe,
+    TimeLinePJe,
+)
 from backend.controllers.pje import PJeBot
 from backend.dicionarios import CapaPJe
 
@@ -19,7 +24,7 @@ if TYPE_CHECKING:
     from httpx import Client
 
     from backend.dicionarios import PJeCapa
-    from backend.types_app import Dict
+    from typings import Dict
 
 
 class Capa(PJeBot):
@@ -102,7 +107,9 @@ class Capa(PJeBot):
 
             id_processo = resultados["id_processo"]
             data_ = resultados["data_request"]
-            self.append_success("Capa", [self.capa_processual(result=data_, grau=grau)])
+            self.append_success(
+                "Capa", [self.capa_processual(result=data_, grau=grau)]
+            )
             sleep(1.5)
             if str(item.get("TRAZER_ASSUNTOS", "sim")).lower() == "sim":
                 assuntos = AssuntosPJe.extrair(
@@ -115,7 +122,10 @@ class Capa(PJeBot):
                 self.append_success("Assuntos", assuntos)
 
             sleep(1.5)
-            if str(item.get("TRAZER_AUDIENCIAS", "sim")).lower() == "sim":
+            if (
+                str(item.get("TRAZER_AUDIENCIAS", "sim")).lower()
+                == "sim"
+            ):
                 audiencias = AudienciasPJe.extrair(
                     cliente=client,
                     regiao=self.regiao,
@@ -135,13 +145,20 @@ class Capa(PJeBot):
                     grau=grau,
                 )
                 if partes_cls:
-                    self.append_success("Partes", partes_cls.formata_partes())
+                    self.append_success(
+                        "Partes", partes_cls.formata_partes()
+                    )
 
                     representantes = partes_cls.formata_representantes()
-                    self.append_success("Representantes", representantes)
+                    self.append_success(
+                        "Representantes", representantes
+                    )
 
             sleep(1.5)
-            if str(item.get("TRAZER_MOVIMENTACOES", "sim")).lower() == "sim":
+            if (
+                str(item.get("TRAZER_MOVIMENTACOES", "sim")).lower()
+                == "sim"
+            ):
                 tl = TimeLinePJe.load(
                     bot=self,
                     cliente=client,
@@ -153,7 +170,9 @@ class Capa(PJeBot):
                 )
 
                 if tl.result:
-                    self.append_success("Movimentações", tl.movimentacoes)
+                    self.append_success(
+                        "Movimentações", tl.movimentacoes
+                    )
 
             type_ = "success"
             msg_ = "Execução Efetuada com sucesso!"
@@ -182,7 +201,9 @@ class Capa(PJeBot):
         """
         id_ = result["id"]
         reg = self.regiao
-        link_consulta = f"https://pje.trt{reg}.jus.br/pjekz/processo/{id_}/detalhe"
+        link_consulta = (
+            f"https://pje.trt{reg}.jus.br/pjekz/processo/{id_}/detalhe"
+        )
         return CapaPJe(
             ID_PJE=id_,
             LINK_CONSULTA=link_consulta,

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, ParamSpec
+from typing import TYPE_CHECKING
 
 from flask_jwt_extended import verify_jwt_in_request
 
@@ -14,12 +14,8 @@ if TYPE_CHECKING:
 
 __all__ = ["CrossDomain"]
 
-type AnyType = any
 
-P = ParamSpec("P")
-
-
-def jwt_sio_required[T](fn: Callable[P, T]) -> Callable[P, T]:
+def jwt_sio_required[**P, T](fn: Callable[P, T]) -> Callable[P, T]:
 
     @wraps(fn)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Callable[P, T]:

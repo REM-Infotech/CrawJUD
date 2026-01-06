@@ -12,7 +12,7 @@ from backend.api.resources import camel_to_snake
 from ._query import Query, QueryProperty
 
 if TYPE_CHECKING:
-    from backend.types_app import AnyType
+    from typings import Any
 
 type Any = any
 
@@ -43,8 +43,8 @@ class FSATableName:
     def __get__(
         self,
         cls: Model | None = None,
-        *args: AnyType,
-        **kwargs: AnyType,
+        *args: Any,
+        **kwargs: Any,
     ) -> str:
         if cls:
             snake_cased = camel_to_snake(cls.__class__.__name__)
@@ -61,7 +61,10 @@ class Model(FSA_Model):
     def to_dict(self) -> dict:
 
         data = {}
-        for item in filter(lambda x: not x.startswith("_") and x != "query", dir(self)):
+        for item in filter(
+            lambda x: not x.startswith("_") and x != "query",
+            dir(self),
+        ):
             value = getattr(self, item, None)
 
             if isinstance(value, list):

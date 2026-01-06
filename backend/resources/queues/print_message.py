@@ -28,8 +28,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from backend.controllers.head import CrawJUD
-    from backend.types_app import AnyType, MessageType
-
+    from typings import Any, MessageType
 load_dotenv()
 
 
@@ -76,7 +75,7 @@ class PrintMessage:
     def __init__(self, bot: CrawJUD) -> None:
         """Instancia da queue de salvamento de sucessos."""
         self.bot = bot
-        self.queue_print_bot = Queue()
+        self.queue_print_bot = Queue[Message]()
         self.thread_print_bot = Thread(target=self.print_msg)
         self.thread_print_bot.start()
         self.succcess_count = 0
@@ -84,7 +83,7 @@ class PrintMessage:
 
     def __call__(
         self,
-        message: MessageStr,
+        message: MessageStr | str,
         message_type: MessageType,
         row: int = 0,
         link: str | None = None,
@@ -119,7 +118,6 @@ class PrintMessage:
             sucessos=self.calc_success(message_type),
             erros=self.calc_error(message_type),
             restantes=self.calc_remaining(message_type),
-            link=link,
         )
         self.queue_print_bot.put_nowait(msg)
 
@@ -193,7 +191,9 @@ class PrintMessage:
         """
         socketio_server = settings.get("API_URL")
 
-        cookies = json.loads(b64decode(self.bot.config.get("cookies")).decode())
+        cookies = json.loads(
+            b64decode(self.bot.config.get("cookies")).decode(),
+        )
         session = Session()
         session.headers.update({
             "Authorization": f"Bearer {cookies['access_token_cookie']}",
@@ -241,22 +241,27 @@ class PrintMessage:
 
                     except Exception as e:  # noqa: BLE001
                         clear()
-                        to_write = "\n".join(traceback.format_exception(e))
+                        to_write = "\n".join(
+                            traceback.format_exception(e),
+                        )
                         tqdm.write(to_write, file=sys.stdout)
 
-                    with self.file_log.open(mode=mode, encoding="utf-8") as fp:
+                    with self.file_log.open(
+                        mode=mode,
+                        encoding="utf-8",
+                    ) as fp:
                         tqdm.write(to_write, file=fp)
 
     def emit_message(self, data: Message, sio: Client) -> None:
         sio.emit("logbot", data=data, namespace="/bot")
         tqdm.write(str(data["message"]), file=sys.stdout)
 
-    def set_event(self, *args: AnyType, **kwargs: AnyType) -> None:
+    def set_event(self, *args: Any, **kwargs: Any) -> None:
         """Evento de parada do robô.
 
         Args:
-            *args (AnyType): Argumentos posicionais.
-            **kwargs (AnyType): Argumentos nomeados.
+            *args (Any): Argumentos posicionais.
+            **kwargs (Any): Argumentos nomeados.
 
         """
         tz = ZoneInfo("America/Sao_Paulo")

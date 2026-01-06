@@ -1,10 +1,6 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from backend.types_app import AnyType
 
 
 class CustomPattern:
@@ -22,7 +18,7 @@ class CustomPattern:
     def fullmatch(self, text: str) -> re.Match[str] | None:
         return self._compiled.fullmatch(text)
 
-    def findall(self, text: str) -> list[AnyType]:
+    def findall(self, text: str) -> list[Any]:
         return self._compiled.findall(text)
 
     def sub(self, repl: str, text: str) -> str:
