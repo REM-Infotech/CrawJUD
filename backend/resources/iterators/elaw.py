@@ -12,7 +12,7 @@ from backend.interfaces.elaw.main import ElawData
 
 if TYPE_CHECKING:
     from backend.controllers.elaw import ElawBot
-    from backend.interfaces import BotData
+    from backend.dicionarios import BotData
 
 
 class ElawIterator:

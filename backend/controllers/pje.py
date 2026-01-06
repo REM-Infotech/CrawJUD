@@ -17,7 +17,7 @@ from backend.resources.auth.pje import AutenticadorPJe
 from backend.resources.search.pje import PjeSeach
 
 if TYPE_CHECKING:
-    from backend.interfaces import BotData
+    from backend.dicionarios import BotData
     from backend.resources.queues.file_downloader import (
         FileDownloader,
     )

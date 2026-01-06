@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import TYPE_CHECKING, TypedDict
+
+if TYPE_CHECKING:
+    from typings import ConfigForm, Sistemas
 
 
 class HealtCheck(TypedDict):
@@ -31,3 +34,12 @@ class LoginForm(TypedDict):
     login: str
     password: str
     remember: bool
+
+
+class BotInfo(TypedDict):
+    Id: int
+    configuracao_form: ConfigForm
+    display_name: str
+    sistema: Sistemas
+    descricao: str
+    categoria: str

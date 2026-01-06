@@ -12,8 +12,8 @@ from backend.api.routes._blueprints import botNS
 
 if TYPE_CHECKING:
     from backend.base import BlueprintNamespace
+    from backend.dicionarios import BotInfo
     from backend.interfaces import Message
-    from backend.interfaces.payloads import BotInfo
     from backend.models import User
     from typings import Any, Sistemas
 

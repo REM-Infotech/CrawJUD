@@ -9,10 +9,9 @@ from backend.common.exceptions.validacao import (
 )
 
 if TYPE_CHECKING:
-    from typings.bot import ProcessoCNJ
-
     from backend.controllers.pje import PJeBot
-    from backend.interfaces import BotData
+    from backend.dicionarios import BotData
+    from typings import ProcessoCNJ
 
 
 class DictSeparaRegiao(TypedDict):
@@ -56,9 +55,7 @@ class RegioesIterator[T: BotData]:
         processos: DictSeparaRegiao = self.separar_regiao()
 
         self._regioes = list(processos["regioes"].items())
-        self._posicoes_processos_planilha = processos[
-            "position_process"
-        ]
+        self._posicoes_processos_planilha = processos["position_process"]
         self._index = 0
 
         # Atualiza atributos do bot
@@ -101,7 +98,7 @@ class RegioesIterator[T: BotData]:
             regiões e a posição de cada processo.
 
         """
-        from typings.bot import ProcessoCNJ
+        from typings import ProcessoCNJ
 
         regioes_dict: dict[str, list[BotData]] = {}
         position_process: dict[str, int] = {}

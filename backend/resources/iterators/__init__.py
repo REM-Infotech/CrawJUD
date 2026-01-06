@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar, Self
 
 from pandas import read_excel
 
-from backend.interfaces import BotData
+from backend.dicionarios import BotData
 from backend.resources.formatadores import (
     format_data,
     format_float,

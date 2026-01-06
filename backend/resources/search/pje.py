@@ -10,7 +10,6 @@ from contextlib import suppress
 from json.decoder import JSONDecodeError
 from typing import TYPE_CHECKING, TypedDict
 
-from backend.interfaces.pje import DictResults
 from backend.resources.elements import pje as el
 from backend.resources.search.main import SearchBot
 from backend.task_manager.constants import HTTP_OK_STATUS
@@ -19,7 +18,8 @@ if TYPE_CHECKING:
     from httpx import Client, Response
 
     from backend.controllers import PJeBot
-    from backend.interfaces import BotData
+    from backend.dicionarios import BotData
+    from typings import Dict
 
 
 class _ResponseDadosBasicos(TypedDict):
@@ -29,6 +29,11 @@ class _ResponseDadosBasicos(TypedDict):
     classe: str
     codigoOrgaoJulgador: int
     juizoDigital: bool
+
+
+class _DictResults(TypedDict):
+    id_processo: str
+    data_request: Dict
 
 
 class PjeSeach(SearchBot):
@@ -53,7 +58,7 @@ class PjeSeach(SearchBot):
         data: BotData,
         row: int,
         client: Client,
-    ) -> DictResults | None:
+    ) -> _DictResults | None:
         """Realize a busca de um processo no sistema PJe.
 
         Args:
@@ -99,7 +104,7 @@ class PjeSeach(SearchBot):
             self._print_processo_nao_encontrado(row=row)
             return None
 
-        return DictResults(
+        return _DictResults(
             id_processo=id_processo,
             data_request=result.json(),
         )

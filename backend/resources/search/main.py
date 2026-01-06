@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from seleniumwire.webdriver import Chrome
 
     from backend.controllers.head import CrawJUD
-    from backend.interfaces import BotData
+    from backend.dicionarios import BotData
     from backend.resources.queues.print_message import PrintMessage
     from typings import Dict
 
