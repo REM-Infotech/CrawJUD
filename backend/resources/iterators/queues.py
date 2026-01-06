@@ -16,7 +16,7 @@ class QueueIterator[T]:
     tratando exceções de fila vazia ou encerrada.
     """
 
-    def __init__(self, queue: Queue) -> None:
+    def __init__(self, queue: Queue[T]) -> None:
         """Inicialize o iterador com a fila fornecida.
 
         Args:
