@@ -28,7 +28,6 @@ from backend.resources.assinador import Assinador
 from backend.resources.auth.main import AutenticadorBot
 from backend.resources.elements import pje as el
 from backend.resources.formatadores import random_base36
-from backend.resources.keystore import KeyStore
 from backend.task_manager.constants import NO_CONTENT_STATUS
 from backend.task_manager.constants.pje import ENDPOINT_DESAFIO
 
@@ -188,19 +187,3 @@ class AutenticadorPJe(AutenticadorBot):
     def _cookie_to_dict(self) -> dict[str, str]:
         cookies_driver = self.driver.get_cookies()
         return {str(cookie["name"]): str(cookie["value"]) for cookie in cookies_driver}
-
-    def _get_otp_uri(self) -> str:
-        kp = KeyStore(self.credenciais.kdbx, self.credenciais.senha_kdbx)
-        username = self.credenciais.cpf_cnpj_certificado
-        entries = kp.find_entries({"username": username})
-
-        if isinstance(entries, list):
-            lista_filtrada = list(
-                filter(
-                    lambda x: x.otp and "sso.cloud.pje.jus.br" in x.url,
-                    entries,
-                ),
-            )
-            return lista_filtrada[-1].otp
-
-        return entries.otp

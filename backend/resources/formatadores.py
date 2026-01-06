@@ -8,10 +8,14 @@ from __future__ import annotations
 
 import secrets
 from datetime import datetime
+from typing import TYPE_CHECKING
 from unicodedata import combining, normalize
 
 from pandas import Timestamp
 from werkzeug.utils import secure_filename
+
+if TYPE_CHECKING:
+    from typings import Any
 
 
 def formata_string(string: str) -> str:
