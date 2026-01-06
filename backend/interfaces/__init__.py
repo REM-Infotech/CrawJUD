@@ -31,7 +31,7 @@ class DictUsers(TypedDict):
 class DictCredencial(TypedDict):
     Id: int
     nome_credencial: str
-    system: Sistemas
+    sistema: Sistemas
     login_metodo: str
     login: str
     password: str

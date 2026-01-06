@@ -84,7 +84,8 @@ def create_bots(app: Flask) -> None:
                 if not db.session.query(Bots).filter(Bots.Id == bot["Id"]).first()
             ]
 
-            lic.bots.extend(list_bot_add)
+            if lic:
+                lic.bots.extend(list_bot_add)
 
             db.session.add_all(list_bot_add)
             db.session.commit()

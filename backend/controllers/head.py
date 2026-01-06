@@ -37,7 +37,7 @@ from backend.task_manager.constants import WORKDIR
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from selenium.webdriver.chrome.webdriver import WebDriver
+    from selenium.webdriver import Chrome as SeChrome
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
@@ -68,7 +68,7 @@ class CrawJUD:
 
     def shutdown_all(self) -> None:
 
-        if hasattr(self, "driver") and not self.driver.is_closed:
+        if hasattr(self, "driver") and not self.driver:
             window_handles = self.driver.window_handles
             if window_handles:
                 self.driver.delete_all_cookies()
@@ -193,12 +193,12 @@ class CrawJUD:
     def auth(self) -> None: ...
 
     @property
-    def driver(self) -> WebDriver | Chrome:
+    def driver(self) -> SeChrome | Chrome:
         """Retorne o driver do navegador utilizado pelo bot."""
         return self.bot_driver.driver
 
     @property
-    def wait(self) -> WebDriverWait[WebDriver | Chrome]:
+    def wait(self) -> WebDriverWait[SeChrome | Chrome]:
         """Retorne o objeto de espera do driver do navegador."""
         return self.bot_driver.wait
 
@@ -308,6 +308,8 @@ def start_bot(config: Dict) -> None:
     """
     load_dotenv()
 
+    class Dummy(CrawJUD): ...
+
     try:
         bot_nome = f"{config['categoria']}_{config['sistema']}"
         bot = CrawJUD.bots.get(bot_nome)
@@ -321,18 +323,15 @@ def start_bot(config: Dict) -> None:
         BotUtil.create_thread_shutdown(bot)
 
     except (ArquivoNaoEncontradoError, FatalError) as e:
+        bot = Dummy().setup(config=config)
         exc = BotUtil.logging_fatal_error(e, bot)
         BotUtil.create_thread_shutdown(bot)
-
         raise exc from e
 
     except KeyError as e:
         clear()
 
-        class Dummy(CrawJUD): ...
-
         config["sistema"] = "PJE"
-
         bot = Dummy().setup(config=config)
         exc = BotUtil.logging_fatal_error(e, bot)
         BotUtil.create_thread_shutdown(bot)
@@ -340,7 +339,7 @@ def start_bot(config: Dict) -> None:
 
     except Exception as e:
         clear()
-
+        bot = Dummy().setup(config=config)
         exc = BotUtil.logging_fatal_error(e, bot)
         BotUtil.create_thread_shutdown(bot)
 
