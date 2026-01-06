@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from ._main import PJe
+from .main import PJe
 
 
 class PJeMovimentacao(PJe):

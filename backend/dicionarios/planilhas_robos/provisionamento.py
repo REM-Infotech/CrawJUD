@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ._main import BotData
+from .main import BotData
 
 
 class Provisionamento(BotData):

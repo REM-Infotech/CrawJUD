@@ -80,7 +80,7 @@ def on_listagem_execucoes(self: BlueprintNamespace) -> list[Execucao]:
                 pid=item.pid,
                 status=item.status,
                 data_inicio=item.data_inicio.strftime("%d/%m/%Y, %H:%M:%S"),
-                data_fim=item.data_fim.strftime("%d/%m/%Y, %H:%M:%S"),
+                data_fim=item.data_fim.strftime("%d/%m/%Y, %H:%M:%S") if item.data_fim else "",
             )
             for item in execucao
         ]
