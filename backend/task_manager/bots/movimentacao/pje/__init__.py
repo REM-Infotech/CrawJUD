@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from tqdm import tqdm
 
 from backend.controllers.pje import PJeBot
-from backend.dicionarios import CapaPJe
+from backend.dicionarios import CapaPJe, MovimentacaoPJe
 
 from ._timeline import TimeLinePJe
 
@@ -104,6 +104,7 @@ class Movimentacao(PJeBot):
 
             termos: list[str] = self.formata_termos(termos)
             arquivos = self.filtrar_arquivos(timeline, termos)
+            movimentacoes = self.filtrar_movimentacoes(timeline, termos)
             capa = self.capa_processual(result=resultados["data_request"])
 
             for file in arquivos:
@@ -133,6 +134,9 @@ class Movimentacao(PJeBot):
                 data_save=[capa],
             )
 
+            if movimentacoes:
+                self.append_success("Movimentações", movimentacoes)
+
     def kw_timeline(
         self,
         result: DictResults,
@@ -158,6 +162,17 @@ class Movimentacao(PJeBot):
             return any(termo.lower() in file["tipo"].lower() for termo in termos)
 
         return list(filter(termo_in_tipo, tl.documentos))
+
+    def filtrar_movimentacoes(
+        self,
+        tl: TimeLinePJe,
+        termos: list[str],
+    ) -> list[MovimentacaoPJe]:
+
+        def termo_in_tipo(mov: MovimentacaoPJe) -> bool:
+            return any(termo.lower() in mov["titulo"].lower() for termo in termos)
+
+        return list(filter(termo_in_tipo, tl.movimentacoes))
 
     def salva_erro(self, row: int, item: PJeMovimentacao) -> None:
 
