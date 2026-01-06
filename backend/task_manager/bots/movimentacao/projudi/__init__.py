@@ -19,7 +19,9 @@ from backend.resources.elements import projudi as el
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from backend.dicionarios import ProjudiMovimentacao
     from backend.resources.driver.web_element import WebElement
+    from backend.resources.iterators import BotIterator
 
 
 class Movimentacao(ProjudiBot):
@@ -35,7 +37,7 @@ class Movimentacao(ProjudiBot):
         gerenciando possíveis exceções durante a execução.
 
         """
-        frame = self.frame
+        frame: BotIterator[ProjudiMovimentacao] = self.frame
         self._total_rows = len(frame)
 
         for pos, value in enumerate(frame):

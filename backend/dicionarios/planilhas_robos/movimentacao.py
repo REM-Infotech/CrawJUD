@@ -10,6 +10,6 @@ class PJeMovimentacao(PJe):
     TRAZER_DOCUMENTOS: Literal["sim", "não"]
 
 
-class ProdudiMovimentacao(BotData):
+class ProjudiMovimentacao(BotData):
     PALAVRAS_CHAVE: str
     TRAZER_ARQUIVO_MOVIMENTACAO: Literal["sim", "não"]

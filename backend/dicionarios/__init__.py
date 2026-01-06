@@ -13,6 +13,7 @@ from .planilhas_robos import (
     PJeCapa,
     PJeMovimentacao,
     ProjudiCapa,
+    ProjudiMovimentacao,
 )
 from .robos import (
     AssuntoPJe,
@@ -65,5 +66,6 @@ __all__ = [
     "PJeMovimentacao",
     "PartePJe",
     "ProjudiCapa",
+    "ProjudiMovimentacao",
     "RepresentantePJe",
 ]

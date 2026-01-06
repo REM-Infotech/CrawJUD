@@ -1,7 +1,7 @@
 from .capa import EsajCapa, PJeCapa, ProjudiCapa
 from .elaw import ElawCondenacao, ElawCustas
 from .main import BotData
-from .movimentacao import PJeMovimentacao
+from .movimentacao import PJeMovimentacao, ProjudiMovimentacao
 from .provisionamento import ElawProvisionamento, JusdsProvisionamento
 
 __all__ = [
@@ -14,4 +14,5 @@ __all__ = [
     "PJeCapa",
     "PJeMovimentacao",
     "ProjudiCapa",
+    "ProjudiMovimentacao",
 ]
