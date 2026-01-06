@@ -1,30 +1,40 @@
 ---
-name: 'gerar-desc-pr'
-description: 'Geração de titulo e descrição em um arquivo .md para pull-requests.'
+name: "gerar-desc-pr"
+description: "Geração de titulo e descrição em um arquivo .md para pull-requests."
 
-tools: ['execute', 'edit', 'search/codebase', 'search/fileSearch', 'search/listDirectory', 'search/usages', 'web/githubRepo', 'github.vscode-pull-request-github/activePullRequest']
+tools:
+  [
+    "execute",
+    "edit",
+    "search/codebase",
+    "search/fileSearch",
+    "search/listDirectory",
+    "search/usages",
+    "web/githubRepo",
+    "github.vscode-pull-request-github/activePullRequest",
+  ]
 ---
 
 Instruções para geração de titulo e descrição de Pull requests.
 Essas instruções são para edição de titulo e corpo de uma pull request ativa no momento
 
-
 ## 1. Context gathering and research:
+
 1. Você vai gerar um markdown para ser salvo em `.pull-requests/gh-{numeropullrequest}_{tipo-de-alteracao}.pullrequest.md`. Caso o arquivo já exista, sobreescreva
 2. Siga as instruções dentro de <pullrequest_style_guide> e qualquer outra que o usuário indicar.
 3. Aplique o titulo e o corpo na pull request ativa
 
-
 <pullrequest_style_guide>
 Siga este template (**não inclua as orientações entre `{}`**):
+
 ```markdown
+## {
 
-{
+## [GH-{numero_pullrequest}] {Tipo de alteração (bugfixes, refact, feature, etc)} - Breve resumo (2–10 palavras)
+
 ---
-## [GH-{numero_pullrequest}] {Tipo de alteração (bugfixes, refact, feature, etc)} - Breve resumo (2–10 palavras) 
----
+
 }
-
 
 ## 📖 Descrição
 
@@ -52,15 +62,14 @@ Inclua:
 - [ ] Infraestrutura / configuração
 - [ ] Documentação
 - [ ] Outro (descrever abaixo)
-}
+      }
 
 ## 🧩 O que foi alterado
 
-
-* {Texto descritivo com subtexto informando:
-    - Mudanças relevantes de lógica
-    - Novos padrões ou abstrações introduzidas
-  }
+- {Texto descritivo com subtexto informando:
+  - Mudanças relevantes de lógica
+  - Novos padrões ou abstrações introduzidas
+    }
 
 ## 🏗️ Impacto Técnico
 
@@ -70,32 +79,33 @@ Inclua:
 - Alterações em fluxos existentes
 - Dependências afetadas
 - Possíveis efeitos colaterais
-}
+  }
 
 ## ⚠️ Breaking Changes
 
 {Insira as caixas a seguir e marque o que se aplica
+
 - [ ] Não
 - [ ] Sim (descrever abaixo)
-}
+      }
 
 {Se houver breaking changes, explique:
 
 - O que mudou
 - Quem é impactado
 - O que precisa ser ajustado
-}
+  }
 
 {- Mandatório: Insira tag a seguir apenas se os arquivos da pasta teste/ forem alterados ou tiver arquivos novos.}
 {
+
 ## 🧪 Testes e Validação
-  
-  Descreva como as mudanças foram testadas:
+
+Descreva como as mudanças foram testadas:
 
 - Testes automatizados
 - Testes manuais
 - Cenários validados
-
 
 }
 
@@ -108,7 +118,6 @@ Inclua:
 {- [ ] Tipagem ou validações aprimoradas}
 {- [ ] Comentários ou documentação adicionados}
 
-
 ## 📚 Observações para Revisão
 
 {Inclua qualquer contexto que ajude na revisão:
@@ -116,16 +125,15 @@ Inclua:
 - Decisões técnicas importantes
 - Pontos que merecem atenção especial
 - Limitações conhecidas
-}
+  }
 
 ## 🚀 Próximos Passos (Opcional)
 
 {Sugestões de melhorias futuras ou follow-ups relacionados a este PR.}
-
-
 ```
 
 Ao atualizar pull requests, use o comando **gh**.
-> **Disclaimer: verificar se o __Github CLI (gh) __ está instalado, Caso não esteja, Solicite ao usuario que instale e aguarde a confirmação para prosseguir.**
+
+> **Disclaimer: verificar se o **Github CLI (gh) ** está instalado, Caso não esteja, Solicite ao usuario que instale e aguarde a confirmação para prosseguir.**
 
 <pullrequest_style_guide/>

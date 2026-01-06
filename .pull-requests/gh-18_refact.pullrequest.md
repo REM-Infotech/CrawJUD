@@ -1,10 +1,12 @@
----
-## [GH-18] refact - Estrutura, tipagem e documentação
+## [GH-18] Refatoração - Estrutura, tipagem e documentação
+
+✨
+
 ---
 
 ## 📖 Descrição
 
-Este Pull Request realiza uma grande refatoração estrutural e de organização do código do backend CrawJUD.
+Este Pull Request realiza uma ampla refatoração estrutural e de organização do backend CrawJUD.
 
 Inclui:
 
