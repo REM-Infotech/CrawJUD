@@ -120,11 +120,6 @@ class Movimentacao(PJeBot):
                 timeline.baixar_documento(**kw_dw)
                 sleep(0.5)
 
-            if len(arquivos) == 0:
-                self.salva_erro(row=row, item=item)
-                sleep(2.5)
-                return
-
             sleep(0.5)
             type_ = "success"
             msg_ = "Execução efetuada com sucesso!"
@@ -173,20 +168,6 @@ class Movimentacao(PJeBot):
             return any(termo.lower() in mov["titulo"].lower() for termo in termos)
 
         return list(filter(termo_in_tipo, tl.movimentacoes))
-
-    def salva_erro(self, row: int, item: PJeMovimentacao) -> None:
-
-        message = "Nenhum arquivo encontrado!"
-        message_type = "error"
-
-        item["MOTIVO_ERRO"] = message
-
-        self.print_message(
-            message=message,
-            message_type=message_type,
-            row=row,
-        )
-        self.append_error(data_save=[item])
 
     def capa_processual(self, result: Dict) -> CapaPJe:
         """Gere a capa processual do processo judicial PJE.
