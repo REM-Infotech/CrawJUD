@@ -108,7 +108,8 @@ class Capa(PJeBot):
             id_processo = resultados["id_processo"]
             data_ = resultados["data_request"]
             self.append_success(
-                "Capa", [self.capa_processual(result=data_, grau=grau)]
+                "Capa",
+                [self.capa_processual(result=data_, grau=grau)],
             )
             sleep(1.5)
             if str(item.get("TRAZER_ASSUNTOS", "sim")).lower() == "sim":
@@ -122,10 +123,7 @@ class Capa(PJeBot):
                 self.append_success("Assuntos", assuntos)
 
             sleep(1.5)
-            if (
-                str(item.get("TRAZER_AUDIENCIAS", "sim")).lower()
-                == "sim"
-            ):
+            if str(item.get("TRAZER_AUDIENCIAS", "sim")).lower() == "sim":
                 audiencias = AudienciasPJe.extrair(
                     cliente=client,
                     regiao=self.regiao,
@@ -146,19 +144,18 @@ class Capa(PJeBot):
                 )
                 if partes_cls:
                     self.append_success(
-                        "Partes", partes_cls.formata_partes()
+                        "Partes",
+                        partes_cls.formata_partes(),
                     )
 
                     representantes = partes_cls.formata_representantes()
                     self.append_success(
-                        "Representantes", representantes
+                        "Representantes",
+                        representantes,
                     )
 
             sleep(1.5)
-            if (
-                str(item.get("TRAZER_MOVIMENTACOES", "sim")).lower()
-                == "sim"
-            ):
+            if str(item.get("TRAZER_MOVIMENTACOES", "sim")).lower() == "sim":
                 tl = TimeLinePJe.load(
                     bot=self,
                     cliente=client,
@@ -171,7 +168,8 @@ class Capa(PJeBot):
 
                 if tl.result:
                     self.append_success(
-                        "Movimentações", tl.movimentacoes
+                        "Movimentações",
+                        tl.movimentacoes,
                     )
 
             type_ = "success"
@@ -201,9 +199,7 @@ class Capa(PJeBot):
         """
         id_ = result["id"]
         reg = self.regiao
-        link_consulta = (
-            f"https://pje.trt{reg}.jus.br/pjekz/processo/{id_}/detalhe"
-        )
+        link_consulta = f"https://pje.trt{reg}.jus.br/pjekz/processo/{id_}/detalhe"
         return CapaPJe(
             ID_PJE=id_,
             LINK_CONSULTA=link_consulta,
