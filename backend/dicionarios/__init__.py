@@ -1,11 +1,14 @@
 from .api import HealtCheck, LoginForm
 from .planilhas_robos import (
+    BotData,
     ElawCondenacao,
     ElawCustas,
     ElawProvisionamento,
+    EsajCapa,
     JusdsProvisionamento,
     PJeCapa,
     PJeMovimentacao,
+    ProjudiCapa,
 )
 from .robos import (
     AssuntoPJe,
@@ -21,11 +24,13 @@ from .robos import (
 __all__ = [
     "AssuntoPJe",
     "AudienciaProcessoPJe",
+    "BotData",
     "CapaPJe",
     "DocumentoPJe",
     "ElawCondenacao",
     "ElawCustas",
     "ElawProvisionamento",
+    "EsajCapa",
     "ExpedienteDocumentoPJe",
     "HealtCheck",
     "JusdsProvisionamento",
@@ -34,5 +39,6 @@ __all__ = [
     "PJeCapa",
     "PJeMovimentacao",
     "PartePJe",
+    "ProjudiCapa",
     "RepresentantePJe",
 ]

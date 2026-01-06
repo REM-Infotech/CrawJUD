@@ -78,7 +78,7 @@ class Protocolo(HabilitiacaoPJe):
                 regiao=regiao,
             )
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.print_message(
                 message="\n".join(traceback.format_exception(e)),
                 message_type="info",
@@ -120,7 +120,7 @@ class Protocolo(HabilitiacaoPJe):
                         message_type="success",
                     )
 
-                except (KeyError, Exception) as e:
+                except (KeyError, Exception) as e:  # noqa: BLE001
                     exc_message = "\n".join(
                         traceback.format_exception_only(e),
                     )

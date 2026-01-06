@@ -19,7 +19,7 @@ from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common import raise_execution_error
 from backend.common.exceptions import ExecutionError
-from backend.interfaces.projudi import CapaProjudiDict
+from backend.dicionarios import ProjudiCapa
 
 from ._2 import SegundaInstancia
 from .primeira import PrimeiraInstancia
@@ -109,16 +109,12 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
             raise_execution_error("Erro ao executar operação")
 
     def primeiro_grau(self, numero_processo: str) -> None:
-        process_info = CapaProjudiDict(NUMERO_PROCESSO=numero_processo)
+        process_info = ProjudiCapa(NUMERO_PROCESSO=numero_processo)
 
-        list_items = dir(CapaProjudiDict)
+        list_items = dir(ProjudiCapa)
         for item in list_items:
             val = process_info.get(item)
-            if (
-                not val
-                and not item.startswith("_")
-                and not callable(getattr(CapaProjudiDict, item))
-            ):
+            if not val and not item.startswith("_") and not callable(getattr(ProjudiCapa, item)):
                 process_info.update({item: "Vazio"})
 
         informacoes_gerais = self._informacoes_gerais_primeiro_grau()
@@ -141,16 +137,12 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
             self.append_success(worksheet=item[0], data_save=item[1])
 
     def segundo_grau(self, numero_processo: str) -> None:
-        process_info = CapaProjudiDict(NUMERO_PROCESSO=numero_processo)
+        process_info = ProjudiCapa(NUMERO_PROCESSO=numero_processo)
 
-        list_items = dir(CapaProjudiDict)
+        list_items = dir(ProjudiCapa)
         for item in list_items:
             val = process_info.get(item)
-            if (
-                not val
-                and not item.startswith("_")
-                and not callable(getattr(CapaProjudiDict, item))
-            ):
+            if not val and not item.startswith("_") and not callable(getattr(ProjudiCapa, item)):
                 process_info.update({item: "Vazio"})
 
         informacoes_gerais = self._informacoes_gerais_segundo_grau()
