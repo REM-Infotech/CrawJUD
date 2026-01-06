@@ -18,9 +18,6 @@ from backend.resources.search.pje import PjeSeach
 
 if TYPE_CHECKING:
     from backend.dicionarios import BotData
-    from backend.resources.queues.file_downloader import (
-        FileDownloader,
-    )
     from typings import Dict, ProcessoCNJ
 
 load_dotenv()
@@ -31,7 +28,6 @@ class PJeBot(CrawJUD):
 
     _regiao: ClassVar[int] = 1
     _is_grau_list: ClassVar[bool] = False
-    download_file: FileDownloader
     posicoes_processos: ClassVar[dict[str, str]] = {}
 
     auth: AutenticadorPJe
