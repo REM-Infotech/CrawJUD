@@ -267,9 +267,7 @@ class Protocolo(ProjudiBot):
         tipo_anexos_data = bot_data["TIPO_ANEXOS"]
         anexos = anexos_data.split(",") if "," in anexos_data else [anexos_data]
         tipo_anexos = (
-            tipo_anexos_data.split(",")
-            if "," in tipo_anexos_data
-            else [tipo_anexos_data]
+            tipo_anexos_data.split(",") if "," in tipo_anexos_data else [tipo_anexos_data]
         )
 
         for pos, nome_arquivo in enumerate(anexos):
@@ -526,7 +524,8 @@ class Protocolo(ProjudiBot):
         with path_comprovante2.open("wb") as fp:
             fp.write(self.driver.get_screenshot_as_png())
 
-        message = f"Peticionamento do processo Nº{self.bot_data.get('NUMERO_PROCESSO')} concluído com sucesso!"
+        proc = self.bot_data.get("NUMERO_PROCESSO")
+        message = f"Peticionamento do processo Nº{proc} concluído com sucesso!"
         message_type = "success"
         self.print_message(
             message=message,
@@ -552,7 +551,7 @@ class Protocolo(ProjudiBot):
 
                 if style_progressbar == "visibility: hidden;":
                     break
-            except Exception:
+            except Exception:  # noqa: BLE001
                 break
 
     def __confirma_inclusao(self) -> None:

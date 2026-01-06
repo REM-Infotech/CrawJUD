@@ -1,4 +1,4 @@
-# ruff: noqa: BLE001, E501, SLF001
+# ruff: noqa: BLE001, SLF001
 
 from __future__ import annotations
 
@@ -82,7 +82,7 @@ class Movimentacao(ProjudiBot):
 
             list_botdata = list(self.bot_data.items())
             for key, value in list_botdata:
-                if value is None:
+                if not value:
                     self.bot_data.pop(key)
 
             self.print_message(
@@ -92,7 +92,7 @@ class Movimentacao(ProjudiBot):
 
             search = self.search()
 
-            if search is not True:
+            if not search:
                 self.print_message(
                     message="Processo não encontrado!",
                     message_type="error",
@@ -146,9 +146,7 @@ class Movimentacao(ProjudiBot):
         termos = [
             " ".join(termo.split())
             for termo in (
-                [palavras_chave]
-                if "," not in palavras_chave
-                else palavras_chave.split(",")
+                [palavras_chave] if "," not in palavras_chave else palavras_chave.split(",")
             )
         ]
 
@@ -163,12 +161,10 @@ class Movimentacao(ProjudiBot):
 
             """
             return any(
-                elemento.find_elements(By.TAG_NAME, "td")[3].text.lower()
-                == termo.lower()
+                elemento.find_elements(By.TAG_NAME, "td")[3].text.lower() == termo.lower()
                 for termo in termos
             ) or any(
-                termo.lower()
-                in elemento.find_elements(By.TAG_NAME, "td")[3].text.lower()
+                termo.lower() in elemento.find_elements(By.TAG_NAME, "td")[3].text.lower()
                 for termo in termos
             )
 
@@ -234,9 +230,7 @@ class Movimentacao(ProjudiBot):
             message = f"Foram encontradas {qtd_movimentacoes} movimentações!"
 
             if com_documento:
-                message = (
-                    f"Foram encontradas {qtd_movimentacoes} movimentações com arquivos!"
-                )
+                message = f"Foram encontradas {qtd_movimentacoes} movimentações com arquivos!"
 
             self.print_message(
                 message=message,
@@ -290,8 +284,7 @@ class Movimentacao(ProjudiBot):
         )
 
         cookies = {
-            str(cookie["name"]): str(cookie["value"])
-            for cookie in self.driver.get_cookies()
+            str(cookie["name"]): str(cookie["value"]) for cookie in self.driver.get_cookies()
         }
 
         part_files: list[Path] = []
@@ -303,9 +296,7 @@ class Movimentacao(ProjudiBot):
                 tds_files = tr_file.find_elements(By.TAG_NAME, "td")
                 tds_files[0]
 
-                link_arquivo = (
-                    tds_files[4].find_element(By.TAG_NAME, "a").get_attribute("href")
-                )
+                link_arquivo = tds_files[4].find_element(By.TAG_NAME, "a").get_attribute("href")
 
                 with client.stream("get", link_arquivo) as stream:
                     tmp_file_name = f"part_{str(pos).zfill(2)}.pdf"
@@ -317,9 +308,7 @@ class Movimentacao(ProjudiBot):
 
                     part_files.append(tmp_path_file)
 
-        _pages = [
-            writer.add_page(page) for f in part_files for page in PdfReader(f).pages
-        ]
+        _pages = [writer.add_page(page) for f in part_files for page in PdfReader(f).pages]
 
         pdf_out_name = tds[3].text
         if "\n" in pdf_out_name:
@@ -357,9 +346,7 @@ class Movimentacao(ProjudiBot):
             "Data": tds[2].text,
             "Evento": " ".join(evento.split()),
             "Descrição Evento": "Sem Descrição",
-            "Movimentado Por": " ".join([
-                t.capitalize() for t in movimentado_por.split()
-            ]),
+            "Movimentado Por": " ".join([t.capitalize() for t in movimentado_por.split()]),
         }
 
         if "\n" in movimentado_por:
