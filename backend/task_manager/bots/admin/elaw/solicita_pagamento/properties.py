@@ -8,26 +8,27 @@ pagamento no contexto do bot Elaw.
 from __future__ import annotations
 
 import traceback
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal, overload
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.common.raises import raise_execution_error
+from backend.common.exceptions import ExecutionError
 from backend.controllers import ElawBot
+from backend.interfaces.elaw.pagamentos import ISolicitacaoPagamentos
 from backend.resources.elements.elaw import (
     SolicitaPagamento as Element,
 )
 
 if TYPE_CHECKING:
+    from backend.dicionarios import ElawCondenacao, ElawCustas
     from backend.interfaces.elaw.pagamentos import (
-        CondenacaoDataType,
-        CustasDataType,
         ISolicitacaoPagamentos,
     )
-    from backend.resources.driver.web_element import (
-        WebElement as WebElement,
-    )
+    from backend.resources.driver.web_element import WebElement
+
+    from .condenacao import PgtoCondenacao
+    from .custas import PgtoCustas
 
 PGTO_BOLETO = "Boleto bancário"
 
@@ -35,16 +36,26 @@ PGTO_BOLETO = "Boleto bancário"
 class Geral(ElawBot):
     """Gerencie dados e ações do fluxo de solicitação de pagamento Elaw."""
 
-    _bot_data: CondenacaoDataType | CustasDataType = None
+    _bot_data: ElawCondenacao | ElawCustas = None
     Solicitadores: ClassVar[dict[str, ISolicitacaoPagamentos]] = {}
 
+    @overload
+    def solicitadores(self, nome: Literal["Condenação"]) -> PgtoCondenacao: ...
+    @overload
+    def solicitadores(self, nome: Literal["Custas"]) -> PgtoCustas: ...
+    @overload
+    def solicitadores(self, nome: str) -> PgtoCustas | PgtoCondenacao: ...
+
+    def solicitadores(self, nome: str) -> PgtoCustas | PgtoCondenacao:
+        return self.Solicitadores[nome]
+
     @property
-    def bot_data(self) -> CondenacaoDataType | CustasDataType:
+    def bot_data(self) -> ElawCondenacao | ElawCustas:
         """Retorne os dados do bot para pagamento."""
         return self._bot_data
 
     @bot_data.setter
-    def bot_data(self, val: CondenacaoDataType | CustasDataType) -> None:
+    def bot_data(self, val: ElawCondenacao | ElawCustas) -> None:
         self._bot_data = val
 
     @property
@@ -78,7 +89,7 @@ class Geral(ElawBot):
 
         except Exception as e:
             message = "\n".join(traceback.format_exception(e))
-            raise_execution_error(message=message, exc=e)
+            raise ExecutionError(message=message) from e
 
     @property
     def seletores_informacao(self) -> list[WebElement]:

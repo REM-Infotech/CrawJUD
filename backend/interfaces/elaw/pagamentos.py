@@ -6,15 +6,10 @@ informações de pagamentos e condenações processuais.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, TypedDict
-
-from typings import P
-
-if TYPE_CHECKING:
-    from typings.bot import ProcessoCNJ
+from typing import Protocol
 
 
-class ISolicitacaoPagamentos[T](Protocol[P, T]):
+class ISolicitacaoPagamentos[**P, T](Protocol[P, T]):
     """Defina interface para solicitações de pagamentos Elaw.
 
     Estruture chamadas para processar pagamentos no sistema.
@@ -31,49 +26,3 @@ class ISolicitacaoPagamentos[T](Protocol[P, T]):
     def __call__(self) -> None:
         """Execute a solicitação de pagamento Elaw."""
         ...
-
-
-class CondenacaoDataType(TypedDict):
-    """Estruture dados de condenação e pagamento do Elaw.
-
-    Esta classe organiza informações de pagamentos
-    processuais, como valores, documentos e partes.
-    """
-
-    NUMERO_PROCESSO: ProcessoCNJ
-    DESC_PAGAMENTO: str
-    VALOR_GUIA: str
-    DATA_LANCAMENTO: str
-    TIPO_PAGAMENTO: str
-    SOLICITANTE: str
-    TIPO_CONDENACAO: str
-    COD_BARRAS: str
-    DOC_GUIA: str
-    DOC_CALCULO: str
-    LOCALIZACAO: str
-    CNPJ_FAVORECIDO: str
-    FORMA_PAGAMENTO: str
-    CENTRO_CUSTAS: str
-    CONTA_DEBITO: str
-
-
-class CustasDataType(TypedDict):
-    """Estruture dados de custas processuais do sistema Elaw.
-
-    Organize informações de guias, valores e partes envolvidas.
-    """
-
-    NUMERO_PROCESSO: ProcessoCNJ
-    TIPO_GUIA: str
-    VALOR_GUIA: str
-    DATA_LANCAMENTO: str
-    TIPO_PAGAMENTO: str
-    SOLICITANTE: str
-    DESC_PAGAMENTO: str
-    COD_BARRAS: str
-    DOC_GUIA: str
-    LOCALIZACAO: str
-    CNPJ_FAVORECIDO: str
-    FORMA_PAGAMENTO: str
-    CENTRO_CUSTAS: str
-    CONTA_DEBITO: str

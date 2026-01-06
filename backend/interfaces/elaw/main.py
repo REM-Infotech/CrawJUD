@@ -16,7 +16,7 @@ from backend.task_manager.constants.data._bots.cidades import (
 )
 
 if TYPE_CHECKING:
-    from typings import Dict
+    from typings import Any, Dict
 
 
 class ElawData(UserDict):

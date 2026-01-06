@@ -14,6 +14,7 @@ from selenium.common import JavascriptException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
+from backend.common.exceptions import ExecutionError
 from backend.common.raises import raise_execution_error
 from backend.resources.elements.elaw import (
     SolicitaPagamento as Element,
@@ -22,12 +23,8 @@ from backend.resources.elements.elaw import (
 from .properties import Geral
 
 if TYPE_CHECKING:
-    from backend.interfaces.elaw.pagamentos import (
-        ISolicitacaoPagamentos,
-    )
-    from backend.resources.driver import (
-        WebElement as WebElement,
-    )
+    from .condenacao import PgtoCondenacao
+    from .custas import PgtoCustas
 
 
 class Inicializacao(Geral):
@@ -57,9 +54,9 @@ class Inicializacao(Geral):
 
         except Exception as e:
             message = "\n".join(traceback.format_exception(e))
-            raise_execution_error(message=message, exc=e)
+            raise ExecutionError(message=message) from e
 
-    def seleciona_tipo_pgto(self: Inicializacao) -> ISolicitacaoPagamentos:
+    def seleciona_tipo_pgto(self: Inicializacao) -> PgtoCustas | PgtoCondenacao:
         """Seleciona o tipo de pagamento no formulário do Elaw.
 
         Returns:
@@ -74,7 +71,7 @@ class Inicializacao(Geral):
             tipo_pgto: str = self.bot_data["TIPO_PAGAMENTO"].capitalize()
             # Aguarda o elemento do tipo de pagamento estar disponível
             sleep(0.5)
-            el_select: WebElement = self.wait.until(
+            el_select = self.wait.until(
                 ec.presence_of_element_located((
                     By.XPATH,
                     Element.XPATH_TIPO_PAGAMENTO,
@@ -86,7 +83,7 @@ class Inicializacao(Geral):
             self.sleep_load(Element.CSS_LOAD)
 
             # Retorna a instância do solicitador correspondente
-            return self.Solicitadores[tipo_pgto]
+            return self.solicitadores(nome=tipo_pgto)
 
         except KeyError as e:
             # Trata erro de tipo de pagamento não encontrado

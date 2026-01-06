@@ -1,5 +1,7 @@
 from .api import HealtCheck, LoginForm
 from .planilhas_robos import (
+    ElawCondenacao,
+    ElawCustas,
     ElawProvisionamento,
     JusdsProvisionamento,
     PJeCapa,
@@ -21,6 +23,8 @@ __all__ = [
     "AudienciaProcessoPJe",
     "CapaPJe",
     "DocumentoPJe",
+    "ElawCondenacao",
+    "ElawCustas",
     "ElawProvisionamento",
     "ExpedienteDocumentoPJe",
     "HealtCheck",

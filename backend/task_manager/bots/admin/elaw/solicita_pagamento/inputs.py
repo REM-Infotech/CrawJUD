@@ -20,9 +20,7 @@ from backend.resources.formatadores import formata_string
 from .properties import Geral
 
 if TYPE_CHECKING:
-    from backend.resources.driver import (
-        WebElement as WebElement,
-    )
+    from backend.resources.driver import WebElement
 
 
 type TipoDocumento = Literal["Gru - Custas Processuais", "Guia de Pagamento"]
