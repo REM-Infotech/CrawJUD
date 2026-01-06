@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from abc import abstractmethod
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
+from time import sleep
 from typing import TYPE_CHECKING, ClassVar
 
 from dotenv import load_dotenv
@@ -130,10 +132,15 @@ class PJeBot(CrawJUD):
         headers = self.auth.get_headers(url=url)
 
         client_context = Client(cookies=cookies, headers=headers)
-        _thread_pool = ThreadPoolExecutor(2)
+        thread_pool = ThreadPoolExecutor(6)
 
-        with client_context as client:
+        with client_context as client, thread_pool as pool:
             for item in data:
                 if self.bot_stopped.is_set():
                     break
-                self.queue(item=item, client=client)
+
+                pool.submit(self.queue, item=item, client=client)
+                sleep(5)
+
+    @abstractmethod
+    def queue(self, item: BotData, client: Client): ...  # noqa: ANN201
