@@ -6,10 +6,9 @@ from typing import TYPE_CHECKING
 
 from tqdm import tqdm
 
+from backend.components import TimeLinePJe
 from backend.controllers.pje import PJeBot
 from backend.dicionarios import CapaPJe, MovimentacaoPJe
-
-from ._timeline import TimeLinePJe
 
 if TYPE_CHECKING:
     from queue import Queue

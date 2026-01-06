@@ -9,13 +9,9 @@ from typing import TYPE_CHECKING, ClassVar
 from tqdm import tqdm
 
 from backend.common.exceptions._fatal import FatalError
+from backend.components import AssuntosPJe, AudienciasPJe, PartesPJe, TimeLinePJe
 from backend.controllers.pje import PJeBot
 from backend.dicionarios import CapaPJe
-
-from ._assuntos import AssuntosPJe
-from ._audiencias import AudienciasPJe
-from ._partes import PartesPJe
-from ._timeline import TimeLinePJe
 
 if TYPE_CHECKING:
     from queue import Queue
