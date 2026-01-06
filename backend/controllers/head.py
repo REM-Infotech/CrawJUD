@@ -68,7 +68,7 @@ class CrawJUD:
 
     def shutdown_all(self) -> None:
 
-        if hasattr(self, "driver") and not self.driver.is_closed():
+        if hasattr(self, "driver") and not self.driver.is_closed:
             window_handles = self.driver.window_handles
             if window_handles:
                 self.driver.delete_all_cookies()
@@ -154,7 +154,7 @@ class CrawJUD:
             self.append_success.queue_save.shutdown()
             self.append_error.queue_save.shutdown()
 
-            if not self.driver.is_closed():
+            if not self.driver.is_closed:
                 window_handles = self.driver.window_handles
                 if window_handles:
                     self.driver.delete_all_cookies()
