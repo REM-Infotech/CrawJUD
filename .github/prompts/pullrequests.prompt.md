@@ -25,6 +25,7 @@ tools:
 Instruções para geração de titulo e descrição de Pull requests.
 Essas instruções são para edição de titulo e corpo de uma pull request ativa
 Caso não tenha pull request ativa, verifique se o usuario passou alguma e use esta.
+Tudo precisa ser em português brasileiro.
 
 ## 1. Context gathering and research:
 
