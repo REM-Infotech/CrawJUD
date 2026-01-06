@@ -3,6 +3,6 @@
 Este pacote contém módulos para diferentes bots administrativos.
 """
 
-from . import csi, elaw, jusds
+from . import csi, elaw
 
-__all__ = ["csi", "elaw", "jusds"]
+__all__ = ["csi", "elaw"]
