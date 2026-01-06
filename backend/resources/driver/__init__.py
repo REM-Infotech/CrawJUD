@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from threading import Event
+from typing import TYPE_CHECKING, TypedDict, Unpack
 
-from selenium.webdriver import Chrome
+from selenium.webdriver import Chrome as SeChromeDriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
-from seleniumwire.webdriver import Chrome as SeleniumWireChrome
+from seleniumwire.webdriver import Chrome as SeWireChrome
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.driver_cache import DriverCacheManager
 
@@ -22,6 +23,58 @@ from backend.task_manager.constants.webdriver import (
 
 if TYPE_CHECKING:
     from backend.controllers.head import CrawJUD
+
+
+class ChromeDriverKwargs(TypedDict):  # noqa: D101
+    options: Options
+    service: Service
+
+
+class SeleniumWireOptions(TypedDict):  # noqa: D101
+    addr: str
+    port: int
+    exclude_hosts: list[str]
+    standalone: bool
+
+
+class Chrome(SeChromeDriver):  # noqa: D101
+    def __init__(  # noqa: D107
+        self,
+        options: Options = None,
+        service: Service = None,
+        *,
+        keep_alive: bool = True,
+    ) -> None:
+
+        self._event_driver = Event()
+        super().__init__(options, service, keep_alive)
+
+    def quit(self) -> None:
+        self._event_driver.set()
+        return super().quit()
+
+    @property
+    def is_closed(self) -> bool:
+        return self._event_driver.is_set()
+
+
+class SeleniumWireChrome(SeWireChrome):  # noqa: D101
+    def __init__(  # noqa: D107
+        self,
+        *,
+        seleniumwire_options: SeleniumWireOptions = None,
+        **kwargs: Unpack[ChromeDriverKwargs],
+    ) -> None:
+        self._event_driver = Event()
+        super().__init__(seleniumwire_options=seleniumwire_options, **kwargs)
+
+    def quit(self) -> None:
+        self._event_driver.set()
+        return super().quit()
+
+    @property
+    def is_closed(self) -> bool:
+        return self._event_driver.is_set()
 
 
 class BotDriver:

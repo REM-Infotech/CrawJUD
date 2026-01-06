@@ -68,6 +68,12 @@ class CrawJUD:
 
     def shutdown_all(self) -> None:
 
+        if hasattr(self, "driver") and not self.driver.is_closed():
+            window_handles = self.driver.window_handles
+            if window_handles:
+                self.driver.delete_all_cookies()
+                self.driver.quit()
+
         if hasattr(self, "append_success"):
             with suppress(Exception):
                 self.append_success.queue_save.shutdown()
@@ -147,10 +153,12 @@ class CrawJUD:
         with suppress(Exception):
             self.append_success.queue_save.shutdown()
             self.append_error.queue_save.shutdown()
-            window_handles = self.driver.window_handles
-            if window_handles:
-                self.driver.delete_all_cookies()
-                self.driver.quit()
+
+            if not self.driver.is_closed():
+                window_handles = self.driver.window_handles
+                if window_handles:
+                    self.driver.delete_all_cookies()
+                    self.driver.quit()
 
         message = "Fim da execução"
         link = self.file_manager.upload_file()
