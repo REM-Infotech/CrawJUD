@@ -237,16 +237,12 @@ class Movimentacao(ProjudiBot):
                 message_type="info",
             )
 
+        trazer_doc = str(bot_data.get("TRAZER_ARQUIVO_MOVIMENTACAO", "não"))
         for item in filtered_moves:
             tds = item.find_elements(By.TAG_NAME, "td")
             self._formatar_dados(tds)
-            if all(
-                [
-                    com_documento,
-                    "TRAZER_ARQUIVO_MOVIMENTACAO" in bot_data,
-                    bot_data["TRAZER_ARQUIVO_MOVIMENTACAO"].lower() == "sim",
-                ],
-            ):
+
+            if all([com_documento, trazer_doc.lower() == "sim"]):
                 self._extrair_arquivos_movimentacao(
                     table_movimentacoes=table_movimentacoes,
                     tds=tds,
