@@ -10,6 +10,7 @@ from contextlib import suppress
 from datetime import datetime
 from queue import Queue
 from threading import Thread
+from time import sleep
 from typing import TYPE_CHECKING, Literal, TypedDict
 from zoneinfo import ZoneInfo
 
@@ -208,6 +209,7 @@ class PrintMessage:
 
         self.sio = sio
         for data in QueueIterator(self.queue_print_bot):
+            sleep(1)
             with suppress(Exception):
                 if not sio.connected:
                     sio.connect(
