@@ -60,7 +60,7 @@ class Inicializacao(Geral):
         """Seleciona o tipo de pagamento no formulário do Elaw.
 
         Returns:
-            ISolicitacaoPagamentos: Solicitador do tipo de pagamento.
+            (PgtoCustas | PgtoCondenacao): Solicitador do tipo de pagamento.
 
         """
         # Define mensagem de status para logs ou exceções

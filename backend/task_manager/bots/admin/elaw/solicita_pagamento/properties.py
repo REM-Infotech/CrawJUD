@@ -15,16 +15,12 @@ from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common.exceptions import ExecutionError
 from backend.controllers import ElawBot
-from backend.interfaces.elaw.pagamentos import ISolicitacaoPagamentos
 from backend.resources.elements.elaw import (
     SolicitaPagamento as Element,
 )
 
 if TYPE_CHECKING:
     from backend.dicionarios import ElawCondenacao, ElawCustas
-    from backend.interfaces.elaw.pagamentos import (
-        ISolicitacaoPagamentos,
-    )
     from backend.resources.driver.web_element import WebElement
 
     from .condenacao import PgtoCondenacao
@@ -37,7 +33,7 @@ class Geral(ElawBot):
     """Gerencie dados e ações do fluxo de solicitação de pagamento Elaw."""
 
     _bot_data: ElawCondenacao | ElawCustas = None
-    Solicitadores: ClassVar[dict[str, ISolicitacaoPagamentos]] = {}
+    Solicitadores: ClassVar[dict[str, PgtoCustas | PgtoCondenacao]] = {}
 
     @overload
     def solicitadores(self, nome: Literal["Condenação"]) -> PgtoCondenacao: ...
