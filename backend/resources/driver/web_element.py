@@ -98,14 +98,6 @@ class WebElement(SEWebElement):
         Select(self).select_by_value(item)
 
     def click(self) -> None:
-        """Perform a click action on a web element with brief pauses.
-
-        Args:
-            element (WebElement): The target web element.
-
-        Implements a click with pre- and post-click delays.
-
-        """
         sleep(0.05)
         super().click()
         sleep(0.05)
