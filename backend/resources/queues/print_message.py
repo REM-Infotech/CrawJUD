@@ -209,7 +209,7 @@ class PrintMessage:
 
         self.sio = sio
         for data in QueueIterator(self.queue_print_bot):
-            sleep(1)
+            sleep(0.25)
             with suppress(Exception):
                 if not sio.connected:
                     sio.connect(

@@ -11,6 +11,7 @@ import jpype
 import pyotp
 import requests
 from dotenv import dotenv_values
+from httpx import Client, Cookies
 
 # Importa classes Java
 from jpype import JClass
@@ -27,7 +28,6 @@ from backend.common import auth_error
 from backend.resources.assinador import Assinador
 from backend.resources.auth.main import AutenticadorBot
 from backend.resources.elements import pje as el
-from backend.resources.formatadores import random_base36
 
 if TYPE_CHECKING:
     from cryptography.x509 import Certificate
@@ -88,9 +88,6 @@ class AutenticadorPJe(AutenticadorBot):
             url = el.LINK_AUTENTICACAO_SSO.format(regiao=self.regiao)
             self.driver.get(url)
 
-            if "https://sso.cloud.pje.jus.br/" not in self.driver.current_url:
-                return url not in self.driver.current_url
-
             self.wait.until(
                 ec.presence_of_element_located((
                     By.CSS_SELECTOR,
@@ -100,6 +97,7 @@ class AutenticadorPJe(AutenticadorBot):
 
             self._login_certificado()
             self._desafio_duplo_fator()
+
             sucesso_login = WebDriverWait(
                 driver=self.driver,
                 timeout=10,
@@ -121,26 +119,30 @@ class AutenticadorPJe(AutenticadorBot):
         return sucesso_login
 
     def _login_certificado(self) -> None:
-        # enviar diretamente ao endpoint PJe (exemplo)
+        cookies = Cookies()
+
         uuid_tarefa = str(uuid4())
-        desafio = random_base36()
+        desafio = self._extrair_desafio()
         assinador = Assinador(
             self.credenciais.certificado,
             self.credenciais.password,
         )
         conteudo_assinado = assinador.assinar_conteudo(desafio)
+        driver_cookies = list(self.driver.get_cookies())
 
-        base64_conteudo = conteudo_assinado.conteudo_assinado_base64
-        cadeia_base64 = conteudo_assinado.cadeia_base64
+        for cookie in driver_cookies:
+            cookies.set(cookie["name"], cookie["value"], cookie["domain"], cookie["path"])
 
-        ssopayload = {
-            "uuid": uuid_tarefa,
-            "mensagem": desafio,
-            "assinatura": base64_conteudo,
-            "certChain": cadeia_base64,
-        }
-
-        resp = requests.post(ENDPOINT_DESAFIO, json=ssopayload, timeout=30)
+        with Client(timeout=30, cookies=cookies) as client:
+            resp = client.post(
+                url=ENDPOINT_DESAFIO,
+                json={
+                    "uuid": uuid_tarefa,
+                    "mensagem": desafio,
+                    "assinatura": conteudo_assinado.conteudo_assinado_base64,
+                    "certChain": conteudo_assinado.cadeia_base64,
+                },
+            )
 
         if resp.status_code != NO_CONTENT_STATUS:
             auth_error()
@@ -188,3 +190,15 @@ class AutenticadorPJe(AutenticadorBot):
     def _cookie_to_dict(self) -> dict[str, str]:
         cookies_driver = self.driver.get_cookies()
         return {str(cookie["name"]): str(cookie["value"]) for cookie in cookies_driver}
+
+    def _extrair_desafio(self) -> str:
+
+        class_cert = (
+            self.driver.find_element(By.CSS_SELECTOR, 'div[class="certificado"]')
+            .find_element(By.TAG_NAME, "a")
+            .get_attribute("onclick")
+        )
+
+        list_text = class_cert.split(", ")[1].split("'")
+
+        return list_text[1]

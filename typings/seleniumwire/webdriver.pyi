@@ -1,7 +1,19 @@
+from typing import TypedDict
+
 from selenium.webdriver import Chrome as _Chrome
 from seleniumwire.inspect import InspectRequestsMixin
 
 from typings import Any
+
+class Cookie(TypedDict):
+    domain: str
+    expiry: int
+    httpOnly: bool
+    name: str
+    path: str
+    sameSite: str
+    secure: int
+    value: str
 
 class DriverCommonMixin:
     def _setup_backend(self, seleniumwire_options: dict[str, Any]) -> dict[str, Any]: ...
@@ -13,3 +25,4 @@ class DriverCommonMixin:
 class Chrome(InspectRequestsMixin, DriverCommonMixin, _Chrome):
     @property
     def is_closed(self) -> bool: ...
+    def get_cookies(self) -> list[Cookie]: ...
