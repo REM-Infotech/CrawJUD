@@ -1,6 +1,7 @@
 # ruff: noqa: BLE001
 from __future__ import annotations
 
+from collections import UserString
 from contextlib import suppress
 from time import sleep
 from traceback import format_exception
@@ -20,6 +21,7 @@ from backend.resources.elements.jusds import Provisionamento as El
 if TYPE_CHECKING:
     from backend.controllers.head import BotIterator
     from backend.dicionarios import JusdsProvisionamento
+    from backend.resources.driver.web_element import WebElement
 
 
 STATUS_EVENTO = {
@@ -44,6 +46,43 @@ ELEMENTOS = {
     "VALOR_PAGO": El.CSS_INPUT_VALOR_PAGO,
     "DATA_PAGAMENTO": El.CSS_INPUT_DATA_PAGAMENTO,
 }
+
+
+class JusdsURL(UserString):
+    BASE = "https://infraero.jusds.com.br/JRD/openform.do"
+
+    def __init__(
+        self,
+        *,
+        sys: str,
+        action: str,
+        formID: str,  # noqa: N803
+        mode: str,
+        goto: str,
+        filter_val: str,
+        scrolling: str,
+    ) -> None:
+
+        self.sys = sys
+        self.action = action
+        self.formID = formID
+        self.mode = mode
+        self.goto = goto
+        self.filter = filter_val
+        self.scrolling = scrolling
+
+    def __str__(self) -> str:
+        return (
+            f"{self.BASE}"
+            f"?sys={self.sys}"
+            f"&action={self.action}"
+            f"&formID={self.formID}"
+            f"&mode={self.mode}"
+            f"&goto={self.goto}"
+            f"&filter={self.filter}"
+            f"&scrolling={self.scrolling}"
+            f"#!"
+        )
 
 
 class Provisionamento(JusdsBot):
@@ -72,23 +111,7 @@ class Provisionamento(JusdsBot):
     def alterar_risco(self) -> None:
 
         proc = self.bot_data["NUMERO_PROCESSO"]
-        btn_pagina_risco = self.wait.until(
-            presence_of_element_located((By.XPATH, '//*[@id="tabButton8"]')),
-        )
-
-        with suppress(Exception):
-            w = WebDriverWait(self.driver, 10)
-            message_popup = w.until(
-                presence_of_element_located((
-                    By.XPATH,
-                    '//*[@id="0143FB23-78A2-4DC4-9ADE-22B059AAEB88"]/div[7]',
-                )),
-            )
-
-            self.driver.execute_script("$(arguments[0]).toggle()", message_popup)
-
-        with suppress(Exception):
-            btn_pagina_risco.click()
+        self.acessa_pagina_risco()
 
         sleep(2)
 
@@ -108,13 +131,16 @@ class Provisionamento(JusdsBot):
 
             self._informa_status()  # ultimo
 
+            self.salva_alteracoes()
+
+            self._informa_objeto()
+
         except Exception as e:
             raise ExecutionError(message="Erro de operação", exc=e) from e
 
         out = self.output_dir_path
         comprovante = out.joinpath(f"Comprovante - {proc} - {self.pid}.png")
         comprovante.write_bytes(self.driver.get_screenshot_as_png())
-        tqdm.write(str(comprovante))
 
     def _informa_nivel(self) -> None:
 
@@ -128,25 +154,6 @@ class Provisionamento(JusdsBot):
             input_nivel,
             value,
         )
-
-        self._select_item(value=value)
-
-    def _informa_status(self) -> None:
-
-        value = STATUS_EVENTO[self.bot_data["STATUS_EVENTO"].upper()]
-        input_status = self.wait.until(
-            presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_STATUS_EVENTO)),
-        )
-
-        self.driver.execute_script(
-            "arguments[0].value = arguments[1]",
-            input_status,
-            value,
-        )
-
-        self._select_item(value=value)
-
-    def _select_item(self, value: str) -> None:
 
         items_table = (
             self.wait.until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
@@ -162,16 +169,35 @@ class Provisionamento(JusdsBot):
         )
         select_element.select_by_value(value)
 
+    def _informa_status(self) -> None:
+
+        value = STATUS_EVENTO[self.bot_data["STATUS_EVENTO"].upper()]
+        input_status = self.wait.until(
+            presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_STATUS_EVENTO)),
+        )
+
+        self.driver.execute_script(
+            "arguments[0].value = arguments[1]",
+            input_status,
+            value,
+        )
+
+        items_table = (
+            self.wait.until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            .find_element(By.TAG_NAME, "tbody")
+            .find_elements(By.TAG_NAME, "tr")
+        )
+
+        tds = items_table[0].find_elements(By.TAG_NAME, "td")
+        tds.reverse()
+
+        items_table.reverse()
+        select_element = Select(
+            tds[0].find_element(By.TAG_NAME, "select"),
+        )
+        select_element.select_by_value(value)
+
     def _informa_campos(self) -> None:
-
-        def send_data(val: str) -> None:
-
-            el.click()
-            sleep(0.25)
-            el.send_keys(val)
-            sleep(0.25)
-            el.send_keys(Keys.ENTER)
-            sleep(0.25)
 
         for nome in ELEMENTOS:
             el = self.driver.find_element(By.CSS_SELECTOR, ELEMENTOS[nome])
@@ -183,4 +209,127 @@ class Provisionamento(JusdsBot):
             if nome == "MOMENTO_PROCESSUAL":
                 val = self.bot_data[nome].upper()
 
-            send_data(val)
+            self.send_data(val, el)
+
+    def _informa_objeto(self) -> None:
+
+        self.driver.refresh()
+        self.acessa_pagina_risco()
+
+        items_table = (
+            self.wait.until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            .find_element(By.TAG_NAME, "tbody")
+            .find_elements(By.TAG_NAME, "tr")
+        )
+
+        id_risco = (
+            items_table[0]
+            .find_element(
+                By.XPATH,
+                '//td[@height="33"][@class="grid" or @class="gridAltCol"]/div',
+            )
+            .text.strip()
+        )
+
+        window_processo = self.driver.current_window_handle
+        self.driver.switch_to.new_window("tab")
+
+        self._criacao_objeto(id_risco=id_risco)
+
+        self.driver.close()
+        self.driver.switch_to.window(window_processo)
+        self.append_success(
+            "Sucessos",
+            [
+                {
+                    "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
+                    "ID_PROVISAO": id_risco,
+                },
+            ],
+        )
+
+    def _criacao_objeto(self, id_risco: str) -> None:
+
+        url = str(
+            JusdsURL(
+                sys="JRD",
+                action="openform",
+                formID="464569307",
+                mode="-1",
+                goto="-1",
+                filter_val=f"jrd_riscos_processo.jrd_rsp_id={id_risco}@long",
+                scrolling="yes",
+            ),
+        )
+        self.driver.get(url)
+
+        adicionar_risco_btn = self.wait.until(
+            presence_of_element_located((
+                By.XPATH,
+                '//*[@id="TMAKERGRIDbar"]/*[@id="addButton"]',
+            )),
+        )
+
+        adicionar_risco_btn.click()
+
+        input_objeto_risco = self.wait.until(
+            presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_OBJETO)),
+        )
+
+        self.send_data(self.bot_data["OBJETO_RISCO"], input_objeto_risco)
+
+        input_objeto_porcentagem = self.wait.until(
+            presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_PORCENTAGEM_OBJETO)),
+        )
+
+        self.send_data(self.bot_data["OBJETO_PORCENTAGEM"], input_objeto_porcentagem)
+
+        btn_salvar = self.wait.until(
+            presence_of_element_located((By.CSS_SELECTOR, El.CSS_BTN_SALVAR_OBJETO)),
+        )
+        btn_salvar.click()
+
+        sleep(2)
+
+    def acessa_pagina_risco(self) -> None:
+
+        btn_pagina_risco = self.wait.until(
+            presence_of_element_located((By.XPATH, '//*[@id="tabButton8"]')),
+        )
+
+        with suppress(Exception):
+            w = WebDriverWait(self.driver, 10)
+            message_popup = w.until(
+                presence_of_element_located((
+                    By.XPATH,
+                    '//*[@id="0143FB23-78A2-4DC4-9ADE-22B059AAEB88"]/div[7]',
+                )),
+            )
+
+            self.driver.execute_script("$(arguments[0]).toggle()", message_popup)
+
+        with suppress(Exception):
+            btn_pagina_risco.click()
+
+    def salva_alteracoes(self) -> None:
+
+        btn_salvar = self.wait.until(
+            presence_of_element_located((
+                By.XPATH,
+                '//div[@id="TMAKERGRID9bar"]/i[@id="saveButton"]',
+            )),
+        )
+
+        btn_salvar.click()
+
+        sleep(2)
+
+    @classmethod
+    def send_data(cls, val: str, el: WebElement) -> None:
+
+        el.click()
+        sleep(0.25)
+        el.send_keys(val)
+        sleep(0.25)
+        el.send_keys(Keys.ENTER)
+        sleep(0.25)

@@ -59,3 +59,8 @@ class Provisionamento:  # noqa: D101
     CSS_INPUT_VALOR_PAGO = 'input[name="WFRInput819354"]'
     CSS_INPUT_DATA_PAGAMENTO = 'input[name="WFRInput819356"]'
     CSS_INPUT_STATUS_EVENTO = 'input[name="WFRInput819044"]'  # setattribute (value=valor)
+
+    CSS_INPUT_OBJETO = 'input[name="WFRInput819343Show"]'
+    CSS_INPUT_PORCENTAGEM_OBJETO = 'input[name="WFRInput819345"]'
+
+    CSS_BTN_SALVAR_OBJETO = 'i[id="saveButton"]'
