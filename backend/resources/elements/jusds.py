@@ -8,7 +8,9 @@ CSS_CAMPO_INPUT_SENHA = 'input[id="WFRInput819916"]'
 XPATH_BTN_ENTRAR = '//*[@id="loginbutton"]/button'
 
 
-LINK_CONSULTA_PROCESSO = "https://infraero.jusds.com.br/JRD/openform.do?sys=JRD&action=openform&formID=464569314"
+LINK_CONSULTA_PROCESSO = (
+    "https://infraero.jusds.com.br/JRD/openform.do?sys=JRD&action=openform&formID=464569314"
+)
 
 
 XPATH_SELECT_CAMPO_BUSCA = '//*[@id="cmbPesquisa"]/select'
@@ -40,9 +42,20 @@ XPATH_BTN_AENXAR_ARQUIVO = '//*[@id="MakerButton1"]/button'
 
 XPATH_INPUT_FILE = '//*[@id="file-input"]'
 
-XPATH_IFRAME_UPLOAD_ANEXO = (
-    '//div[contains(@id, "WFRIframeFormRuleUpload19")]/div/iframe'
-)
+XPATH_IFRAME_UPLOAD_ANEXO = '//div[contains(@id, "WFRIframeFormRuleUpload19")]/div/iframe'
 XPATH_BTN_ENVIAR_ARQUIVO = '//*[@id="uploadButton"]'
 XPATH_BTN_CLOSE_MODAL = '//*[@id="WFRIframeForm19"]/div[1]/div/a'
 XPATH_BTN_SALVA_STATUS = '//div[@id="TMAKERGRID6bar"]/i[@id="saveButton"]'
+
+
+class Provisionamento:  # noqa: D101
+    CSS_INPUT_NIVEL = 'input[name="WFRInput819036"]'  # setattribute (value=valor)
+    CSS_INPUT_PARTE = 'input[name="WFRInput819411Show"]'
+    CSS_INPUT_MOMENTO_PROCESSUAL = 'input[name="WFRInput819350Show"]'
+    CSS_INPUT_ORIGEM_RISCO = 'input[name="WFRInput819351Show"]'
+    CSS_INPUT_CRITERIO_DETERMINANTE = 'input[name="WFRInput819353Show"]'
+    CSS_INPUT_VALOR_RISCO = 'input[name="WFRInput819042"]'
+    CSS_INPUT_INDICE = 'input[name="WFRInput819040Show"]'
+    CSS_INPUT_VALOR_PAGO = 'input[name="WFRInput819354"]'
+    CSS_INPUT_DATA_PAGAMENTO = 'input[name="WFRInput819356"]'
+    CSS_INPUT_STATUS_EVENTO = 'input[name="WFRInput819044"]'  # setattribute (value=valor)

@@ -1,132 +1,56 @@
 # ruff: noqa: BLE001
 from __future__ import annotations
 
+from contextlib import suppress
 from time import sleep
 from traceback import format_exception
-from typing import TYPE_CHECKING, ClassVar, Literal, Self
+from typing import TYPE_CHECKING
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
+from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
 from tqdm import tqdm
 
+from backend.common.exceptions import ExecutionError
 from backend.controllers.jusds import JusdsBot
-from backend.resources.driver.web_element import WebElement
+from backend.resources.elements.jusds import Provisionamento as El
 
 if TYPE_CHECKING:
     from backend.controllers.head import BotIterator
     from backend.dicionarios import JusdsProvisionamento
-    from backend.resources.driver.web_element import WebElement
 
 
-FIELDS = [
-    "NIVEL",
-    "GRAU",
-    "NUMERO",
-    "DATA_AVALIACAO",
-    "RESPONSAVEL_AVALIACAO",
-    "PARTE",
-    "OBJETOS_RISCO",
-    "OBSERVACAO",
-    "MOMENTO_PROCESSUAL",
-    "ORIGEM_RISCO",
-    "CRITERIO_DETERMINANTE",
-    "VALOR_RISCO",
-    "INDICE",
-    "DATA_BASE",
-    "VALOR_CORRIGIDO",
-    "VALOR_PAGO",
-    "DATA_PAGAMENTO",
-    "SALDO_CORRIGIDO",
-    "VALOR_PROVISIONADO",
-    "HONORARIOS",
-    "VALOR_HONORARIOS",
-    "VALOR_PROVISIONADO_FINAL",
-    "STATUS_EVENTO",
-]
+STATUS_EVENTO = {
+    "FORMALIZADO": "Formalizado",
+    "NÃO FORMALIZADO": "Não formalizado",
+    "CANCELADO": "Cancelado",
+}
 
-type FielsProvisao = Literal[
-    "NIVEL",
-    "GRAU",
-    "NUMERO",
-    "DATA_AVALIACAO",
-    "RESPONSAVEL_AVALIACAO",
-    "PARTE",
-    "OBJETOS_RISCO",
-    "OBSERVACAO",
-    "MOMENTO_PROCESSUAL",
-    "ORIGEM_RISCO",
-    "CRITERIO_DETERMINANTE",
-    "VALOR_RISCO",
-    "INDICE",
-    "DATA_BASE",
-    "VALOR_CORRIGIDO",
-    "VALOR_PAGO",
-    "DATA_PAGAMENTO",
-    "SALDO_CORRIGIDO",
-    "VALOR_PROVISIONADO",
-    "HONORARIOS",
-    "VALOR_HONORARIOS",
-    "VALOR_PROVISIONADO_FINAL",
-    "STATUS_EVENTO",
-]
+NIVEIS = {
+    "ALTO": "0",
+    "MEDIO": "1",
+    "BAIXO": "2",
+}
 
-
-class ItemProvisao:
-    td_dict: ClassVar[dict[FielsProvisao, WebElement]] = {}
-
-    def __init__(self, table_data: list[WebElement]) -> None:
-        self.table_data = table_data
-        for pos, item in enumerate(FIELDS):
-            self.td_dict.update({item: table_data[pos]})
-
-    def __getitem__(self, key: FielsProvisao) -> WebElement | None:
-        return self.td_dict.get(key)
-
-    def __setitem__(self, key: FielsProvisao, value: WebElement) -> None:
-        self.td_dict.setdefault(key, value)
-
-
-class TableProvisao:
-    def __init__(self, element: WebElement) -> None:
-        self._table = element
-        self._index = 0
-
-        colgroup = element.find_element(By.TAG_NAME, "colgroup")
-        self.nome_colunas = colgroup.find_elements(By.TAG_NAME, "col")
-        self.table_rows = self._table.find_elements(By.TAG_NAME, "tr")
-
-    def __iter__(self) -> Self:
-        """Retorne o próprio iterador para permitir iteração sobre regiões.
-
-        Returns:
-            RegioesIterator: O próprio iterador de regiões.
-
-        """
-        return self
-
-    def __next__(self) -> ItemProvisao:
-        """Implementa a iteração retornando próxima região e dados associados.
-
-        Returns:
-            tuple[str, str]: Tupla contendo a região e os dados da região.
-
-        Raises:
-            StopIteration: Quando todas as regiões forem iteradas.
-
-        """
-        table_data = self.table_rows[self._index].find_elements(By.TAG_NAME, "td")
-        if self._index >= len(self.table_rows):
-            raise StopIteration
-
-        self._index += 1
-        return ItemProvisao(table_data=table_data)
+ELEMENTOS = {
+    "PARTE": El.CSS_INPUT_PARTE,
+    "MOMENTO_PROCESSUAL": El.CSS_INPUT_MOMENTO_PROCESSUAL,
+    "ORIGEM_RISCO": El.CSS_INPUT_ORIGEM_RISCO,
+    "CRITERIO_DETERMINANTE": El.CSS_INPUT_CRITERIO_DETERMINANTE,
+    "VALOR_RISCO": El.CSS_INPUT_VALOR_RISCO,
+    "INDICE": El.CSS_INPUT_INDICE,
+    "VALOR_PAGO": El.CSS_INPUT_VALOR_PAGO,
+    "DATA_PAGAMENTO": El.CSS_INPUT_DATA_PAGAMENTO,
+}
 
 
 class Provisionamento(JusdsBot):
     name = "jusds_provisionamento"
 
     def execution(self) -> None:
-
+        self.driver.maximize_window()
         list_item: BotIterator[JusdsProvisionamento] = self.frame
         for pos, item in enumerate(list_item):
             self.bot_data = item
@@ -147,26 +71,116 @@ class Provisionamento(JusdsBot):
 
     def alterar_risco(self) -> None:
 
+        proc = self.bot_data["NUMERO_PROCESSO"]
         btn_pagina_risco = self.wait.until(
             presence_of_element_located((By.XPATH, '//*[@id="tabButton8"]')),
         )
 
-        btn_pagina_risco.click()
+        with suppress(Exception):
+            w = WebDriverWait(self.driver, 10)
+            message_popup = w.until(
+                presence_of_element_located((
+                    By.XPATH,
+                    '//*[@id="0143FB23-78A2-4DC4-9ADE-22B059AAEB88"]/div[7]',
+                )),
+            )
+
+            self.driver.execute_script("$(arguments[0]).toggle()", message_popup)
+
+        with suppress(Exception):
+            btn_pagina_risco.click()
 
         sleep(2)
 
-        btn_editar_risco = self.wait.until(
+        btn_novo_risco = self.wait.until(
             presence_of_element_located((
                 By.XPATH,
-                '//*[@id="TMAKERGRID9bar"]/i[@id="editButton"]',
+                '//*[@id="TMAKERGRID9bar"]/i[@id="addButton"]',
             )),
         )
 
-        table = TableProvisao(
-            self.wait.until(
-                presence_of_element_located((By.XPATH, '//*[@id="isc_C6table"]')),
-            ),
+        btn_novo_risco.click()
+
+        try:
+            self._informa_nivel()
+
+            self._informa_campos()
+
+            self._informa_status()  # ultimo
+
+        except Exception as e:
+            raise ExecutionError(message="Erro de operação", exc=e) from e
+
+        out = self.output_dir_path
+        comprovante = out.joinpath(f"Comprovante - {proc} - {self.pid}.png")
+        comprovante.write_bytes(self.driver.get_screenshot_as_png())
+        tqdm.write(str(comprovante))
+
+    def _informa_nivel(self) -> None:
+
+        value = NIVEIS[self.bot_data["NIVEL"].upper()]
+        input_nivel = self.wait.until(
+            presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_NIVEL)),
         )
 
-        _item_provisao = next(iter(table))
-        btn_editar_risco.click()
+        self.driver.execute_script(
+            "arguments[0].value = arguments[1]",
+            input_nivel,
+            value,
+        )
+
+        self._select_item(value=value)
+
+    def _informa_status(self) -> None:
+
+        value = STATUS_EVENTO[self.bot_data["STATUS_EVENTO"].upper()]
+        input_status = self.wait.until(
+            presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_STATUS_EVENTO)),
+        )
+
+        self.driver.execute_script(
+            "arguments[0].value = arguments[1]",
+            input_status,
+            value,
+        )
+
+        self._select_item(value=value)
+
+    def _select_item(self, value: str) -> None:
+
+        items_table = (
+            self.wait.until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            .find_element(By.TAG_NAME, "tbody")
+            .find_elements(By.TAG_NAME, "tr")
+        )
+
+        items_table.reverse()
+        select_element = Select(
+            items_table[0]
+            .find_elements(By.TAG_NAME, "td")[0]
+            .find_element(By.TAG_NAME, "select"),
+        )
+        select_element.select_by_value(value)
+
+    def _informa_campos(self) -> None:
+
+        def send_data(val: str) -> None:
+
+            el.click()
+            sleep(0.25)
+            el.send_keys(val)
+            sleep(0.25)
+            el.send_keys(Keys.ENTER)
+            sleep(0.25)
+
+        for nome in ELEMENTOS:
+            el = self.driver.find_element(By.CSS_SELECTOR, ELEMENTOS[nome])
+
+            val = "SELIC"
+            if nome != "INDICE":
+                val = str(self.bot_data[nome])
+
+            if nome == "MOMENTO_PROCESSUAL":
+                val = self.bot_data[nome].upper()
+
+            send_data(val)
