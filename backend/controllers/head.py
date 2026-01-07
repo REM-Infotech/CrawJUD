@@ -7,6 +7,7 @@ from abc import abstractmethod
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
 from datetime import datetime
+from pathlib import Path
 from threading import Event
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar, Self
@@ -20,7 +21,6 @@ from dotenv import load_dotenv
 from backend.common.exceptions import StartError
 from backend.common.exceptions._fatal import FatalError
 from backend.common.exceptions._file import ArquivoNaoEncontradoError
-from backend.config import WORKDIR
 from backend.extensions import celery
 from backend.resources.driver import BotDriver
 from backend.resources.iterators import BotIterator
@@ -35,8 +35,6 @@ from backend.resources.queues.file_operation import (
 from backend.resources.queues.print_message import PrintMessage
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from selenium.webdriver import Chrome as SeChrome
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
@@ -44,6 +42,7 @@ if TYPE_CHECKING:
     from typings import Any, Dict
 
 
+WORKDIR = Path.cwd()
 MODULE_SPLIT_SIZE = 3
 TZ = ZoneInfo("America/Sao_Paulo")
 FORMAT_TIME = "%d-%m-%Y %H-%M-%S"
@@ -97,7 +96,7 @@ class CrawJUD:
         if not hasattr(cls, "name"):
             warn(
                 "Atributo 'name' não definido na subclasse CrawJUD.",
-                stacklevel=2,
+                stacklevel=1,
             )
 
         return True
