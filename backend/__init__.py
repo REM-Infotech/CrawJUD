@@ -7,6 +7,7 @@ carrega as rotas e executa o servidor SocketIO na porta definida.
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from threading import Thread
 from time import sleep
 from typing import TYPE_CHECKING, NoReturn
@@ -61,6 +62,19 @@ def _thread_api() -> NoReturn:
     api_.start()
 
     sleep(5)
+
+    logger = logging.getLogger("werkzeug")
+
+    name = "crawjud-api.log"
+    path_log = Path.cwd().joinpath("logs", name)
+    if not path_log.parent.exists():
+        path_log.parent.mkdir(exist_ok=True)
+        path_log.touch()
+
+    file_handler = logging.FileHandler(path_log)
+    file_handler.level = logger.level
+
+    logger.addHandler(file_handler)
 
     while True:
         ...
