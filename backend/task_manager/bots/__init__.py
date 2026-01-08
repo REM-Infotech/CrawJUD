@@ -6,27 +6,15 @@ cálculo, capa, emissão, intimações, movimentação e protocolo.
 """
 
 from . import (
-    admin,
-    buscadores,
-    calculadoras,
     capa,
-    emissao,
-    habilitacao,
     intimacoes,
     movimentacao,
-    protocolo,
     provisionamento,
 )
 
 __all__ = [
-    "admin",
-    "buscadores",
-    "calculadoras",
     "capa",
-    "emissao",
-    "habilitacao",
     "intimacoes",
     "movimentacao",
-    "protocolo",
     "provisionamento",
 ]

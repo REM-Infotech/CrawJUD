@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import UserString
 from contextlib import suppress
 from time import sleep
-from traceback import format_exception
+from traceback import format_exception, format_exception_only
 from typing import TYPE_CHECKING
 
 from selenium.webdriver.common.by import By
@@ -109,6 +109,22 @@ class Provisionamento(JusdsBot):
             exc = format_exception(e)
             tqdm.write("\n".join(exc))
 
+            self.print_message(
+                message=f"Erro de execução: {exc}",
+                message_type="error",
+                row=self.row,
+            )
+
+            self.append_error(
+                "Erros",
+                data_save=[
+                    {
+                        "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
+                        "ERRO": "\n".join(format_exception_only(e)),
+                    },
+                ],
+            )
+
     def alterar_risco(self) -> None:
 
         proc = self.bot_data["NUMERO_PROCESSO"]
@@ -136,26 +152,26 @@ class Provisionamento(JusdsBot):
 
             id_risco = self._informa_objeto()
 
+            out = self.output_dir_path
+            comprovante = out.joinpath(f"Comprovante - {proc} - {self.pid}.png")
+            comprovante.write_bytes(self.driver.get_screenshot_as_png())
+
+            self.append_success(
+                "Sucessos",
+                [
+                    {
+                        "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
+                        "ID_PROVISAO": id_risco,
+                    },
+                ],
+            )
+
+            type_ = "success"
+            msg_ = "Execução efetuada com sucesso!"
+            self.print_message(msg_, type_, self.row)
+
         except Exception as e:
             raise ExecutionError(message="Erro de operação", exc=e) from e
-
-        out = self.output_dir_path
-        comprovante = out.joinpath(f"Comprovante - {proc} - {self.pid}.png")
-        comprovante.write_bytes(self.driver.get_screenshot_as_png())
-
-        self.append_success(
-            "Sucessos",
-            [
-                {
-                    "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
-                    "ID_PROVISAO": id_risco,
-                },
-            ],
-        )
-
-        type_ = "success"
-        msg_ = "Execução efetuada com sucesso!"
-        self.print_message(msg_, type_, self.row)
 
     def _informa_nivel(self) -> None:
 
@@ -171,7 +187,8 @@ class Provisionamento(JusdsBot):
         )
 
         items_table = (
-            self.wait.until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            self.wait
+            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
@@ -198,7 +215,8 @@ class Provisionamento(JusdsBot):
         )
 
         items_table = (
-            self.wait.until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            self.wait
+            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
@@ -233,7 +251,8 @@ class Provisionamento(JusdsBot):
         self.acessa_pagina_risco()
 
         items_table = (
-            self.wait.until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            self.wait
+            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
