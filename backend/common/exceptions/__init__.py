@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import traceback
-from typing import ClassVar, Literal, NoReturn
+from typing import TYPE_CHECKING, ClassVar, Literal, NoReturn, Self
+
+if TYPE_CHECKING:
+    from typings import Any
 
 MessageError = "Erro ao executar operaçao: "
 type MessageTokenError = Literal["Senha do Token Incorreta"]
@@ -57,6 +60,34 @@ class BaseCrawJUDError(Exception):
 
         """
         return self.message
+
+    def __repr__(self) -> str:
+        """Return the string representation of the FatalError for debugging."""
+        return f"{self.__class__.__name__}(type={self._exc_type}, message={self._exc_msg})"
+
+    def __reduce__(self) -> tuple[type[Self], tuple[Exception]]:  # noqa: D105
+        # Provide a way for pickle to reconstruct the object
+        return (
+            self.__class__,
+            (Exception(self._exc_msg),),  # reconstruct with a generic Exception
+        )
+
+    def __getstate__(self) -> dict[str, Any]:  # noqa: D105
+        # Only store pickleable attributes
+        return {
+            "_exc_str": self._exc_str,
+            "_exc_type": self._exc_type,
+            "_exc_msg": self._exc_msg,
+            "_traceback": self._traceback,
+            "message": self.message,
+        }
+
+    def __setstate__(self, state: dict[str, Any]) -> None:  # noqa: D105
+        self._exc_str = state["_exc_str"]
+        self._exc_type = state["_exc_type"]
+        self._exc_msg = state["_exc_msg"]
+        self._traceback = state["_traceback"]
+        self.message = state["message"]
 
 
 class StartError(BaseCrawJUDError):

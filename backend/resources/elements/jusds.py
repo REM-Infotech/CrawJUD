@@ -56,6 +56,7 @@ class Provisionamento:  # noqa: D101
     CSS_INPUT_CRITERIO_DETERMINANTE = 'input[name="WFRInput819353Show"]'
     CSS_INPUT_VALOR_RISCO = 'input[name="WFRInput819042"]'
     CSS_INPUT_INDICE = 'input[name="WFRInput819040Show"]'
+    CSS_INPUT_DATA_BASE = 'input[name="WFRInput819041"]'
     CSS_INPUT_VALOR_PAGO = 'input[name="WFRInput819354"]'
     CSS_INPUT_DATA_PAGAMENTO = 'input[name="WFRInput819356"]'
     CSS_INPUT_STATUS_EVENTO = 'input[name="WFRInput819044"]'  # setattribute (value=valor)

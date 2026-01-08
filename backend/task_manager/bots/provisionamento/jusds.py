@@ -43,6 +43,7 @@ ELEMENTOS = {
     "CRITERIO_DETERMINANTE": El.CSS_INPUT_CRITERIO_DETERMINANTE,
     "VALOR_RISCO": El.CSS_INPUT_VALOR_RISCO,
     "INDICE": El.CSS_INPUT_INDICE,
+    "DATA_BASE": El.CSS_INPUT_DATA_BASE,
     "VALOR_PAGO": El.CSS_INPUT_VALOR_PAGO,
     "DATA_PAGAMENTO": El.CSS_INPUT_DATA_PAGAMENTO,
 }
@@ -123,7 +124,7 @@ class Provisionamento(JusdsBot):
         )
 
         btn_novo_risco.click()
-
+        id_risco = None
         try:
             self._informa_nivel()
 
@@ -133,7 +134,7 @@ class Provisionamento(JusdsBot):
 
             self.salva_alteracoes()
 
-            self._informa_objeto()
+            id_risco = self._informa_objeto()
 
         except Exception as e:
             raise ExecutionError(message="Erro de operação", exc=e) from e
@@ -141,6 +142,20 @@ class Provisionamento(JusdsBot):
         out = self.output_dir_path
         comprovante = out.joinpath(f"Comprovante - {proc} - {self.pid}.png")
         comprovante.write_bytes(self.driver.get_screenshot_as_png())
+
+        self.append_success(
+            "Sucessos",
+            [
+                {
+                    "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
+                    "ID_PROVISAO": id_risco,
+                },
+            ],
+        )
+
+        type_ = "success"
+        msg_ = "Execução efetuada com sucesso!"
+        self.print_message(msg_, type_, self.row)
 
     def _informa_nivel(self) -> None:
 
@@ -187,13 +202,14 @@ class Provisionamento(JusdsBot):
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
-
-        tds = items_table[0].find_elements(By.TAG_NAME, "td")
-        tds.reverse()
-
         items_table.reverse()
+
+        tds = list(items_table[0].find_elements(By.TAG_NAME, "td"))
+        tds.reverse()
+        table_data = tds[0].find_elements(By.TAG_NAME, "div")[1]
+
         select_element = Select(
-            tds[0].find_element(By.TAG_NAME, "select"),
+            table_data.find_element(By.TAG_NAME, "select"),
         )
         select_element.select_by_value(value)
 
@@ -211,7 +227,7 @@ class Provisionamento(JusdsBot):
 
             self.send_data(val, el)
 
-    def _informa_objeto(self) -> None:
+    def _informa_objeto(self) -> str:
 
         self.driver.refresh()
         self.acessa_pagina_risco()
@@ -238,19 +254,8 @@ class Provisionamento(JusdsBot):
 
         self.driver.close()
         self.driver.switch_to.window(window_processo)
-        self.append_success(
-            "Sucessos",
-            [
-                {
-                    "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
-                    "ID_PROVISAO": id_risco,
-                },
-            ],
-        )
 
-        type_ = "success"
-        msg_ = "Execução efetuada com sucesso!"
-        self.print_message(msg_, type_, self.row)
+        return id_risco
 
     def _criacao_objeto(self, id_risco: str) -> None:
 
@@ -280,7 +285,7 @@ class Provisionamento(JusdsBot):
             presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_OBJETO)),
         )
 
-        self.send_data(self.bot_data["OBJETO_RISCO"], input_objeto_risco)
+        self.send_data(self.bot_data["OBJETO_RISCO"].upper(), input_objeto_risco)
 
         input_objeto_porcentagem = self.wait.until(
             presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_PORCENTAGEM_OBJETO)),
@@ -328,12 +333,13 @@ class Provisionamento(JusdsBot):
 
         sleep(2)
 
-    @classmethod
-    def send_data(cls, val: str, el: WebElement) -> None:
+    def send_data(self, val: str, el: WebElement) -> None:
 
-        el.click()
         sleep(0.25)
         el.send_keys(val)
-        sleep(0.25)
+        sleep(2)
         el.send_keys(Keys.ENTER)
-        sleep(0.25)
+        sleep(1)
+
+        with suppress(Exception):
+            self.driver.execute_script("return $(arguments[0]).blur()", el)
