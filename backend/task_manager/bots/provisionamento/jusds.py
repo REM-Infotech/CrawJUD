@@ -93,7 +93,7 @@ class Provisionamento(JusdsBot):
         list_item: BotIterator[JusdsProvisionamento] = self.frame
         for pos, item in enumerate(list_item):
             self.bot_data = item
-            self.row = pos
+            self.row = pos + 1
             self.queue()
 
         self.finalizar_execucao()
@@ -247,6 +247,10 @@ class Provisionamento(JusdsBot):
                 },
             ],
         )
+
+        type_ = "success"
+        msg_ = "Execução efetuada com sucesso!"
+        self.print_message(msg_, type_, self.row)
 
     def _criacao_objeto(self, id_risco: str) -> None:
 
