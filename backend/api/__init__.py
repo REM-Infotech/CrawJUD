@@ -37,7 +37,6 @@ def create_app() -> Flask:
     FlaskDynaconf(
         app=app,
         instance_relative_config=True,
-        extensions_list="EXTENSIONS",  # pyright: ignore[reportArgumentType]
         dynaconf_instance=settings,
     )
 
