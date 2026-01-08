@@ -16,8 +16,7 @@ if TYPE_CHECKING:
     from httpx import Client
     from seleniumwire.webdriver import Chrome
 
-    from backend.dicionarios import DocumentoPJe, PJeMovimentacao
-    from backend.interfaces.pje import DictResults
+    from backend.dicionarios import DictResults, DocumentoPJe, PJeMovimentacao
     from typings import Dict
 
 

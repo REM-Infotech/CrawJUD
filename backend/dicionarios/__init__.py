@@ -30,7 +30,7 @@ from .robos import (
 )
 
 if TYPE_CHECKING:
-    from typings import MessageType, Sistemas, StatusBot
+    from typings import Dict, MessageType, Sistemas, StatusBot
 
 
 class Message(TypedDict, total=False):
@@ -70,6 +70,11 @@ class DictCredencial(TypedDict):
     login_metodo: str
     login: str
     password: str
+
+
+class DictResults(TypedDict):
+    id_processo: str
+    data_request: Dict
 
 
 class DataSave(TypedDict):
