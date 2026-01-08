@@ -4,20 +4,11 @@ from __future__ import annotations
 
 import base64
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, ClassVar, Literal, cast
+from typing import TYPE_CHECKING, ClassVar, cast
 
 import jpype
-from clear import clear
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives.asymmetric.dh import DHPrivateKey
-from cryptography.hazmat.primitives.asymmetric.dsa import DSAPrivateKey
-from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePrivateKey
-from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PrivateKey
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
-from cryptography.hazmat.primitives.asymmetric.x448 import X448PrivateKey
-from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
 from cryptography.hazmat.primitives.serialization import (
     Encoding,
 )
@@ -29,38 +20,24 @@ from cryptography.hazmat.primitives.serialization.pkcs12 import (
 from dotenv import dotenv_values
 
 # Importa classes Java
-from jpype import JArray, JByte, JClass
-from tqdm import tqdm
-from typer import Argument, Option, Typer
+from jpype import JArray, JByte
 
 if TYPE_CHECKING:
     from cryptography.x509 import Certificate
 
     from backend.controllers.pje import PJeBot
+    from typings import Algoritmos, PrivateKey
 
 if not jpype.isJVMStarted():
     jpype.startJVM()
 
-app = Typer()
+    from jpype import imports as imports
+
+from java.io import ByteArrayInputStream
+from java.security.cert import CertificateFactory
+from java.util import ArrayList
+
 environ = dotenv_values()
-
-type PrivateKey = (
-    DHPrivateKey
-    | Ed25519PrivateKey
-    | Ed448PrivateKey
-    | RSAPrivateKey
-    | DSAPrivateKey
-    | EllipticCurvePrivateKey
-    | X25519PrivateKey
-    | X448PrivateKey
-)
-
-type Algoritmos = Literal["SHA256withRSA", "SHA1withRSA", "MD5withRSA"]
-
-
-ByteArrayInputStream = JClass("java.io.ByteArrayInputStream")
-CertificateFactory = JClass("java.security.cert.CertificateFactory")
-ArrayList = JClass("java.util.ArrayList")
 
 
 class ConteudoAssinado:
@@ -132,8 +109,8 @@ class Assinador:
     _certificado_carregado: PKCS12KeyAndCertificates = None
     algoritmos_suportados: ClassVar[dict[Algoritmos, hashes.HashAlgorithm]] = {
         "SHA256withRSA": hashes.SHA256(),
-        "SHA1withRSA": hashes.SHA1(),  # noqa: S303
-        "MD5withRSA": hashes.MD5(),  # noqa: S303
+        "SHA1withRSA": hashes.SHA1(),
+        "MD5withRSA": hashes.MD5(),
     }
 
     def __init__(
@@ -199,54 +176,3 @@ class Assinador:
             [cert.certificate for cert in self.certificado_carregado.additional_certs],
         )
         return chain
-
-
-if __name__ == "__main__":
-
-    @app.command()
-    def assinar_conteudo(
-        arquivo: Annotated[str, Argument()],
-        certificado: Annotated[str, Option()],
-        senha_certificado: Annotated[str, Option()],
-        algoritmo: Annotated[str | None, Option()] = None,
-    ) -> None:
-        """Assina o conteúdo de um arquivo utilizando um certificado digital.
-
-        Parameters
-        ----------
-        arquivo : str
-            Caminho para o arquivo a ser assinado.
-        certificado : str
-            Caminho para o arquivo do certificado digital.
-        senha_certificado : str
-            Senha do certificado digital.
-        algoritmo : Algoritmos, optional
-            Algoritmo de assinatura a ser utilizado.
-
-
-        """
-        caminho_certificado = Path(certificado).resolve()
-        caminho_arquivo = Path(arquivo).resolve()
-
-        assinador = Assinador(
-            certificado=caminho_certificado,
-            senha_certificado=senha_certificado,
-        )
-        conteudo_assinado = assinador.assinar_conteudo(
-            caminho_arquivo.read_bytes(),
-        )
-
-        clear()
-
-        tqdm.write(f"""
-=============================
-Base64 conteúdo:
-
-{conteudo_assinado.conteudo_assinado_base64}
-
-
-
-=============================
-""")
-
-    app()
