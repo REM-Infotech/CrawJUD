@@ -15,6 +15,7 @@ from flask import Response as FlaskResponse
 from .payloads import PayloadDownloadExecucao
 from .string_types import MessageLog, ProcessoCNJ
 
+type TableArgs = dict[Literal["extend_existing"], bool]
 type Any = any
 type ListPattern = list[Pattern]
 type Dict = dict[str, str | Any | None]

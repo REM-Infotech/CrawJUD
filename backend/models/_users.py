@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from contextlib import suppress
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar
 from uuid import uuid4
 
 import bcrypt
@@ -13,11 +13,12 @@ from backend.api import crypt_context
 from backend.extensions import db
 
 if TYPE_CHECKING:
-    from backend.models._bot import Bots, CredenciaisRobo, ExecucoesBot
+    from typings import TableArgs
+
+    from ._bot import Bots, CredenciaisRobo, ExecucoesBot
 
 rel = db.relationship
 salt = bcrypt.gensalt()
-type _TableArgs = dict[Literal["extend_existing"], bool]
 
 
 def _generate_key() -> str:
@@ -30,7 +31,7 @@ def _generate_key() -> str:
 
 class LicenseUser(db.Model):
     __tablename__ = "licencas"
-    __table_args__: ClassVar[_TableArgs] = {"extend_existing": True}
+    __table_args__: ClassVar[TableArgs] = {"extend_existing": True}
 
     Id: int = Column("id", Integer, primary_key=True, nullable=False)
     ProductKey: str = Column(
@@ -67,7 +68,7 @@ class LicenseUser(db.Model):
 
 class User(db.Model):
     __tablename__ = "usuarios"
-    __table_args__: ClassVar[_TableArgs] = {"extend_existing": True}
+    __table_args__: ClassVar[TableArgs] = {"extend_existing": True}
 
     Id: int = Column("id", Integer, primary_key=True)
     login: str = Column(
