@@ -11,7 +11,6 @@ from pathlib import Path
 from threading import Event
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar, Self
-from warnings import warn
 from zoneinfo import ZoneInfo
 
 from backend.base.task import CeleryTask
@@ -28,7 +27,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
-    from typings import Any, Dict
+    from typings import Dict
 
 
 WORKDIR = Path.cwd()
@@ -54,6 +53,7 @@ class CrawJUD(CeleryTask):
     @property
     def name(self) -> str:
         """Retorne o nome do bot CrawJUD."""
+        return self._name
 
     @name.setter
     def name(self, val: str) -> None:
@@ -78,34 +78,6 @@ class CrawJUD(CeleryTask):
         kw = self.config
         kw["tipo_notificacao"] = "stop"
         celery.send_task("notifica_usuario", kwargs=kw)
-
-    @classmethod
-    def __subclasshook__(
-        cls,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        """Registre subclasses do CrawJUD automaticamente."""
-        if not hasattr(cls, "name"):
-            warn(
-                "Atributo 'name' não definido na subclasse CrawJUD.",
-                stacklevel=1,
-            )
-
-        return True
-
-    def __init_subclass__(cls) -> None:
-        """Inicialize subclasses do CrawJUD e registre bots.
-
-        Args:
-            cls (type): Subclasse de CrawJUD.
-
-
-        """
-        if not hasattr(cls, "name"):
-            return
-
-        CrawJUD.bots[cls.name] = cls
 
     def setup(self, config: Dict) -> Self:
         """Configure o bot com as opções fornecidas.
