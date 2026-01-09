@@ -11,7 +11,7 @@ from clear import clear
 from dotenv import dotenv_values
 from typer import Typer
 
-from ._makers import create_app, make_celery
+from .extensions import create_app, make_celery
 
 if TYPE_CHECKING:
     from celery import Celery
@@ -27,7 +27,7 @@ typerapp = Typer()
 app: Flask = create_app()
 
 
-def _api() -> None:
+def _api(app: Flask) -> None:
     from backend.api import routes as routes
 
     io: SocketIO = app.extensions["socketio"]
@@ -35,11 +35,10 @@ def _api() -> None:
     io.run(app, host="localhost", port=port, allow_unsafe_werkzeug=True)
 
 
-def _celery_worker() -> None:
-    celery_app: Celery = make_celery(app)
+def _celery_worker(celery: Celery) -> None:
 
     worker = Worker(
-        app=celery_app,
+        app=celery,
         pool="threads",
         loglevel=logging.INFO,
     )
@@ -50,7 +49,9 @@ def _celery_worker() -> None:
 @typerapp.command(name="api")
 def _thread_api() -> NoReturn:
 
-    api_ = Thread(target=_api, daemon=True)
+    app = create_app()
+    make_celery(app)
+    api_ = Thread(target=_api, daemon=True, kwargs={"app": app})
     api_.start()
 
     sleep(5)
@@ -75,7 +76,9 @@ def _thread_api() -> NoReturn:
 @typerapp.command(name="celery")
 def _thread_celery() -> NoReturn:
 
-    celery_ = Thread(target=_celery_worker, daemon=True)
+    app = create_app()
+    celery: Celery = make_celery(app)
+    celery_ = Thread(target=_celery_worker, daemon=True, kwargs={"celery": celery})
     celery_.start()
 
     while True:
@@ -84,10 +87,13 @@ def _thread_celery() -> NoReturn:
 
 def _start_backend() -> None:
 
-    celery_ = Thread(target=_celery_worker, daemon=True)
+    app = create_app()
+    celery = make_celery(app)
+
+    celery_ = Thread(target=_celery_worker, daemon=True, kwargs={"celery": celery})
     celery_.start()
 
-    api_ = Thread(target=_api, daemon=True)
+    api_ = Thread(target=_api, daemon=True, kwargs={"app": app})
     api_.start()
 
 

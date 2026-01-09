@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from backend._makers import celery_app
+from backend.extensions import celery
 
 from .bots import EsajCapaTask, PJeCapaTask, ProjudiCapaTask
 from .mail import MailTasks
@@ -21,7 +21,7 @@ tasks: list[CeleryTask] = [MailTasks, PJeCapaTask, ProjudiCapaTask, EsajCapaTask
 def register_tasks() -> None:  # noqa: D103
 
     for task in tasks:
-        celery_app.register_task(task())
+        celery.register_task(task())
 
 
 __all__ = ["register_tasks"]

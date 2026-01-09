@@ -13,7 +13,7 @@ from flask import (
     request,
 )
 
-from backend._makers import app
+from backend.extensions import app
 
 from . import api, status, web
 from ._blueprints import admin, adminNS, auth, botNS, bots, fileNS

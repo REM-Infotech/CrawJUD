@@ -9,12 +9,14 @@ Esta pull request documenta as diferenças significativas entre a branch `main` 
 ## 🎯 Análise Comparativa: Main vs Dev
 
 ### ✅ **Migração de Framework Completa**
-- [x] **Flask → Quart**: Migração completa para framework assíncrono 
+
+- [x] **Flask → Quart**: Migração completa para framework assíncrono
 - [x] **Python Version**: Flexibilização de >=3.13,<3.14 para >=3.12,<4
 - [x] **ASGI**: Substituição WSGI por ASGI com Hypercorn
 - [x] **Async/Await**: Implementação nativa de operações assíncronas
 
 ### ✅ **Reestruturação Arquitetural Completa**
+
 - [x] **Modularização**: Nova estrutura baseada em domínios funcionais
 - [x] **API Layer**: Novo módulo `crawjud/api/` para organização de rotas
 - [x] **Bots Reorganizados**: `crawjud/bot/` → `crawjud/bots/` com melhor estrutura
@@ -22,6 +24,7 @@ Esta pull request documenta as diferenças significativas entre a branch `main` 
 - [x] **Common Utilities**: Utilitários compartilhados em `crawjud/common/`
 
 ### ✅ **Infraestrutura Moderna**
+
 - [x] **MinIO Object Storage**: Sistema de storage distribuído
 - [x] **Redis Object Mapping**: Substituição de redis-flask por redis-om
 - [x] **Celery Tasks**: Sistema de tarefas assíncronas com scheduler
@@ -34,16 +37,17 @@ Esta pull request documenta as diferenças significativas entre a branch `main` 
 ### **1. Framework e Dependências**
 
 #### **Migration Flask → Quart**
+
 ```diff
 # Branch Main (Flask Ecosystem)
 - flask (>=3.1.0,<4.0.0)
-- flask-mail (>=0.10.0,<0.11.0)  
+- flask-mail (>=0.10.0,<0.11.0)
 - flask-sqlalchemy (>=3.1.1,<4.0.0)
 - flask-login (>=0.6.3,<0.7.0)
 - flask-wtf (>=1.2.2,<2.0.0)
 - python >=3.13,<3.14
 
-# Branch Dev (Quart Ecosystem)  
+# Branch Dev (Quart Ecosystem)
 + quart (>=0.20.0,<0.21.0)
 + quart-jwt-extended (>=0.1.0,<0.2.0)
 + quart-cors (>=0.8.0,<0.9.0)
@@ -53,17 +57,18 @@ Esta pull request documenta as diferenças significativas entre a branch `main` 
 ```
 
 #### **Novas Dependências Infraestruturais**
+
 ```diff
 # Object Storage & Data Management
 + minio (>=7.2.15)                    # Distributed object storage
-+ redis-om (>=0.0.20)                 # Redis Object Mapping 
++ redis-om (>=0.0.20)                 # Redis Object Mapping
 + types-redis (>=4.1.17)              # Redis type definitions
 
 # Computer Vision & OCR
 + pytesseract (>=0.3.13,<0.4.0)       # Optical Character Recognition
 + opencv-python (>=4.12.0.88,<5.0.0.0) # Computer Vision
 
-# Runtime Type Safety  
+# Runtime Type Safety
 + beartype (>=0.21.0,<0.22.0)         # Runtime type checking
 
 # Java Integration
@@ -75,11 +80,12 @@ Esta pull request documenta as diferenças significativas entre a branch `main` 
 ```
 
 #### **Dependências Atualizadas**
+
 ```diff
 - selenium (>=4.28.1,<5.0.0)
 + selenium (>=4.32.0,<5.0.0)
 
-- pypdf (>=5.3.0,<6.0.0)  
+- pypdf (>=5.3.0,<6.0.0)
 + pypdf>=6.0.0
 
 - openai (>=1.63.0,<2.0.0)
@@ -97,14 +103,15 @@ Esta pull request documenta as diferenças significativas entre a branch `main` 
 #### **Comparação de Estruturas**
 
 **Branch Main:**
+
 ```
 crawjud/
 ├── __init__.py
-├── __main__.py  
+├── __main__.py
 ├── bot/                    # Bot automation modules
 ├── core/                   # Core application logic
 ├── routes/                 # Flask routes
-├── misc/                   # Miscellaneous utilities  
+├── misc/                   # Miscellaneous utilities
 ├── forms/                  # Web forms
 ├── manager/                # Management utilities
 ├── models/                 # Data models
@@ -113,6 +120,7 @@ crawjud/
 ```
 
 **Branch Dev:**
+
 ```
 crawjud/
 ├── __init__.py
@@ -121,7 +129,7 @@ crawjud/
 │   └── routes/             #     HTTP routes by domain
 ├── bots/                   # 🔄 REFATORADO: Bot modules by system
 │   ├── pje/               #     Processo Judicial Eletrônico
-│   ├── projudi/           #     Projudi system integration  
+│   ├── projudi/           #     Projudi system integration
 │   ├── elaw/              #     ELAW system automation
 │   └── esaj/              #     ESAJ system integration
 ├── common/                 # ✨ NOVO: Shared utilities & exceptions
@@ -134,7 +142,7 @@ crawjud/
 ├── resources/              # ✨ NOVO: Static resources & elements
 ├── tasks/                  # ✨ NOVO: Celery async tasks
 ├── utils/                  # 🔄 REFATORADO: Enhanced utilities
-├── celery_app.py          # ✨ NOVO: Celery configuration  
+├── celery.py          # ✨ NOVO: Celery configuration
 ├── quartconf.py           # ✨ NOVO: Quart app configuration
 └── logo.png               # ✨ NOVO: Application logo
 ```
@@ -142,12 +150,13 @@ crawjud/
 ### **3. Novos Arquivos de Configuração**
 
 #### **Infraestrutura e Deploy**
+
 ```diff
 # Docker & Object Storage
 + compose-minio.yaml           # MinIO Docker configuration
 + config.py                    # Application configuration
 
-# Package Management  
+# Package Management
 + requirements.txt             # pip-format dependencies
 + uv.lock                      # UV package manager lockfile
 
@@ -162,6 +171,7 @@ crawjud/
 ### **4. Sistema de Tipos e Interfaces**
 
 #### **TypedDict Implementation**
+
 ```python
 # Branch Dev: crawjud/interfaces/types/bots/
 class ProJudiSucessoResponse(TypedDict):
@@ -171,7 +181,7 @@ class ProJudiSucessoResponse(TypedDict):
     data_protocolo: str
     arquivos_anexados: List[str]
 
-# Branch Dev: crawjud/interfaces/dict/bot.py  
+# Branch Dev: crawjud/interfaces/dict/bot.py
 PolosProcessuais = Literal["ativo", "passivo", "terceiro"]
 
 class BotData(TypedDict):
@@ -183,8 +193,9 @@ class BotData(TypedDict):
 ### **5. Celery Task System**
 
 #### **Async Task Implementation**
+
 ```python
-# Branch Dev: crawjud/celery_app.py
+# Branch Dev: crawjud/celery.py
 from celery import Celery
 from celery.schedules import crontab
 
@@ -203,7 +214,7 @@ def clear_cache():
     """Automated temporary directory cleanup"""
     import glob
     import shutil
-    
+
     patterns = ['/tmp/crawjud_*', '/tmp/selenium_*']
     for pattern in patterns:
         for path in glob.glob(pattern):
@@ -213,6 +224,7 @@ def clear_cache():
 ### **6. Object Storage Integration**
 
 #### **MinIO Configuration**
+
 ```yaml
 # Branch Dev: compose-minio.yaml
 services:
@@ -222,8 +234,8 @@ services:
       MINIO_ACCESS_KEY: crawjud
       MINIO_SECRET_KEY: crawjud123
     ports:
-      - "9000:9000"      # API
-      - "9001:9001"      # Console
+      - "9000:9000" # API
+      - "9001:9001" # Console
     command: server /data --console-address ":9001"
     volumes:
       - minio-data:/data
@@ -232,6 +244,7 @@ services:
 ### **7. API Architecture Modernization**
 
 #### **Quart API Structure**
+
 ```python
 # Branch Dev: crawjud/api/routes/auth.py
 from quart import Blueprint
@@ -252,16 +265,17 @@ async def protected():
 ```
 
 #### **Socket.IO Namespaces**
+
 ```python
 # Branch Dev: crawjud/api/namespaces/master.py
 from quart_socketio import SocketIO
 
 @sio.on('connect', namespace='/master')
 async def handle_master_connect(sid):
-    await sio.emit('status', {'connected': True}, 
+    await sio.emit('status', {'connected': True},
                    room=sid, namespace='/master')
 
-@sio.on('bot_command', namespace='/master')  
+@sio.on('bot_command', namespace='/master')
 async def handle_bot_command(sid, data):
     # Handle bot management commands
     pass
@@ -273,25 +287,27 @@ async def handle_bot_command(sid, data):
 
 ### **Análise Quantitativa das Diferenças**
 
-| Categoria | Branch Main | Branch Dev | Mudança |
-|-----------|-------------|------------|---------|
-| **Framework Base** | Flask (WSGI) | Quart (ASGI) | Migration |
-| **Python Version** | >=3.13,<3.14 | >=3.12,<4 | Flexibilizado |
-| **Dependencies** | ~50 packages | ~80+ packages | +60% |
-| **Dir Structure** | 13 modules | 16 modules | +23% |
-| **Type Safety** | Basic | Runtime + TypedDict | Enhanced |
-| **Async Support** | Limited | Native | Native |
+| Categoria          | Branch Main  | Branch Dev          | Mudança       |
+| ------------------ | ------------ | ------------------- | ------------- |
+| **Framework Base** | Flask (WSGI) | Quart (ASGI)        | Migration     |
+| **Python Version** | >=3.13,<3.14 | >=3.12,<4           | Flexibilizado |
+| **Dependencies**   | ~50 packages | ~80+ packages       | +60%          |
+| **Dir Structure**  | 13 modules   | 16 modules          | +23%          |
+| **Type Safety**    | Basic        | Runtime + TypedDict | Enhanced      |
+| **Async Support**  | Limited      | Native              | Native        |
 
 ### **Funcionalidades por Branch**
 
 #### **Branch Main (Versão Estável)**
+
 - ✅ Flask-based web application
-- ✅ Basic bot automation (PJE, ELAW, Projudi) 
+- ✅ Basic bot automation (PJE, ELAW, Projudi)
 - ✅ SQLAlchemy ORM integration
 - ✅ Basic authentication system
 - ✅ Core automation functionality
 
-#### **Branch Dev (Versão Avançada)**  
+#### **Branch Dev (Versão Avançada)**
+
 - ✅ **Tudo do Main +**
 - 🆕 Quart async framework
 - 🆕 MinIO object storage
@@ -313,67 +329,73 @@ async def handle_bot_command(sid, data):
 
 ### **⚠️ Mudanças Obrigatórias para Migração Main → Dev**
 
-1. **Framework Change**: 
+1. **Framework Change**:
+
    - ❌ **Flask applications** não compatíveis diretamente
    - ✅ **Quart migration** necessária para async/await
 
 2. **Python Version**:
+
    ```bash
    # Main requires
    python >=3.13,<3.14
-   
-   # Dev supports  
+
+   # Dev supports
    python >=3.12,<4
    ```
 
 3. **Dependencies Complete Overhaul**:
+
    ```bash
    # Remove Flask ecosystem
    pip uninstall flask flask-login flask-mail flask-sqlalchemy
-   
-   # Install Quart ecosystem  
+
+   # Install Quart ecosystem
    pip install -r requirements.txt  # Dev branch
    ```
 
 4. **Configuration Changes**:
+
    ```bash
    # New environment variables needed
    QUART_ENV=development
-   JWT_SECRET_KEY=your-secret-key  
+   JWT_SECRET_KEY=your-secret-key
    MINIO_ENDPOINT=localhost:9000
    REDIS_OM_URL=redis://localhost:6379
    ```
 
 5. **Infrastructure Dependencies**:
+
    ```bash
    # MinIO for object storage
    docker-compose -f compose-minio.yaml up -d
-   
+
    # Redis for caching and sessions
    redis-server
-   
+
    # Celery worker for async tasks
-   celery -A crawjud.celery_app worker --loglevel=info
+   celery -A crawjud.celery worker --loglevel=info
    ```
 
 ### **🔄 Compatibilidade Matrix**
 
-| Component | Main | Dev | Migration Status |
-|-----------|------|-----|-----------------|
-| **Core Bot Logic** | ✅ | ✅ | ✅ Compatible |
-| **Data Models** | ✅ | ✅ | ✅ Compatible |
-| **Web Routes** | Flask | Quart | ⚠️ Requires conversion |
-| **Authentication** | Session-based | JWT | ❌ Incompatible |
-| **Database** | SQLAlchemy | SQLAlchemy | ✅ Compatible |
-| **File Storage** | Local | MinIO + Local | ⚠️ Enhanced |
-| **Task Queue** | None | Celery | 🆕 New feature |
-| **Type System** | Basic | Enhanced | ⚠️ Upgrade |
+| Component          | Main          | Dev           | Migration Status       |
+| ------------------ | ------------- | ------------- | ---------------------- |
+| **Core Bot Logic** | ✅            | ✅            | ✅ Compatible          |
+| **Data Models**    | ✅            | ✅            | ✅ Compatible          |
+| **Web Routes**     | Flask         | Quart         | ⚠️ Requires conversion |
+| **Authentication** | Session-based | JWT           | ❌ Incompatible        |
+| **Database**       | SQLAlchemy    | SQLAlchemy    | ✅ Compatible          |
+| **File Storage**   | Local         | MinIO + Local | ⚠️ Enhanced            |
+| **Task Queue**     | None          | Celery        | 🆕 New feature         |
+| **Type System**    | Basic         | Enhanced      | ⚠️ Upgrade             |
 
 ---
 
 ## 📚 Impacto na Documentação
 
 ### **Arquivos Exclusivos da Branch Dev**
+
 ```diff
 # Novos arquivos de documentação
 + PULL_REQUEST_DESCRIPTION.md      # Este arquivo
@@ -384,13 +406,14 @@ async def handle_bot_command(sid, data):
 
 # Novos arquivos de configuração
 + compose-minio.yaml              # Docker MinIO
-+ config.py                       # App configuration  
++ config.py                       # App configuration
 + requirements.txt                # Pip dependencies
 + uv.lock                         # UV lockfile
 + validate_interfaces.py          # Interface validation
 ```
 
 ### **GitHub Integration Melhorada**
+
 ```diff
 # Branch Dev adiciona
 + .github/copilot-*-instructions.md  # Copilot integration
@@ -403,12 +426,14 @@ async def handle_bot_command(sid, data):
 ## 🎯 Recomendações de Uso
 
 ### **Quando Usar Branch Main**
+
 - ✅ **Produção estável** com requisitos básicos
 - ✅ **Ambientes simples** sem necessidade de async
 - ✅ **Equipes familiarizadas** com Flask
 - ✅ **Recursos limitados** de infraestrutura
 
-### **Quando Usar Branch Dev**  
+### **Quando Usar Branch Dev**
+
 - 🚀 **Desenvolvimento moderno** com async/await
 - 🚀 **Scaling horizontal** com multiple workers
 - 🚀 **Integração avançada** com object storage
@@ -418,9 +443,10 @@ async def handle_bot_command(sid, data):
 - 🚀 **Microservices architecture** preparação
 
 ### **Migration Strategy**
+
 1. **Phase 1**: Teste em ambiente Dev isolado
 2. **Phase 2**: Migração gradual de componentes
-3. **Phase 3**: Validação de compatibilidade  
+3. **Phase 3**: Validação de compatibilidade
 4. **Phase 4**: Deploy com rollback plan
 
 ---
@@ -428,6 +454,7 @@ async def handle_bot_command(sid, data):
 ## ✅ Checklist de Validação
 
 ### **Análise Completada**
+
 - [x] **Framework differences**: Flask vs Quart analisado
 - [x] **Dependency changes**: 50+ packages diff mapeado
 - [x] **Structure reorganization**: 13 vs 16 modules comparado
@@ -438,6 +465,7 @@ async def handle_bot_command(sid, data):
 - [x] **Compatibility matrix**: Componentes avaliados
 
 ### **Documentação Atualizada**
+
 - [x] **PULL_REQUEST_DESCRIPTION.md**: Análise completa das diferenças
 - [x] **RELEASE_NOTES.md**: Impacto e guia de migração
 - [x] **Accuracy verified**: Informações validadas com código real
@@ -450,6 +478,7 @@ async def handle_bot_command(sid, data):
 A comparação entre as branches `main` e `dev` revela uma **evolução arquitetural significativa**. A branch `dev` representa não apenas uma atualização, mas uma **reestruturação completa** que posiciona o CrawJUD como uma plataforma moderna de automação jurídica.
 
 ### **Principais Takeaways:**
+
 - 🔄 **Migration necessária**: Flask → Quart não é backward compatible
 - 📈 **Capabilities expandidas**: +60% mais funcionalidades na branch dev
 - 🏗️ **Architecture moderna**: ASGI, async/await, microservices-ready
@@ -460,6 +489,6 @@ A comparação entre as branches `main` e `dev` revela uma **evolução arquitet
 
 ---
 
-*Análise gerada através de comparação detalhada entre branches `main` e `dev`*  
-*Data da análise: Janeiro 2025*  
-*Documento versão: 1.0*
+_Análise gerada através de comparação detalhada entre branches `main` e `dev`_  
+_Data da análise: Janeiro 2025_  
+_Documento versão: 1.0_

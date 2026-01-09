@@ -9,8 +9,7 @@ import bcrypt
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped  # noqa: TC002
 
-from backend._makers import crypt_context
-from backend.extensions import db
+from backend.extensions import crypt_context, db
 
 if TYPE_CHECKING:
     from typings import TableArgs

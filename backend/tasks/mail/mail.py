@@ -56,7 +56,7 @@ class MailTasks(CeleryTask):
     db: SQLAlchemy
 
     def __init__(self) -> None:  # noqa: D107
-        from backend._makers import app
+        from backend.extensions import app
 
         self.flaskapp = app
         self.db = app.extensions["sqlalchemy"]

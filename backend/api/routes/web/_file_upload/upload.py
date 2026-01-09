@@ -12,9 +12,8 @@ from typing import Self, TypedDict
 
 from flask import request
 
-from backend._makers import app
 from backend.api.resources import formata_string
-from backend.extensions import storage
+from backend.extensions import app, storage
 
 WORKDIR = Path.cwd()
 

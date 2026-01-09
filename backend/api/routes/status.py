@@ -15,8 +15,7 @@ from flask import (
 )
 from flask_jwt_extended import jwt_required
 
-from backend._makers import app
-from backend.extensions import db
+from backend.extensions import app, db
 
 if TYPE_CHECKING:
     from typings import HealtCheck

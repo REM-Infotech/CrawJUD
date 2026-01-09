@@ -26,7 +26,7 @@ load_dotenv()
 class FileManager(MinioClient):
     """Gerenciador de arquivos recebidos para a execução do robô."""
 
-    celery_app: Celery
+    celery: Celery
 
     def __init__(self, bot: CrawJUD) -> None:
         """Inicialize o gerenciador com o bot informado.
