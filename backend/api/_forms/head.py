@@ -96,7 +96,7 @@ class FormBot:
             )
 
             celery.send_task(
-                f"{kwargs['sistema']}_{kwargs['categoria']}",
+                f"{kwargs['categoria']}_{kwargs['sistema']}",
                 kwargs={"config": kwargs},
             )
 

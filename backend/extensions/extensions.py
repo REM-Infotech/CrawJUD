@@ -29,6 +29,8 @@ if TYPE_CHECKING:
     from dynaconf.contrib import DynaconfConfig
 
 
+__name__ = "crawjud"
+
 app: Flask = Flask(__name__)
 celery = Celery(__name__, task_cls=CeleryTask)
 db = SQLAlchemy(model_class=Model, query_class=Query)  # pyright: ignore[reportArgumentType]
@@ -77,6 +79,8 @@ def create_app() -> Flask:
         Flask: Instância configurada da aplicação Flask.
 
     """
+    from backend.api.routes import register_routes
+
     # Configura a aplicação com Dynaconf
     FlaskDynaconf(
         app=app,
@@ -92,8 +96,10 @@ def create_app() -> Flask:
         x_host=1,
         x_prefix=1,
     )
+    start_extensions(app)
+    register_routes(app)
 
-    return start_extensions(app)
+    return app
 
 
 def start_extensions(app: Flask) -> Flask:
