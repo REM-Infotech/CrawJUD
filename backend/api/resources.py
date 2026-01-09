@@ -53,8 +53,6 @@ def formata_string(string: str) -> str:
             de arquivo.
 
     """
-    normalized_string = "".join([
-        c for c in normalize("NFKD", string) if not combining(c)
-    ])
+    normalized_string = "".join([c for c in normalize("NFKD", string) if not combining(c)])
 
     return secure_filename(normalized_string)
