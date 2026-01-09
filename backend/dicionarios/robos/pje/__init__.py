@@ -1,5 +1,3 @@
-# ruff: noqa: D104
-
 from .capa import (
     AssuntoPJe,
     AudienciaProcessoPJe,
