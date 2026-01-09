@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import time
 from contextlib import suppress
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -27,6 +27,8 @@ class Intimacoes(ProjudiBot):
     This class extends CrawJUD to enter the intimacoes tab, set page sizes,
     and retrieve detailed process intimation information.
     """
+
+    name: ClassVar[str] = "intimacoes_projudi"
 
     def execution(self) -> None:
         """Execute the intimation extraction loop and handle pagination.

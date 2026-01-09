@@ -28,8 +28,6 @@ from backend.resources import setup_logger
 if TYPE_CHECKING:
     from dynaconf.contrib import DynaconfConfig
 
-__name__ = "CrawJUD"
-
 
 app: Flask = Flask(__name__)
 celery = Celery(__name__, task_cls=CeleryTask)

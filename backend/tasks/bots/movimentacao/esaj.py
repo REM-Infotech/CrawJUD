@@ -10,7 +10,7 @@ import re
 from contextlib import suppress
 from datetime import datetime
 from time import sleep
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 from zoneinfo import ZoneInfo
 
 from selenium.common.exceptions import NoSuchElementException
@@ -32,6 +32,8 @@ SIZE_ITEMSMOVE = 5
 
 class Movimentacao(ESajBot):
     """Raspagem de movimentações esaj."""
+
+    name: ClassVar[str] = "movimentacao_esaj"
 
     def execution(self) -> None:
         """Executa a raspagem das movimentações do processo no ESAJ."""

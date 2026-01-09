@@ -27,6 +27,8 @@ if TYPE_CHECKING:
 class Movimentacao(ProjudiBot):
     """Raspagem de movimentações projudi."""
 
+    name = "movimentacao_projudi"
+
     movimentacao_encontrada: ClassVar[bool] = False
     list_movimentacoes_extraidas: ClassVar[list[dict[str, str]]] = []
 

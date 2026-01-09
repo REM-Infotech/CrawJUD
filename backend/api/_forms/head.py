@@ -10,8 +10,8 @@ from flask_jwt_extended import get_current_user
 
 from backend.api.resources import camel_to_snake, formata_string
 from backend.common.exceptions._fatal import FatalError
-from backend.extensions import celery
-from backend.models import Bots, LicenseUser, User, db
+from backend.extensions import celery, db
+from backend.models import Bots, LicenseUser, User
 
 if TYPE_CHECKING:
     from flask_keepass import KeepassManager
@@ -140,7 +140,8 @@ class FormBot:
                 # Acessa 'credenciais' antes de fechar a sessão
                 # para evitar DetachedInstanceError
                 lic = (
-                    db.session.query(LicenseUser)
+                    db.session
+                    .query(LicenseUser)
                     .select_from(User)
                     .join(LicenseUser.usuarios)
                     .filter(User.Id == user.Id)
