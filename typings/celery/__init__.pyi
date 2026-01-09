@@ -34,6 +34,11 @@ class KwCelery(TypedDict):
 
 class Celery(BaseCelery):
     def __init__(self, **kwargs: Unpack[KwCelery]) -> None: ...
+    def register_task[**P, R](
+        self,
+        task: CeleryTask[P, R],
+        **options: ...,
+    ) -> CeleryTask[P, R]: ...
 
 @overload
 def shared_task[**P, T](

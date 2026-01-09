@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from celery import Task
+from celery.app.task import Task
 
 if TYPE_CHECKING:
     from collections.abc import Callable
