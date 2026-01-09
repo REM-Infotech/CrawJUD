@@ -28,11 +28,13 @@ from ._dicionarios import (
     RepresentantePJe,
     RepresentantesProjudiDict,
 )
+from .api import BotInfo
 
 __all__ = [
     "AssuntoPJe",
     "AudienciaProcessoPJe",
     "BotData",
+    "BotInfo",
     "CapaPJe",
     "DataSave",
     "DataSucesso",

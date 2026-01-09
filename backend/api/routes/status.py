@@ -18,7 +18,7 @@ from flask_jwt_extended import jwt_required
 from backend.extensions import app, db
 
 if TYPE_CHECKING:
-    from typings import HealtCheck
+    from backend.dicionarios import HealtCheck
 
 __all__ = ["app"]
 
