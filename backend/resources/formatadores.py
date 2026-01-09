@@ -6,6 +6,7 @@ especiais, tornando textos seguros para nomes de arquivos.
 
 from __future__ import annotations
 
+import re
 import secrets
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -16,6 +17,10 @@ from werkzeug.utils import secure_filename
 
 if TYPE_CHECKING:
     from typings import Any
+
+
+MAIOR_60_ANOS = "Maior que 60 anos (conforme Lei 10.741/2003)"
+VER_RECURSO = "Clique aqui para visualizar os recursos relacionados"
 
 
 def formata_string(string: str) -> str:
@@ -95,3 +100,37 @@ def format_float(value: Any) -> str:
 
     """
     return f"{value:.2f}".replace(".", ",")
+
+
+def camel_to_snake(name: str) -> str:
+    """Converta string CamelCase para snake_case.
+
+    Args:
+        name (str): String no formato CamelCase.
+
+    Returns:
+        str: String convertida para snake_case.
+
+    """
+    # Adiciona underscore antes de letras maiúsculas precedidas de minúsculas
+    snake_case_step1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+    # Adiciona underscore antes de letras maiúsculas precedidas de números ou minúsculas
+    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", snake_case_step1).lower()
+
+
+def value_check(label: str, valor: str) -> bool:
+    """Verifique se valor não está em constantes proibidas.
+
+    Args:
+        label (str): Rótulo do campo.
+        valor (str): Valor a ser verificado.
+
+    Returns:
+        bool: True se valor for permitido, senão False.
+
+    """
+    # Verifica se o valor não contém ":" e não está nas constantes
+    if label and valor and ":" not in valor:
+        return valor not in {MAIOR_60_ANOS, VER_RECURSO}
+
+    return False
