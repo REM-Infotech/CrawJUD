@@ -32,10 +32,6 @@ class Movimentacao(ProjudiBot):
     movimentacao_encontrada: ClassVar[bool] = False
     list_movimentacoes_extraidas: ClassVar[list[dict[str, str]]] = []
 
-    def run(self) -> None:
-
-        self.execution()
-
     def execution(self) -> None:
         """Execute o processamento das linhas de dados e trate erros de movimentação.
 

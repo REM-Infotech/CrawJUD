@@ -79,6 +79,11 @@ class CrawJUD(CeleryTask):
         kw["tipo_notificacao"] = "stop"
         celery.send_task("notifica_usuario", kwargs=kw)
 
+    def run(self, config: dict) -> None:
+
+        self.setup(config)
+        self.execution()
+
     def setup(self, config: Dict) -> Self:
         """Configure o bot com as opções fornecidas.
 
