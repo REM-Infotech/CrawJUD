@@ -4,6 +4,6 @@ Este pacote contém classes e funções para automatizar a
 coleta de dados processuais do sistema Projudi.
 """
 
-from ._capa import Capa
+from .capa import Capa
 
 __all__ = ["Capa"]

@@ -17,6 +17,9 @@ from backend.resources.elements import esaj as el
 class ESajBot(CrawJUD):
     """Classe de controle para robôs do ESaj."""
 
+    def __init__(self) -> None:  # noqa: D107
+        super().__init__()
+
     def auth(self) -> bool:
         """Realize a autenticação do usuário no sistema ESaj.
 
