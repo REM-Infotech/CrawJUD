@@ -15,7 +15,6 @@ from zoneinfo import ZoneInfo
 
 from backend.base.task import CeleryTask
 from backend.common.exceptions import StartError
-from backend.common.exceptions._fatal import FatalError
 from backend.extensions import celery
 from backend.resources.driver import BotDriver
 from backend.resources.iterators import BotIterator
@@ -238,28 +237,3 @@ class CrawJUD(CeleryTask):
         """
         now_time = datetime.now(tz=TZ)
         return now_time.strftime(FORMAT_TIME)
-
-
-class BotUtil:  # noqa: D101
-    @staticmethod
-    def on_done(fut: Future[None]) -> None:
-        futures_shutdown.remove(fut)
-
-    @staticmethod
-    def create_thread_shutdown(bot: CrawJUD) -> None:
-
-        sleep(5)
-        future = pool.submit(bot.shutdown_all)
-        futures_shutdown.append(future)
-        future.add_done_callback(BotUtil.on_done)
-
-    @staticmethod
-    def logging_fatal_error(e: Exception, bot: CrawJUD) -> FatalError:
-        exc = FatalError(e)
-        if hasattr(bot, "print_message"):
-            bot.print_message(
-                message=f"Erro na execução do bot CrawJUD. {exc}",
-                message_type="error",
-            )
-        logger.exception("Erro na execução do bot CrawJUD: %s", exc)  # noqa: LOG004
-        return exc
