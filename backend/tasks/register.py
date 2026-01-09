@@ -9,13 +9,32 @@ from typing import TYPE_CHECKING
 
 from backend.extensions import celery
 
-from .bots import EsajCapaTask, PJeCapaTask, ProjudiCapaTask
+from .bots import (
+    EsajCapaTask,
+    EsajMovimentacaoTask,
+    JusdsProvisionamentoTask,
+    PJeCapaTask,
+    PJeMovimentacaoTask,
+    ProjudiCapaTask,
+    ProjudiIntimacoesTask,
+    ProjudiMovimentacaoTask,
+)
 from .mail import MailTasks
 
 if TYPE_CHECKING:
     from backend.base import CeleryTask
 
-tasks: list[CeleryTask] = [MailTasks, PJeCapaTask, ProjudiCapaTask, EsajCapaTask]
+tasks: list[CeleryTask] = [
+    MailTasks,
+    PJeCapaTask,
+    ProjudiCapaTask,
+    EsajCapaTask,
+    ProjudiIntimacoesTask,
+    ProjudiMovimentacaoTask,
+    EsajMovimentacaoTask,
+    PJeMovimentacaoTask,
+    JusdsProvisionamentoTask,
+]
 
 
 def register_tasks() -> None:  # noqa: D103
