@@ -10,6 +10,7 @@ from ._types import (
     MethodsSearch,
     ModeMiddleware,
     PolosProcessuais,
+    Sistemas,
     StrPath,
     TableArgs,
 )
@@ -31,6 +32,7 @@ __all__ = [
     "PayloadDownloadExecucao",
     "PolosProcessuais",
     "ProcessoCNJ",
+    "Sistemas",
     "StrPath",
     "TableArgs",
 ]

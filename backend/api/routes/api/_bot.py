@@ -16,7 +16,6 @@ from flask_jwt_extended import (
 )
 
 from backend.api._forms.head import FormBot
-from backend.api.constants import SISTEMAS
 from backend.api.decorators import CrossDomain
 from backend.api.resources import gerar_id
 from backend.api.routes._blueprints import bots
@@ -28,6 +27,16 @@ if TYPE_CHECKING:
         Response,
         Sistemas,
     )
+
+
+SISTEMAS: set[Sistemas] = {
+    "projudi",
+    "elaw",
+    "esaj",
+    "pje",
+    "jusds",
+    "csi",
+}
 
 
 def is_sistema(valor: Sistemas) -> bool:
