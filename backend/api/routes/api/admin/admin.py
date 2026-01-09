@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 @admin.post("/cadastro_credencial")
 @CrossDomain(origin="*", methods=["get", "post", "options"])
 @jwt_required()
-def cadatro_credencial() -> Response:
+def cadatro_credencial() -> Response:  # noqa: D103
 
     form_ = request.form
     _files = request.files

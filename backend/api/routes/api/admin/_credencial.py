@@ -53,7 +53,9 @@ class CredencialBot:
     db: SQLAlchemy
 
     def __init__(
-        self, app: Flask, **kwargs: Unpack[CredencialBotDict]
+        self,
+        app: Flask,
+        **kwargs: Unpack[CredencialBotDict],
     ) -> None:
 
         self.db = current_app.extensions["sqlalchemy"]
@@ -123,7 +125,7 @@ class CredencialBot:
                 path_temp.mkdir(exist_ok=True, parents=True)
 
                 path_cert = path_temp.joinpath(
-                    self.certificado.filename
+                    self.certificado.filename,
                 )
 
                 self.certificado.save(str(path_cert))
@@ -159,7 +161,8 @@ class CredencialBot:
         user: User = get_current_user()
 
         license_ = (
-            self.db.session.query(LicenseUser)
+            self.db.session
+            .query(LicenseUser)
             .filter(LicenseUser.ProductKey == user.license_.ProductKey)
             .first()
         )
@@ -187,7 +190,8 @@ class CredencialBot:
                 id_credencial = form_.get("Id")
 
                 cred = (
-                    self.db.session.query(CredenciaisRobo)
+                    self.db.session
+                    .query(CredenciaisRobo)
                     .filter(CredenciaisRobo.Id == int(id_credencial))
                     .first()
                 )
