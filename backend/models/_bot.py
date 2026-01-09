@@ -50,7 +50,7 @@ class ExecucoesBot(db.Model):
     __table_args__: ClassVar[_TableArgs] = {"extend_existing": True}
 
     Id: int = Column("id", Integer, primary_key=True)
-    pid: str = Column(String(length=64), nullable=False)
+    id_execucao: str = Column(String(length=64), nullable=False)
     status: str = Column("status", String(length=64), nullable=False)
 
     data_inicio: datetime = Column(DateTime(), nullable=True)

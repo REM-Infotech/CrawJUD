@@ -8,7 +8,7 @@ from jinja2.environment import Template
 
 mail_start: Template = Template(
     """
-<h1>Notificação de Inicialização - PID {{ pid }}</h1>
+<h1>Notificação de Inicialização - PID {{ id_execucao }}</h1>
 <p>Prezado {{ username }},</p>
 <p>Sua execução foi inicializada com sucesso!</p>
 <ul>
@@ -17,7 +17,7 @@ mail_start: Template = Template(
 </ul>
 <p>Acompanhe a execução em:
     <b>
-        <a href="{{ url_web }}/logs/{{ pid }}">Nosso Sistema</a>
+        <a href="{{ url_web }}/logs/{{ id_execucao }}">Nosso Sistema</a>
     </b>
 </p>
 <p>Por favor,
@@ -28,7 +28,7 @@ mail_start: Template = Template(
 
 email_stop: Template = Template(
     """
-<h1>Notificação de Finalização - PID {{pid}}</h1>
+<h1>Notificação de Finalização - PID {{id_execucao}}</h1>
 <p>Prezado {{ username }},</p>
 <p>Sua execução foi finalizada com sucesso!</p>
 <ul>
@@ -37,7 +37,7 @@ email_stop: Template = Template(
 </ul>
 <p>Baixe o resultado
     <b>
-        <a href="crawjud://download_execucao/{{pid}}">Clicando aqui</a>
+        <a href="crawjud://download_execucao/{{id_execucao}}">Clicando aqui</a>
     </b>
 </p>
 <p>Por favor,

@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
+    from backend.dicionarios import ConfigArgsRobo
     from typings import Dict
 
 
@@ -40,23 +41,29 @@ pool = ThreadPoolExecutor(1)
 futures_shutdown: list[Future[None]] = []
 
 
+EMPTY_CONFIG = {
+    "id_execucao": "",
+    "sistema": "",
+    "categoria": "",
+    "credenciais": {
+        "username": "",
+        "password": "",
+        "otp": "",
+        "certificado": "",
+        "nome_certificado": "",
+    },
+}
+
+
 class CrawJUD(CeleryTask):
     """Implemente a abstração do bot CrawJUD."""
 
-    bots: ClassVar[dict[str, type[Self]]] = {}
+    bots: ClassVar[dict[str, type[CrawJUD]]] = {}
     row: int = 0
     _total_rows: int = 0
     remaining: int = 0
-    _name: str = ""
-
-    @property
-    def name(self) -> str:
-        """Retorne o nome do bot CrawJUD."""
-        return self._name
-
-    @name.setter
-    def name(self, val: str) -> None:
-        self._name = val
+    name: str = ""
+    config: ClassVar[ConfigArgsRobo] = EMPTY_CONFIG
 
     def shutdown_all(self) -> None:
 
@@ -77,11 +84,6 @@ class CrawJUD(CeleryTask):
         kw = self.config
         kw["tipo_notificacao"] = "stop"
         celery.send_task("notifica_usuario", kwargs=kw)
-
-    def run(self, config: dict) -> None:
-
-        self.setup(config)
-        self.execution()
 
     def setup(self, config: Dict) -> Self:
         """Configure o bot com as opções fornecidas.
@@ -179,7 +181,7 @@ class CrawJUD(CeleryTask):
             Path: Caminho do diretório de saída criado.
 
         """
-        out_dir = WORKDIR.joinpath("output", self.pid)
+        out_dir = WORKDIR.joinpath("output", self.id_execucao)
         out_dir.mkdir(parents=True, exist_ok=True)
         return out_dir
 
@@ -193,14 +195,14 @@ class CrawJUD(CeleryTask):
         self.config.update({"xlsx": val})
 
     @property
-    def pid(self) -> str:
+    def id_execucao(self) -> str:
         """Retorne o identificador do processo do bot.
 
         Returns:
             str: Identificador do processo.
 
         """
-        return self.config.get("pid")
+        return self.config.get("id_execucao")
 
     @property
     def anexos(self) -> list[str]:
@@ -237,3 +239,8 @@ class CrawJUD(CeleryTask):
         """
         now_time = datetime.now(tz=TZ)
         return now_time.strftime(FORMAT_TIME)
+
+    def __init_subclass__(cls) -> None:  # noqa: D105
+
+        if hasattr(cls, "name") and cls.name:
+            cls.bots[cls.name] = cls

@@ -48,7 +48,7 @@ class CredenciaisSelect(TypedDict):
 class Execucao(TypedDict):
     Id: 0
     bot: str
-    pid: str
+    id_execucao: str
     status: str
     data_inicio: str
     data_fim: str
@@ -76,7 +76,7 @@ def on_listagem_execucoes(self: BlueprintNamespace) -> list[Execucao]:
             Execucao(
                 Id=item.Id,
                 bot=item.bot.display_name,
-                pid=item.pid,
+                id_execucao=item.id_execucao,
                 status=item.status,
                 data_inicio=item.data_inicio.strftime("%d/%m/%Y, %H:%M:%S"),
                 data_fim=item.data_fim.strftime("%d/%m/%Y, %H:%M:%S") if item.data_fim else "",
@@ -94,7 +94,7 @@ def on_logbot(self: BlueprintNamespace, data: Message) -> None:
     self.emit(
         "logbot",
         data=data,
-        room=data["pid"],
+        room=data["id_execucao"],
         namespace="/bot",
     )
 
@@ -134,7 +134,7 @@ def on_listagem(
 def on_bot_stop(self: BlueprintNamespace, data: dict[str, str]) -> None:
     """Registre parada do bot e salve log."""
     # Emite evento de parada do bot para a sala correspondente
-    self.emit("bot_stop", room=data["pid"], namespace="/bot")
+    self.emit("bot_stop", room=data["id_execucao"], namespace="/bot")
 
 
 @botNS.on("join_room")

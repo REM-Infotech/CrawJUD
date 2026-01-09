@@ -33,6 +33,8 @@ class KwCelery(TypedDict):
     task_cls: type[CeleryTask]
 
 class Celery(BaseCelery):
+    @property
+    def tasks(self) -> dict[str, CeleryTask]: ...
     def __init__(self, **kwargs: Unpack[KwCelery]) -> None: ...
     def register_task[**P, R](
         self,

@@ -43,7 +43,7 @@ class Intimacoes(ProjudiBot):
         for i in range(pages_count):
             self.bot_data = {}
 
-            self.bot_data.update({"PID": self.pid, "ROW": i})
+            self.bot_data.update({"PID": self.id_execucao, "ROW": i})
 
             self.row = i + 1
 

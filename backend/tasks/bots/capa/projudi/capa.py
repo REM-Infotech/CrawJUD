@@ -8,18 +8,20 @@ coleta de dados processuais do sistema Projudi.
 
 from __future__ import annotations
 
+import json
 import shutil
 import time
+from base64 import b64encode
 from contextlib import suppress
-from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
+from uuid import uuid4
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from backend.common import raise_execution_error
 from backend.common.exceptions import ExecutionError
-from backend.dicionarios import ProjudiCapa
+from backend.dicionarios import ArgumentosRobo, ProjudiCapa
 
 from ._primeira import PrimeiraInstancia
 from ._segunda import SegundaInstancia
@@ -38,6 +40,27 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
     """
 
     name: ClassVar[str] = "capa_projudi"
+    frame: list[ProjudiCapa]
+
+    def run(self, config: ArgumentosRobo) -> None:
+
+        config.update({
+            "sistema": "projudi",
+        })
+
+        if not config.get("cookies"):
+            config["cookies"] = b64encode(
+                json.dumps({
+                    "access_token_cookie": str(uuid4()),
+                }).encode(),
+            ).decode()
+
+        if config.get("frame"):
+            self.frame = config.get("frame")
+
+        self.args = config
+        self.setup(config)
+        return self.execution()
 
     def execution(self) -> None:
         """Execute a extração de dados dos processos do Projudi."""
@@ -164,10 +187,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
         for item in to_add:
             self.append_success(worksheet=item[0], data_save=item[1])
 
-    def copia_pdf(
-        self,
-        data: dict[str, str | int | datetime],
-    ) -> dict[str, str | int | datetime]:
+    def copia_pdf(self) -> dict[str, str | int | datetime]:
         """Extract the movements of the legal proceedings and saves a PDF copy.
 
         Returns:
@@ -196,66 +216,61 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
         time.sleep(0.5)
         btn_exportar_processo.click()
 
-        def unmark_gen_mov() -> None:
-            time.sleep(0.5)
-            self.wait.until(
-                ec.presence_of_element_located((
-                    By.CSS_SELECTOR,
-                    'input[name="gerarMovimentacoes"][value="false"]',
-                )),
-            ).click()
+        self.unmark_gen_mov()
+        self.unmark_add_validate_tag()
+        self.export(id_proc)
 
-        def unmark_add_validate_tag() -> None:
-            time.sleep(0.5)
-            self.wait.until(
-                ec.presence_of_element_located((
-                    By.CSS_SELECTOR,
-                    'input[name="adicionarTarjaValidacao"][value="false"]',
-                )),
-            ).click()
-
-        def export() -> None:
-            self.print_message(
-                message="Baixando cópia integral do processo...",
-                message_type="log",
-            )
-
-            time.sleep(5)
-
-            n_processo = self.bot_data.get("NUMERO_PROCESSO")
-            path_pdf = Path(self.output_dir_path).joinpath(
-                f"Cópia Integral - {n_processo} - {self.pid}.pdf",
-            )
-
-            btn_exportar = self.driver.find_element(
+    def unmark_gen_mov(self) -> None:
+        time.sleep(0.5)
+        self.wait.until(
+            ec.presence_of_element_located((
                 By.CSS_SELECTOR,
-                'input[name="btnExportar"]',
-            )
-            btn_exportar.click()
+                'input[name="gerarMovimentacoes"][value="false"]',
+            )),
+        ).click()
 
-            count = 0
-            time.sleep(5)
-            path_copia = self.output_dir_path.joinpath(
-                f"{id_proc}.pdf",
-            ).resolve()
+    def unmark_add_validate_tag(self) -> None:
+        time.sleep(0.5)
+        self.wait.until(
+            ec.presence_of_element_located((
+                By.CSS_SELECTOR,
+                'input[name="adicionarTarjaValidacao"][value="false"]',
+            )),
+        ).click()
 
-            while count <= CONTAGEM:
-                if path_copia.exists():
-                    break
+    def export(self, id_proc: str) -> None:
+        self.print_message(
+            message="Baixando cópia integral do processo...",
+            message_type="log",
+        )
 
-                time.sleep(2)
-                count += 1
+        time.sleep(5)
+        n_processo = self.bot_data.get("NUMERO_PROCESSO")
 
-            if not path_copia.exists():
-                raise ExecutionError(message="Arquivo não encontrado!")
+        out_dir = self.output_dir_path
+        nome_pdf = f"2026 - COPIA INTEGRAL - {n_processo} - {self.id_execucao}.pdf"
+        path_pdf = out_dir.joinpath(n_processo, nome_pdf)
+        path_pdf.parent.mkdir(exist_ok=True, parents=True)
 
-            shutil.move(path_copia, path_pdf)
+        btn_exportar = self.driver.find_element(
+            By.CSS_SELECTOR,
+            'input[name="btnExportar"]',
+        )
+        btn_exportar.click()
 
-            time.sleep(0.5)
-            data.update({"CÓPIA_INTEGRAL": path_pdf.name})
+        count = 0
+        time.sleep(5)
+        path_copia = out_dir.joinpath(f"{id_proc}.pdf").resolve()
 
-        unmark_gen_mov()
-        unmark_add_validate_tag()
-        export()
+        while count <= CONTAGEM:
+            if path_copia.exists():
+                break
 
-        return data
+            time.sleep(2)
+            count += 1
+
+        if not path_copia.exists():
+            raise ExecutionError(message="Arquivo não encontrado!")
+
+        shutil.move(path_copia, path_pdf)
+        time.sleep(0.5)

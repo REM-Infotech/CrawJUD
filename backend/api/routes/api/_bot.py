@@ -82,7 +82,7 @@ def run_bot(sistema: Sistemas) -> Response:
                 "title": "Sucesso",
                 "message": "Robô inicializado com sucesso!",
                 "status": "success",
-                "pid": pid_exec,
+                "id_execucao": pid_exec,
                 "pid_resumido": pid_exec,
             }
             code = 200
@@ -94,14 +94,14 @@ def run_bot(sistema: Sistemas) -> Response:
     return make_response(jsonify(payload), code)
 
 
-@bots.get("/execucoes/<string:pid>/download")
+@bots.get("/execucoes/<string:id_execucao>/download")
 @CrossDomain(origin="*", methods=["get", "post", "options"])
 @jwt_required()
-def download_execucao(pid: str) -> Response[PayloadDownloadExecucao]:
+def download_execucao(id_execucao: str) -> Response[PayloadDownloadExecucao]:
     """Baixe o arquivo de execução do bot pelo PID informado.
 
     Args:
-        pid (str): Identificador da execução do bot.
+        id_execucao (str): Identificador da execução do bot.
 
     Returns:
         Response[PayloadDownloadExecucao]: Resposta com arquivo codificado.
@@ -114,13 +114,13 @@ def download_execucao(pid: str) -> Response[PayloadDownloadExecucao]:
     if not temp_dir.exists():
         temp_dir.mkdir(parents=True, exist_ok=True)
 
-    file_path = temp_dir.joinpath(f"{pid}.zip")
+    file_path = temp_dir.joinpath(f"{id_execucao}.zip")
     if file_path.exists():
         file_path.unlink()
 
     storage.fget_object(
         bucket_name="outputexec-bots",
-        object_name=f"{pid}.zip",
+        object_name=f"{id_execucao}.zip",
         file_path=str(file_path),
     )
 
@@ -129,7 +129,7 @@ def download_execucao(pid: str) -> Response[PayloadDownloadExecucao]:
 
     payload = jsonify({
         "content": b64encode(file_data).decode("utf-8"),
-        "file_name": f"{pid}.zip",
+        "file_name": f"{id_execucao}.zip",
     })
 
     return make_response(payload, 200)

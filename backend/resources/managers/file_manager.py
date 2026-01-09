@@ -115,7 +115,7 @@ class FileManager(MinioClient):
         )
 
     def __zip_result(self) -> Path:
-        zip_filename = f"{self.bot.pid}.zip"
+        zip_filename = f"{self.bot.id_execucao}.zip"
         source_dir = self.bot.output_dir_path
         output_dir = WORKDIR.joinpath("archives", zip_filename)
 
@@ -124,7 +124,7 @@ class FileManager(MinioClient):
         with ZipFile(output_dir, "w", ZIP_DEFLATED) as zipfile:
             for root, _, files in source_dir.walk():
                 for file in files:
-                    if self.bot.pid in file and ".log" not in file:
+                    if self.bot.id_execucao in file and ".log" not in file:
                         file_path = root.joinpath(file)
                         arcname = file_path.relative_to(source_dir)
                         zipfile.write(file_path, arcname)

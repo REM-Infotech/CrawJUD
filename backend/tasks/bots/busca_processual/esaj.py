@@ -195,7 +195,7 @@ class Capa(ESajBot):
 
             n_processo = self.bot_data.get("NUMERO_PROCESSO")
             path_pdf = Path(self.output_dir_path).joinpath(
-                f"Cópia Integral - {n_processo} - {self.pid}.pdf",
+                f"Cópia Integral - {n_processo} - {self.id_execucao}.pdf",
             )
 
             btn_exportar = self.driver.find_element(

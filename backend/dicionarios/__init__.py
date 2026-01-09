@@ -1,8 +1,11 @@
 from ._dicionarios import (
+    ArgumentosRobo,
     AssuntoPJe,
     AudienciaProcessoPJe,
     BotData,
     CapaPJe,
+    ConfigArgsRobo,
+    Credencial,
     DataSave,
     DataSucesso,
     DictCredencial,
@@ -31,11 +34,14 @@ from ._dicionarios import (
 from .api import BotInfo
 
 __all__ = [
+    "ArgumentosRobo",
     "AssuntoPJe",
     "AudienciaProcessoPJe",
     "BotData",
     "BotInfo",
     "CapaPJe",
+    "ConfigArgsRobo",
+    "Credencial",
     "DataSave",
     "DataSucesso",
     "DictCredencial",

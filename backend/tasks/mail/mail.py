@@ -66,7 +66,7 @@ class MailTasks(CeleryTask):
     @overload
     def __call__(
         self,
-        pid: str,
+        id_execucao: str,
         bot_id: int,
         user_id: int,
         tipo_notificacao: Literal["start", "stop"],
@@ -76,7 +76,7 @@ class MailTasks(CeleryTask):
 
     def run(
         self,
-        pid: str,
+        id_execucao: str,
         bot_id: int,
         user_id: int,
         tipo_notificacao: Literal["start", "stop"],
@@ -87,7 +87,7 @@ class MailTasks(CeleryTask):
 
         Args:
             app (Flask): Instância da aplicação Flask.
-            pid (str): Identificador do processo.
+            id_execucao (str): Identificador do processo.
             bot_id (int): ID do bot.
             user_id (int): ID do usuário.
             xlsx (str | None): Caminho do arquivo XLSX (opcional).
@@ -102,7 +102,7 @@ class MailTasks(CeleryTask):
         with self.db.session.no_autoflush:
             self.user = self.query_user(user_id)
             self.bot = self.query_bot(bot_id)
-            self.pid = pid
+            self.id_execucao = id_execucao
             self.tipo_notificacao = tipo_notificacao
 
             with suppress(Exception):
@@ -127,7 +127,7 @@ class MailTasks(CeleryTask):
                     template = self.notificacoes.get(tipo_notificacao)
                     msg.html = template.render(
                         display_name=self.bot.display_name,
-                        pid=pid,
+                        id_execucao=id_execucao,
                         xlsx=xlsx,
                         url_web=url_web,
                         username=self.user.nome_usuario,
@@ -151,7 +151,7 @@ class MailTasks(CeleryTask):
             app (Flask): Instância da aplicação Flask.
             bot_id (int): ID do bot a ser executado.
             user_id (int): ID do usuário responsável.
-            pid (str): Identificador do processo.
+            id_execucao (str): Identificador do processo.
             operacao (Literal["start", "stop"]): Operação desejada.
 
         Returns:
@@ -163,7 +163,7 @@ class MailTasks(CeleryTask):
         if self.tipo_notificacao == "stop":
             # Finaliza execução existente pelo PID
             status_execucao = "Finalizado"
-            execucao = self.query_execucao(self.pid)
+            execucao = self.query_execucao(self.id_execucao)
             if execucao:
                 execucao.status = status_execucao
                 execucao.data_fim = now
@@ -172,7 +172,7 @@ class MailTasks(CeleryTask):
 
         # Cria uma nova execução do bot
         execucao = ExecucoesBot(
-            pid=self.pid,
+            id_execucao=self.id_execucao,
             status=status_execucao,
             data_inicio=now,
         )
@@ -209,18 +209,23 @@ class MailTasks(CeleryTask):
         """
         return self.db.session.query(User).filter(User.Id == user_id).first()
 
-    def query_execucao(self, pid: str) -> ExecucoesBot | None:
+    def query_execucao(self, id_execucao: str) -> ExecucoesBot | None:
         """Consulte e retorne uma execução pelo PID informado.
 
         Args:
             db (SQLAlchemy): Instância do banco de dados SQLAlchemy.
-            pid (str): Identificador do processo.
+            id_execucao (str): Identificador do processo.
 
         Returns:
             ExecucoesBot | None: Execução encontrada ou None se não existir.
 
         """
-        return self.db.session.query(ExecucoesBot).filter(ExecucoesBot.pid == pid).first()
+        return (
+            self.db.session
+            .query(ExecucoesBot)
+            .filter(ExecucoesBot.id_execucao == id_execucao)
+            .first()
+        )
 
 
 __all__ = ["MailTasks"]

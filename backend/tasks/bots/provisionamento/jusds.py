@@ -153,7 +153,7 @@ class Provisionamento(JusdsBot):
             id_risco = self._informa_objeto()
 
             out = self.output_dir_path
-            comprovante = out.joinpath(f"Comprovante - {proc} - {self.pid}.png")
+            comprovante = out.joinpath(f"Comprovante - {proc} - {self.id_execucao}.png")
             comprovante.write_bytes(self.driver.get_screenshot_as_png())
 
             self.append_success(

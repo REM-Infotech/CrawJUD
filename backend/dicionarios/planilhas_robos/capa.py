@@ -12,7 +12,9 @@ class PJeCapa(PJe):
     TRAZER_MOVIMENTACOES: Literal["sim", "não"]
 
 
-class ProjudiCapa(BotData): ...
+class ProjudiCapa(BotData):
+    TRAZER_COPIA: str
+    TRAZER_MOVIMENTACOES: str
 
 
 class EsajCapa(BotData): ...

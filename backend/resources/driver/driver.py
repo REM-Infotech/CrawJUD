@@ -88,7 +88,7 @@ class BotDriver:
 
         """
         options = Options()
-        user_data_dir = WORKDIR.joinpath("chrome-data", bot.pid)
+        user_data_dir = WORKDIR.joinpath("chrome-data", bot.id_execucao)
         user_data_dir.mkdir(parents=True, exist_ok=True)
         user_data_dir.chmod(0o775)
 
@@ -96,9 +96,6 @@ class BotDriver:
 
         for argument in ARGUMENTS:
             options.add_argument(argument)
-
-        if "projudi" in bot.config.get("sistema"):
-            options.add_argument("--incognito")
 
         download_dir = str(bot.output_dir_path)
         preferences = PREFERENCES

@@ -5,6 +5,7 @@ operações automatizadas, como administração, busca,
 cálculo, capa, emissão, intimações, movimentação e protocolo.
 """
 
+from .busca_processual import ProjudiBuscaProcessualTask
 from .capa import EsajCapaTask, PJeCapaTask, ProjudiCapaTask
 from .intimacoes import ProjudiIntimacoesTask
 from .movimentacao import EsajMovimentacaoTask, PJeMovimentacaoTask, ProjudiMovimentacaoTask
@@ -16,6 +17,7 @@ __all__ = [
     "JusdsProvisionamentoTask",
     "PJeCapaTask",
     "PJeMovimentacaoTask",
+    "ProjudiBuscaProcessualTask",
     "ProjudiCapaTask",
     "ProjudiIntimacoesTask",
     "ProjudiMovimentacaoTask",

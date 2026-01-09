@@ -9,11 +9,14 @@ from celery.app.task import Task
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from celery import Celery
+
 
 class CeleryTask[**P, R](Task):
     """Integre tarefas Celery ao contexto Flask nesta classe."""
 
     run: Callable[P, R]
+    app: Celery
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         """Executa a tarefa Celery dentro do contexto Flask.
