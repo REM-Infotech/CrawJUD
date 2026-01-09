@@ -19,7 +19,7 @@ from backend.resources.driver.web_element import WebElement
 from .constants import ARGUMENTS, PREFERENCES, SETTINGS
 
 if TYPE_CHECKING:
-    from backend.controllers import CrawJUD
+    from backend.controllers.head import CrawJUD
 
 
 WORKDIR = Path.cwd()

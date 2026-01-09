@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
-    from backend.controllers import CrawJUD
+    from backend.controllers.head import CrawJUD
     from backend.dicionarios import BotData
     from backend.resources.queues.print_message import PrintMessage
     from typings import Dict

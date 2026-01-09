@@ -15,7 +15,7 @@ from backend.resources.formatadores import (
 )
 
 if TYPE_CHECKING:
-    from backend.controllers import CrawJUD
+    from backend.controllers.head import CrawJUD
 
 
 class BotIterator[T: BotData]:

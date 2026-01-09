@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from bs4 import BeautifulSoup
 
-from backend.controllers import CrawJUD
+from backend.controllers.head import CrawJUD
 from backend.resources import value_check
 from backend.resources.auth.projudi import AutenticadorProjudi
 from backend.resources.formatadores import (

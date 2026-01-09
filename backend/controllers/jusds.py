@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING as TYPE_CHECKING
 from typing import ClassVar
 
-from backend.controllers import CrawJUD
+from backend.controllers.head import CrawJUD
 from backend.resources.auth.jusds import AutenticadorJusds
 from backend.resources.search.jusds import JusdsSearch
 
