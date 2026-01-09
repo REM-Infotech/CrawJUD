@@ -95,7 +95,10 @@ class FormBot:
                 {"cookies": b64encode(cookies).decode()},
             )
 
-            celery.send_task("crawjud", kwargs={"config": kwargs})
+            celery.send_task(
+                f"{kwargs['sistema']}_{kwargs['categoria']}",
+                kwargs={"config": kwargs},
+            )
 
             # Notifica o usuário sobre o início da execução
             celery.send_task(
