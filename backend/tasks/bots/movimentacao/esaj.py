@@ -357,9 +357,7 @@ class Movimentacao(ESajBot):
             tuple: Flags e informações auxiliares para processamento.
 
         """
-        save_another_file = (
-            str(self.bot_data.get("DOC_SEPARADO", "SIM")).upper() == "SIM"
-        )
+        save_another_file = str(self.bot_data.get("DOC_SEPARADO", "SIM")).upper() == "SIM"
         mov = ""
         mov_chk = False
         trazer_teor = str(self.bot_data.get("TRAZER_TEOR", "NÃO")).upper() == "SIM"
@@ -439,18 +437,12 @@ class Movimentacao(ESajBot):
         """Set the page size for movement scraping."""
         try:
             self.driver.execute_script(
-                (
-                    'document.querySelector("#tabelaTodasMovimentacoes")'
-                    '.style.display = "block"'
-                ),
+                ('document.querySelector("#tabelaTodasMovimentacoes").style.display = "block"'),
             )
 
         except AttributeError:
             self.driver.execute_script(
-                (
-                    'document.querySelector("#tabelaUltimasMovimentacoes")'
-                    '.style.display = "block"'
-                ),
+                ('document.querySelector("#tabelaUltimasMovimentacoes").style.display = "block"'),
             )
 
     def set_tablemoves(self) -> None:
@@ -504,10 +496,7 @@ class Movimentacao(ESajBot):
                 el.movimentacoes,
             )
             self.driver.execute_script(
-                (
-                    'document.querySelector("#tabelaTodasMovimentacoes")'
-                    '.style.display = "block"'
-                ),
+                ('document.querySelector("#tabelaTodasMovimentacoes").style.display = "block"'),
             )
 
         except NoSuchElementException:
@@ -516,10 +505,7 @@ class Movimentacao(ESajBot):
                 el.ultimas_movimentacoes,
             )
             self.driver.execute_script(
-                (
-                    'document.querySelector("#tabelaUltimasMovimentacoes")'
-                    '.style.display = "block"'
-                ),
+                ('document.querySelector("#tabelaUltimasMovimentacoes").style.display = "block"'),
             )
 
         itens = table_moves.find_elements(By.TAG_NAME, "tr")

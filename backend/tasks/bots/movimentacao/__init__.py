@@ -1,5 +1,7 @@
 """Módulo de controle dos robôs de raspagem de capa."""
 
-from . import esaj, pje, projudi
+from .esaj import Movimentacao as EsajMovimentacaoTask
+from .pje import Movimentacao as PJeMovimentacaoTask
+from .projudi import Movimentacao as ProjudiMovimentacaoTask
 
-__all__ = ["esaj", "pje", "projudi"]
+__all__ = ["EsajMovimentacaoTask", "PJeMovimentacaoTask", "ProjudiMovimentacaoTask"]

@@ -1,3 +1,3 @@
-from . import jusds
+from .jusds import Provisionamento as JusdsProvisionamentoTask
 
-__all__ = ["jusds"]
+__all__ = ["JusdsProvisionamentoTask"]
