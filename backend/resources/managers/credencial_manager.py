@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from backend.controllers.head import CrawJUD
+    from backend.controllers import CrawJUD
 
 type AnyType = any
 

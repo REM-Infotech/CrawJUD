@@ -23,7 +23,7 @@ from .constants import (
 )
 
 if TYPE_CHECKING:
-    from backend.controllers.head import CrawJUD
+    from backend.controllers import CrawJUD
 
 
 WORKDIR = Path.cwd()

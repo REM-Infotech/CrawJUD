@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
 from backend.common.raises import raise_execution_error
-from backend.controllers.head import CrawJUD
+from backend.controllers import CrawJUD
 from backend.dicionarios import DataSucesso
 from backend.dicionarios.robos._cidades import cidades_amazonas
 from backend.resources.auth import AutenticadorElaw

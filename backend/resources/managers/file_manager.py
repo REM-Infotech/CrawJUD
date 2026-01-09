@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from celery import Celery
     from minio.datatypes import Object
 
-    from backend.controllers.head import CrawJUD
+    from backend.controllers import CrawJUD
 
 WORKDIR = Path.cwd()
 load_dotenv()

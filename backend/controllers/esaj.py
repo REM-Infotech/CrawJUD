@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select, WebDriverWait
 
-from backend.controllers.head import CrawJUD
+from backend.controllers import CrawJUD
 from backend.resources.elements import esaj as el
 
 

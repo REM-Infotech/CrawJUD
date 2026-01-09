@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
-    from backend.controllers.head import CrawJUD
+    from backend.controllers import CrawJUD
     from backend.resources.managers.credencial_manager import (
         CredencialManager,
     )
