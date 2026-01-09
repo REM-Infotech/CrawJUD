@@ -6,6 +6,7 @@ cálculo, capa, emissão, intimações, movimentação e protocolo.
 """
 
 from .capa import EsajCapaTask, PJeCapaTask, ProjudiCapaTask
+from .intimacoes import ProjudiIntimacoesTask
 from .movimentacao import EsajMovimentacaoTask, PJeMovimentacaoTask, ProjudiMovimentacaoTask
 from .provisionamento import JusdsProvisionamentoTask
 
@@ -16,5 +17,6 @@ __all__ = [
     "PJeCapaTask",
     "PJeMovimentacaoTask",
     "ProjudiCapaTask",
+    "ProjudiIntimacoesTask",
     "ProjudiMovimentacaoTask",
 ]
