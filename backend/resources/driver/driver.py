@@ -16,11 +16,7 @@ from webdriver_manager.core.driver_cache import DriverCacheManager
 
 from backend.resources.driver.web_element import WebElement
 
-from .constants import (
-    ARGUMENTS,
-    PREFERENCES,
-    SETTINGS,
-)
+from .constants import ARGUMENTS, PREFERENCES, SETTINGS
 
 if TYPE_CHECKING:
     from backend.controllers import CrawJUD
