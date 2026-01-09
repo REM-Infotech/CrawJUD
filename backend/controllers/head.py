@@ -14,26 +14,14 @@ from typing import TYPE_CHECKING, ClassVar, Self
 from warnings import warn
 from zoneinfo import ZoneInfo
 
-from celery import shared_task
-from clear import clear
-from dotenv import load_dotenv
-
 from backend.base.task import CeleryTask
 from backend.common.exceptions import StartError
 from backend.common.exceptions._fatal import FatalError
-from backend.common.exceptions._file import ArquivoNaoEncontradoError
 from backend.extensions import celery
 from backend.resources.driver import BotDriver
 from backend.resources.iterators import BotIterator
-from backend.resources.managers.credencial_manager import (
-    CredencialManager,
-)
-from backend.resources.managers.file_manager import FileManager
-from backend.resources.queues.file_operation import (
-    SaveError,
-    SaveSuccess,
-)
-from backend.resources.queues.print_message import PrintMessage
+from backend.resources.managers import CredencialManager, FileManager
+from backend.resources.queues import PrintMessage, SaveError, SaveSuccess
 
 if TYPE_CHECKING:
     from selenium.webdriver import Chrome as SeChrome
@@ -298,54 +286,3 @@ class BotUtil:  # noqa: D101
             )
         logger.exception("Erro na execução do bot CrawJUD: %s", exc)  # noqa: LOG004
         return exc
-
-
-@shared_task(name="crawjud")
-def start_bot(config: Dict) -> None:
-    """Inicie o bot CrawJUD com a configuração fornecida.
-
-    Args:
-        config (Dict): Configuração do bot.
-
-    Returns:
-        None: Não retorna valor.
-
-    """
-    load_dotenv()
-
-    class Dummy(CrawJUD): ...
-
-    try:
-        bot_nome = f"{config['categoria']}_{config['sistema']}"
-        bot = CrawJUD.bots.get(bot_nome)
-        if not bot:
-            bot_nome = f"{config['sistema']}_{config['categoria']}"
-            bot = CrawJUD.bots[bot_nome]
-
-        bot = bot()
-        bot.setup(config=config)
-        bot.execution()
-        BotUtil.create_thread_shutdown(bot)
-
-    except (ArquivoNaoEncontradoError, FatalError) as e:
-        bot = Dummy().setup(config=config)
-        exc = BotUtil.logging_fatal_error(e, bot)
-        BotUtil.create_thread_shutdown(bot)
-        raise exc from e
-
-    except KeyError as e:
-        clear()
-
-        config["sistema"] = "PJE"
-        bot = Dummy().setup(config=config)
-        exc = BotUtil.logging_fatal_error(e, bot)
-        BotUtil.create_thread_shutdown(bot)
-        raise exc from e
-
-    except Exception as e:
-        clear()
-        bot = Dummy().setup(config=config)
-        exc = BotUtil.logging_fatal_error(e, bot)
-        BotUtil.create_thread_shutdown(bot)
-
-        raise exc from e
