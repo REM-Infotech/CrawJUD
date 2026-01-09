@@ -61,11 +61,15 @@ class CrawJUD(CeleryTask):
     row: int = 0
     _total_rows: int = 0
     remaining: int = 0
+    _name: str = ""
 
     @property
-    @abstractmethod
     def name(self) -> str:
         """Retorne o nome do bot CrawJUD."""
+
+    @name.setter
+    def name(self, val: str) -> None:
+        self._name = val
 
     def shutdown_all(self) -> None:
 

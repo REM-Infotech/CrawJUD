@@ -12,8 +12,8 @@ from dotenv import load_dotenv
 from httpx import Client
 
 from backend.controllers.head import CrawJUD
-from backend.resources import RegioesIterator
 from backend.resources.auth.pje import AutenticadorPJe
+from backend.resources.iterators.pje import RegioesIterator
 from backend.resources.search.pje import PjeSeach
 
 if TYPE_CHECKING:
