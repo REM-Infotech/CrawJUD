@@ -21,8 +21,8 @@ from backend.common import raise_execution_error
 from backend.common.exceptions import ExecutionError
 from backend.dicionarios import ProjudiCapa
 
-from ._2 import SegundaInstancia
-from .primeira import PrimeiraInstancia
+from ._primeira import PrimeiraInstancia
+from ._segunda import SegundaInstancia
 
 if TYPE_CHECKING:
     from datetime import datetime

@@ -37,11 +37,13 @@ def make_celery(app: Flask) -> Celery:
         Celery: Configured Celery instance.
 
     """
-    from backend import tasks as tasks
+    from backend.tasks.register import register_tasks
 
     celery_app.config_from_object(CeleryConfig(app.config))
     celery_app.set_default()
     app.extensions["celery"] = celery_app
+
+    register_tasks()
 
     return celery_app
 
