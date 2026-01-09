@@ -5,9 +5,10 @@ operações automatizadas, como administração, busca,
 cálculo, capa, emissão, intimações, movimentação e protocolo.
 """
 
-from .capa import PJeCapaTask, ProjudiCapaTask
+from .capa import EsajCapaTask, PJeCapaTask, ProjudiCapaTask
 
 __all__ = [
+    "EsajCapaTask",
     "PJeCapaTask",
     "ProjudiCapaTask",
 ]
