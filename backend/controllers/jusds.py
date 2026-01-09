@@ -20,6 +20,7 @@ class JusdsBot(CrawJUD):
         """Inicialize o robô Elaw."""
         self.search = JusdsSearch(self)
         self.auth = AutenticadorJusds(self)
+        super().__init__()
 
     @property
     def main_window(self) -> str:

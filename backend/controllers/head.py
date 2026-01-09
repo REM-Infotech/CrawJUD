@@ -18,6 +18,7 @@ from celery import shared_task
 from clear import clear
 from dotenv import load_dotenv
 
+from backend.base.task import CeleryTask
 from backend.common.exceptions import StartError
 from backend.common.exceptions._fatal import FatalError
 from backend.common.exceptions._file import ArquivoNaoEncontradoError
@@ -53,7 +54,7 @@ pool = ThreadPoolExecutor(1)
 futures_shutdown: list[Future[None]] = []
 
 
-class CrawJUD:
+class CrawJUD(CeleryTask):
     """Implemente a abstração do bot CrawJUD."""
 
     bots: ClassVar[dict[str, type[Self]]] = {}

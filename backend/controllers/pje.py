@@ -36,6 +36,7 @@ class PJeBot(CrawJUD):
         """Inicialize o robô PJe com autenticação e busca."""
         self.auth = AutenticadorPJe(self)
         self.search = PjeSeach(self)
+        super().__init__()
 
     # Retorna as posições dos processos por identificador.
     @property

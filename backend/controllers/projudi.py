@@ -29,6 +29,7 @@ class ProjudiBot(CrawJUD):
         """Inicialize o robô PROJUDI e seus componentes."""
         self.search = ProjudiSearch(self)
         self.auth = AutenticadorProjudi(self)
+        super().__init__()
 
     def parse_data(self, inner_html: str) -> dict[str, str]:
         """Extrai dados do HTML do processo.

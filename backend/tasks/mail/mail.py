@@ -15,7 +15,6 @@ from zoneinfo import ZoneInfo
 from flask_mail import Message
 from jinja2 import Environment
 
-from backend._makers import celery_app
 from backend.base.task import CeleryTask
 from backend.common.exceptions._fatal import FatalError
 from backend.models import Bots, ExecucoesBot, User
@@ -59,7 +58,7 @@ class MailTasks(CeleryTask):
     def __init__(self) -> None:  # noqa: D107
         from backend._makers import app
 
-        self.app = app
+        self.flaskapp = app
         self.db = app.extensions["sqlalchemy"]
 
         super().__init__()
@@ -98,7 +97,7 @@ class MailTasks(CeleryTask):
             str: Mensagem de sucesso do envio do e-mail.
 
         """
-        url_web = self.app.config["WEB_URL"]
+        url_web = self.flaskapp.config["WEB_URL"]
 
         with self.db.session.no_autoflush:
             self.user = self.query_user(user_id)
@@ -109,7 +108,7 @@ class MailTasks(CeleryTask):
             with suppress(Exception):
                 self.informacao_database()
 
-            mail: Mail = self.app.extensions.get("mail")
+            mail: Mail = self.flaskapp.extensions.get("mail")
 
             if mail:
                 try:
@@ -224,4 +223,4 @@ class MailTasks(CeleryTask):
         return self.db.session.query(ExecucoesBot).filter(ExecucoesBot.pid == pid).first()
 
 
-notifica_usuario: MailTasks = celery_app.register_task(MailTasks())
+__all__ = ["MailTasks"]

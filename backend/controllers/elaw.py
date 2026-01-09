@@ -34,6 +34,7 @@ class ElawBot(CrawJUD):
         """Inicialize o robô Elaw."""
         self.search = ElawSearch(self)
         self.auth = AutenticadorElaw(self)
+        super().__init__()
 
     def elaw_formats(self, data: dict[str, str]) -> dict[str, str]:
         """Formata e ajuste os dados para uso no Elaw.
@@ -111,7 +112,8 @@ class ElawBot(CrawJUD):
 
             with suppress(NoSuchElementException):
                 progress_bar = (
-                    self.driver.find_element(
+                    self.driver
+                    .find_element(
                         By.CSS_SELECTOR,
                         'div[id*=":uploadGedEFile"]',
                     )
