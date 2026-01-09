@@ -24,8 +24,6 @@ clear()
 
 typerapp = Typer()
 
-app: Flask = create_app()
-
 
 def _api(app: Flask) -> None:
     from backend.api import routes as routes
