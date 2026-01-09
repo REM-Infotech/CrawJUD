@@ -13,13 +13,25 @@ from flask import (
     make_response,
     request,
 )
+from flask_jwt_extended import verify_jwt_in_request
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from typings import Methods, P
+    from typings import Any, Methods
 
 MAX_AGE = 21600
+
+
+def jwt_sio_required[**P, T](fn: Callable[P, T]) -> Callable[P, T]:
+
+    @wraps(fn)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Callable[P, T]:
+
+        verify_jwt_in_request()
+        return fn(*args, **kwargs)
+
+    return wrapper
 
 
 class CrossDomain:
@@ -58,7 +70,7 @@ class CrossDomain:
         self.automatic_options = automatic_options
         self.current_request_method = None
 
-    def __call__[T](
+    def __call__[**P, T](
         self,
         wrapped_function: Callable[P, T],
     ) -> Callable[P, Response]:

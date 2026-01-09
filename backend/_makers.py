@@ -15,8 +15,7 @@ from backend.base import CeleryTask
 from backend.config import CeleryConfig, settings
 from backend.resources import setup_logger
 
-__all__ = ["_hook", "settings"]
-
+__name__ = "CrawJUD"
 
 celery_app = Celery(__name__, task_cls=CeleryTask)
 after_setup_logger.connect(setup_logger)
@@ -78,3 +77,6 @@ def create_app() -> Flask:
         x_prefix=1,
     )
     return app
+
+
+__all__ = ["_hook", "app", "celery_app", "crypt_context", "make_celery", "settings"]
