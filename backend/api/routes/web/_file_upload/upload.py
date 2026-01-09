@@ -12,7 +12,7 @@ from typing import Self, TypedDict
 
 from flask import request
 
-from backend.api import app
+from backend._makers import app
 from backend.api.resources import formata_string
 from backend.extensions import storage
 

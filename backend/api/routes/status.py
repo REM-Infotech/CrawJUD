@@ -15,7 +15,7 @@ from flask import (
 )
 from flask_jwt_extended import jwt_required
 
-from backend.api import app
+from backend._makers import app
 from backend.extensions import db
 
 if TYPE_CHECKING:

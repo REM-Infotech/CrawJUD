@@ -11,7 +11,7 @@ from clear import clear
 from dotenv import dotenv_values
 from typer import Typer
 
-from backend.api import create_app
+from ._makers import create_app, make_celery
 
 if TYPE_CHECKING:
     from celery import Celery
@@ -36,8 +36,6 @@ def _api() -> None:
 
 
 def _celery_worker() -> None:
-    from backend.task_manager import make_celery
-
     celery_app: Celery = make_celery(app)
 
     worker = Worker(

@@ -32,7 +32,7 @@ class QueryProperty[T]:
         pass
 
     def __get__(self, instance: AnyType, owner: type[T]) -> Query[T]:
-        from backend.api import app
+        from backend._makers import app
 
         cls = cast("Model", owner)
         if "sqlalchemy" in app.extensions:
