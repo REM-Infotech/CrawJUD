@@ -315,7 +315,7 @@ class Movimentacao(ProjudiBot):
             pdf_out_name = pdf_out_name.split("\n")[0]
 
         pdf_out_name = " ".join(pdf_out_name.split())
-        pdf_name = f"{numero_processo} - {pdf_out_name} - {self.pid}.pdf"
+        pdf_name = f"{numero_processo} - {pdf_out_name} - {self.id_execucao}.pdf"
 
         path_pdf = self.output_dir_path.joinpath(pdf_name)
         with path_pdf.open("wb") as fp:

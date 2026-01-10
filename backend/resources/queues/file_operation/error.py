@@ -57,7 +57,7 @@ class SaveError(FileOperator):
         """Salve erros da fila em arquivo Excel de forma assíncrona."""
         tz = ZoneInfo("America/Sao_Paulo")
         now = datetime.now(tz=tz).strftime("%d-%m-%Y %H-%M-%S")
-        nome_arquivo = f"Erros - PID {self.bot.pid} - {now}.xlsx"
+        nome_arquivo = f"Erros - PID {self.bot.id_execucao} - {now}.xlsx"
         arquivo_erro = self.bot.output_dir_path.joinpath(nome_arquivo)
 
         for data in QueueIterator[DataSave](self.queue_save):

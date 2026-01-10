@@ -11,36 +11,23 @@ from pathlib import Path
 from threading import Event
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar, Self
-from warnings import warn
 from zoneinfo import ZoneInfo
-
-from celery import shared_task
-from clear import clear
-from dotenv import load_dotenv
 
 from backend.base.task import CeleryTask
 from backend.common.exceptions import StartError
-from backend.common.exceptions._fatal import FatalError
-from backend.common.exceptions._file import ArquivoNaoEncontradoError
 from backend.extensions import celery
 from backend.resources.driver import BotDriver
 from backend.resources.iterators import BotIterator
-from backend.resources.managers.credencial_manager import (
-    CredencialManager,
-)
-from backend.resources.managers.file_manager import FileManager
-from backend.resources.queues.file_operation import (
-    SaveError,
-    SaveSuccess,
-)
-from backend.resources.queues.print_message import PrintMessage
+from backend.resources.managers import CredencialManager, FileManager
+from backend.resources.queues import PrintMessage, SaveError, SaveSuccess
 
 if TYPE_CHECKING:
     from selenium.webdriver import Chrome as SeChrome
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
-    from typings import Any, Dict
+    from backend.dicionarios import ConfigArgsRobo
+    from typings import Dict
 
 
 WORKDIR = Path.cwd()
@@ -54,22 +41,29 @@ pool = ThreadPoolExecutor(1)
 futures_shutdown: list[Future[None]] = []
 
 
+EMPTY_CONFIG = {
+    "id_execucao": "",
+    "sistema": "",
+    "categoria": "",
+    "credenciais": {
+        "username": "",
+        "password": "",
+        "otp": "",
+        "certificado": "",
+        "nome_certificado": "",
+    },
+}
+
+
 class CrawJUD(CeleryTask):
     """Implemente a abstração do bot CrawJUD."""
 
-    bots: ClassVar[dict[str, type[Self]]] = {}
+    bots: ClassVar[dict[str, type[CrawJUD]]] = {}
     row: int = 0
     _total_rows: int = 0
     remaining: int = 0
-    _name: str = ""
-
-    @property
-    def name(self) -> str:
-        """Retorne o nome do bot CrawJUD."""
-
-    @name.setter
-    def name(self, val: str) -> None:
-        self._name = val
+    name: str = ""
+    config: ClassVar[ConfigArgsRobo] = EMPTY_CONFIG
 
     def shutdown_all(self) -> None:
 
@@ -90,34 +84,6 @@ class CrawJUD(CeleryTask):
         kw = self.config
         kw["tipo_notificacao"] = "stop"
         celery.send_task("notifica_usuario", kwargs=kw)
-
-    @classmethod
-    def __subclasshook__(
-        cls,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        """Registre subclasses do CrawJUD automaticamente."""
-        if not hasattr(cls, "name"):
-            warn(
-                "Atributo 'name' não definido na subclasse CrawJUD.",
-                stacklevel=1,
-            )
-
-        return True
-
-    def __init_subclass__(cls) -> None:
-        """Inicialize subclasses do CrawJUD e registre bots.
-
-        Args:
-            cls (type): Subclasse de CrawJUD.
-
-
-        """
-        if not hasattr(cls, "name"):
-            return
-
-        CrawJUD.bots[cls.name] = cls
 
     def setup(self, config: Dict) -> Self:
         """Configure o bot com as opções fornecidas.
@@ -215,7 +181,7 @@ class CrawJUD(CeleryTask):
             Path: Caminho do diretório de saída criado.
 
         """
-        out_dir = WORKDIR.joinpath("output", self.pid)
+        out_dir = WORKDIR.joinpath("output", self.id_execucao)
         out_dir.mkdir(parents=True, exist_ok=True)
         return out_dir
 
@@ -229,14 +195,14 @@ class CrawJUD(CeleryTask):
         self.config.update({"xlsx": val})
 
     @property
-    def pid(self) -> str:
+    def id_execucao(self) -> str:
         """Retorne o identificador do processo do bot.
 
         Returns:
             str: Identificador do processo.
 
         """
-        return self.config.get("pid")
+        return self.config.get("id_execucao")
 
     @property
     def anexos(self) -> list[str]:
@@ -274,78 +240,7 @@ class CrawJUD(CeleryTask):
         now_time = datetime.now(tz=TZ)
         return now_time.strftime(FORMAT_TIME)
 
+    def __init_subclass__(cls) -> None:  # noqa: D105
 
-class BotUtil:  # noqa: D101
-    @staticmethod
-    def on_done(fut: Future[None]) -> None:
-        futures_shutdown.remove(fut)
-
-    @staticmethod
-    def create_thread_shutdown(bot: CrawJUD) -> None:
-
-        sleep(5)
-        future = pool.submit(bot.shutdown_all)
-        futures_shutdown.append(future)
-        future.add_done_callback(BotUtil.on_done)
-
-    @staticmethod
-    def logging_fatal_error(e: Exception, bot: CrawJUD) -> FatalError:
-        exc = FatalError(e)
-        if hasattr(bot, "print_message"):
-            bot.print_message(
-                message=f"Erro na execução do bot CrawJUD. {exc}",
-                message_type="error",
-            )
-        logger.exception("Erro na execução do bot CrawJUD: %s", exc)  # noqa: LOG004
-        return exc
-
-
-@shared_task(name="crawjud")
-def start_bot(config: Dict) -> None:
-    """Inicie o bot CrawJUD com a configuração fornecida.
-
-    Args:
-        config (Dict): Configuração do bot.
-
-    Returns:
-        None: Não retorna valor.
-
-    """
-    load_dotenv()
-
-    class Dummy(CrawJUD): ...
-
-    try:
-        bot_nome = f"{config['categoria']}_{config['sistema']}"
-        bot = CrawJUD.bots.get(bot_nome)
-        if not bot:
-            bot_nome = f"{config['sistema']}_{config['categoria']}"
-            bot = CrawJUD.bots[bot_nome]
-
-        bot = bot()
-        bot.setup(config=config)
-        bot.execution()
-        BotUtil.create_thread_shutdown(bot)
-
-    except (ArquivoNaoEncontradoError, FatalError) as e:
-        bot = Dummy().setup(config=config)
-        exc = BotUtil.logging_fatal_error(e, bot)
-        BotUtil.create_thread_shutdown(bot)
-        raise exc from e
-
-    except KeyError as e:
-        clear()
-
-        config["sistema"] = "PJE"
-        bot = Dummy().setup(config=config)
-        exc = BotUtil.logging_fatal_error(e, bot)
-        BotUtil.create_thread_shutdown(bot)
-        raise exc from e
-
-    except Exception as e:
-        clear()
-        bot = Dummy().setup(config=config)
-        exc = BotUtil.logging_fatal_error(e, bot)
-        BotUtil.create_thread_shutdown(bot)
-
-        raise exc from e
+        if hasattr(cls, "name") and cls.name:
+            cls.bots[cls.name] = cls

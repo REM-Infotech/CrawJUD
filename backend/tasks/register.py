@@ -15,6 +15,7 @@ from .bots import (
     JusdsProvisionamentoTask,
     PJeCapaTask,
     PJeMovimentacaoTask,
+    ProjudiBuscaProcessualTask,
     ProjudiCapaTask,
     ProjudiIntimacoesTask,
     ProjudiMovimentacaoTask,
@@ -34,13 +35,14 @@ tasks: list[CeleryTask] = [
     EsajMovimentacaoTask,
     PJeMovimentacaoTask,
     JusdsProvisionamentoTask,
+    ProjudiBuscaProcessualTask,
 ]
 
 
 def register_tasks() -> None:  # noqa: D103
 
     for task in tasks:
-        celery.register_task(task())
+        celery.register_task(task)
 
 
 __all__ = ["register_tasks"]

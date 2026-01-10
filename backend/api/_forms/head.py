@@ -68,7 +68,7 @@ class FormBot:
             user: User = get_current_user()
 
             kwargs.update({
-                "pid": pid_exec,
+                "id_execucao": pid_exec,
                 "bot_id": bot.Id,
                 "user_id": user.Id,
                 "sistema": bot.sistema.lower(),
@@ -95,13 +95,16 @@ class FormBot:
                 {"cookies": b64encode(cookies).decode()},
             )
 
-            celery.send_task("crawjud", kwargs={"config": kwargs})
+            celery.send_task(
+                f"{kwargs['categoria']}_{kwargs['sistema']}",
+                kwargs={"config": kwargs},
+            )
 
             # Notifica o usuário sobre o início da execução
             celery.send_task(
                 "notifica_usuario",
                 kwargs={
-                    "pid": pid_exec,
+                    "id_execucao": pid_exec,
                     "bot_id": bot.Id,
                     "user_id": user.Id,
                     "xlsx": kwargs.get("xlsx"),

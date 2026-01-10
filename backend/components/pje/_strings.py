@@ -44,7 +44,7 @@ class NomeDocumentoPJe(UserString):
             "processo": tl.processo,
             "titulo": titulo_formatado,
             "id_unico": documento["codigoDocumento"],
-            "pid": tl.bot.pid,
+            "id_execucao": tl.bot.id_execucao,
         }
         if titulo == tipo:
             seq_dict.pop("titulo")

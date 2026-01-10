@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 class Message(TypedDict, total=False):
     """Defina estrutura para mensagens do bot."""
 
-    pid: str
+    id_execucao: str
     message: str
     time_message: str
     message_type: MessageType
@@ -114,11 +114,34 @@ class DataSucesso(TypedDict):
     NOME_COMPROVANTE_2: str
 
 
+class Credencial(TypedDict):
+    username: str
+    password: str
+    otp: str
+    certificado: str
+    nome_certificado: str
+
+
+class ConfigArgsRobo(TypedDict):
+    id_execucao: str
+    sistema: str
+    categoria: str
+    credenciais: Credencial
+
+
+class ArgumentosRobo(ConfigArgsRobo):
+    nome_parte: str
+    documento_parte: str
+    credenciais: Credencial
+
+
 __all__ = [
+    "ArgumentosRobo",
     "AssuntoPJe",
     "AudienciaProcessoPJe",
     "BotData",
     "CapaPJe",
+    "ConfigArgsRobo",
     "DataSave",
     "DictCredencial",
     "DictUsers",

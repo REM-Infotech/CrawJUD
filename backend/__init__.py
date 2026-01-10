@@ -5,6 +5,6 @@ carrega as rotas e executa o servidor SocketIO na porta definida.
 """
 
 from . import _hook as hook
-from ._main import _start_backend, typerapp
+from ._main import typerapp
 
-__all__ = ["_start_backend", "hook", "typerapp"]
+__all__ = ["hook", "typerapp"]

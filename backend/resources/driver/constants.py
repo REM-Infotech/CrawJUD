@@ -36,4 +36,5 @@ PREFERENCES = {
     "download.default_directory": "",
     "credentials_enable_service": False,
     "profile.password_manager_enabled": False,
+    "profile.password_manager_leak_detection": False,
 }

@@ -211,7 +211,7 @@ class ElawBot(CrawJUD):
 
         """
         numero_processo = self.bot_data.get("NUMERO_PROCESSO")
-        name_comprovante = f"Comprovante - {numero_processo} - {self.pid}.png"
+        name_comprovante = f"Comprovante - {numero_processo} - {self.id_execucao}.png"
         savecomprovante = self.output_dir_path.joinpath(
             name_comprovante,
         )

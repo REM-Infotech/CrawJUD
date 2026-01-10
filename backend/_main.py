@@ -11,11 +11,7 @@ from clear import clear
 from dotenv import dotenv_values
 from typer import Typer
 
-from .extensions import create_app, make_celery
-
 if TYPE_CHECKING:
-    from celery import Celery
-    from flask import Flask
     from flask_socketio import SocketIO
 
 environ = dotenv_values()
@@ -25,31 +21,23 @@ clear()
 typerapp = Typer()
 
 
-def _api(app: Flask) -> None:
+def _api() -> None:
     from backend.api import routes as routes
+
+    from .extensions import create_app, make_celery
+
+    app = create_app()
+    _celery = make_celery(app)
 
     io: SocketIO = app.extensions["socketio"]
     port: int = int(environ.get("FLASK_PORT", FLASK_PORT)) or FLASK_PORT
     io.run(app, host="localhost", port=port, allow_unsafe_werkzeug=True)
 
 
-def _celery_worker(celery: Celery) -> None:
-
-    worker = Worker(
-        app=celery,
-        pool="threads",
-        loglevel=logging.INFO,
-    )
-
-    worker.start()
-
-
 @typerapp.command(name="api")
-def _thread_api() -> NoReturn:
+def thread_api() -> NoReturn:
 
-    app = create_app()
-    make_celery(app)
-    api_ = Thread(target=_api, daemon=True, kwargs={"app": app})
+    api_ = Thread(target=_api, daemon=True)
     api_.start()
 
     sleep(5)
@@ -72,27 +60,19 @@ def _thread_api() -> NoReturn:
 
 
 @typerapp.command(name="celery")
-def _thread_celery() -> NoReturn:
-
-    app = create_app()
-    celery: Celery = make_celery(app)
-    celery_ = Thread(target=_celery_worker, daemon=True, kwargs={"celery": celery})
-    celery_.start()
-
-    while True:
-        ...
-
-
-def _start_backend() -> None:
+def thread_celery() -> NoReturn:
+    from .extensions import create_app, make_celery
 
     app = create_app()
     celery = make_celery(app)
+    worker = Worker(
+        app=celery,
+        pool="threads",
+        loglevel=logging.DEBUG,
+        task_events=True,
+    )
 
-    celery_ = Thread(target=_celery_worker, daemon=True, kwargs={"celery": celery})
-    celery_.start()
-
-    api_ = Thread(target=_api, daemon=True, kwargs={"app": app})
-    api_.start()
+    worker.start()
 
 
-__all__ = ["_start_backend", "typerapp"]
+__all__ = ["typerapp"]

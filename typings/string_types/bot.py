@@ -33,9 +33,7 @@ class ProcessoCNJ(UserString):
         )
 
     def __validate_str(self) -> bool:
-        matches = [
-            re.match(pattern, self.data) for pattern in PADRAO_CNJ
-        ]
+        matches = [re.match(pattern, self.data) for pattern in PADRAO_CNJ]
 
         return any(matches) or value_error()
 
@@ -79,9 +77,7 @@ class ProcessoCNJ(UserString):
 
         """
         with suppress(ValueError):
-            matches = [
-                re.match(pattern, instance) for pattern in PADRAO_CNJ
-            ]
+            matches = [re.match(pattern, instance) for pattern in PADRAO_CNJ]
             return any(matches) or value_error()
 
         return False
@@ -99,14 +95,14 @@ class MessageLog(UserString):
 
     def format(
         self,
-        pid: str,
+        id_execucao: str,
         message_type: MessageType,
         row: int,
     ) -> Self:
         """Formata mensagem de log com PID, tipo, linha e horário.
 
         Args:
-            pid (str): Identificador do processo.
+            id_execucao (str): Identificador do processo.
             message_type (MessageType): Tipo da mensagem.
             row (int): Linha do evento.
 
@@ -122,7 +118,7 @@ class MessageLog(UserString):
         time_ = datetime.now(tz=tz).strftime("%H:%M:%S")
 
         # Monta a mensagem de log formatada
-        msg = f"[({pid}, {message_type}, {row}, {time_})> {self.data}]"
+        msg = f"[({id_execucao}, {message_type}, {row}, {time_})> {self.data}]"
 
         # Atualiza o atributo data da UserString
         self.data = msg

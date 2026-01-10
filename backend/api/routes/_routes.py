@@ -5,21 +5,24 @@ Este módulo define rotas básicas e integra blueprints de autenticação e bots
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING
 
 from flask import (
     Flask,
     Response,
+    jsonify,
     request,
 )
 
-from backend.extensions import app
+from backend.extensions import app, celery
 
 from . import api, status, web
 from ._blueprints import admin, adminNS, auth, botNS, bots, fileNS
 
 if TYPE_CHECKING:
     from flask_socketio import SocketIO
+
 
 __all__ = ["api", "status", "web"]
 
@@ -56,3 +59,27 @@ def apply_cors(response: Response) -> Response:
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
 
     return response
+
+
+task_start = []
+configuracao = set()
+
+
+@app.post("/start")
+def start_teste() -> None:
+
+    if len(task_start) > 0:
+        task_start.clear()
+        return jsonify({"ok": "ok"})
+
+    config = request.get_json()["config"]
+    configuracao.add(json.dumps(config))
+
+    task = celery.tasks["busca_processual_projudi"].apply_async(
+        kwargs={
+            "config": config,
+        },
+    )
+    task_start.append(task)
+
+    return jsonify({"ok": "ok"})

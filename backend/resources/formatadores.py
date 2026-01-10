@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 import secrets
+import traceback
 from datetime import datetime
 from typing import TYPE_CHECKING
 from unicodedata import combining, normalize
@@ -134,3 +135,21 @@ def value_check(label: str, valor: str) -> bool:
         return valor not in {MAIOR_60_ANOS, VER_RECURSO}
 
     return False
+
+
+def formata_msg(exc: Exception | None = None) -> str:
+    """Formata mensagem de erro detalhada a partir de uma exceção fornecida ao bot.
+
+    Args:
+        exc (Exception | None): Exceção a ser formatada, se fornecida.
+
+    Returns:
+        str: Mensagem formatada contendo detalhes da exceção, se houver.
+
+    """
+    if exc:
+        return "\n Exception: " + "\n".join(
+            traceback.format_exception_only(exc),
+        )
+
+    return ""

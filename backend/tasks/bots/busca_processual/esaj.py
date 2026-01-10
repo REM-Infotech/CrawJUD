@@ -1,10 +1,3 @@
-# ruff: noqa: BLE001
-
-"""Module: capa.
-
-Extract and manage process details from esaj by scraping and formatting data.
-"""
-
 import shutil
 import time
 from contextlib import suppress
@@ -14,11 +7,8 @@ from typing import TYPE_CHECKING, ClassVar
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
-from backend.common import raise_execution_error
 from backend.common.exceptions import ExecutionError
-
-from ._primeira import PrimeiraInstancia
-from ._segunda import SegundaInstancia
+from backend.controllers import ESajBot
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -26,20 +16,10 @@ if TYPE_CHECKING:
     from typings import Dict
 
 
-class Capa(PrimeiraInstancia, SegundaInstancia):
-    """Extract process information from Esaj and populate structured data.
-
-    This class extends CrawJUD to click through information panels,
-    extract process data and participant details, and format them accordingly.
-    """
-
-    name: ClassVar[str] = "capa_esaj"
+class Capa(ESajBot):
+    name: ClassVar[str] = "busca_processual_esaj"
 
     def execution(self) -> None:
-        """Execute the main processing loop to extract process information.
-
-        Iterates over each data row and queues process data extraction.
-        """
         frame = self.frame
 
         self._total_rows = len(frame)
@@ -130,8 +110,8 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
                 numero_processo=numero_processo,
             )
 
-        except ExecutionError, Exception:
-            raise_execution_error("Erro ao executar operação")
+        except Exception as e:
+            raise ExecutionError(message="Erro ao executar operação") from e
 
     def primeiro_grau(self, numero_processo: str) -> None:
         process_info: Dict = {"Número do processo": numero_processo}

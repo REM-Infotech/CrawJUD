@@ -71,7 +71,7 @@ class PrintMessage:
 
         """
         out_dir = self.bot.output_dir_path
-        return out_dir.joinpath(f"{self.bot.pid.upper()}.txt")
+        return out_dir.joinpath(f"{self.bot.id_execucao.upper()}.txt")
 
     def __init__(self, bot: CrawJUD) -> None:
         """Instancia da queue de salvamento de sucessos."""
@@ -98,7 +98,7 @@ class PrintMessage:
             link (str): Link do resultado (apenas no fim da execução)
 
         """
-        _mini_pid = self.bot.pid
+        _mini_pid = self.bot.id_execucao
 
         if not row or row == 0:
             row = self.bot.row
@@ -109,7 +109,7 @@ class PrintMessage:
         time_ = datetime.now(tz=tz).strftime("%H:%M:%S:%z")
 
         msg = Message(
-            pid=self.bot.pid,
+            id_execucao=self.bot.id_execucao,
             row=row,
             message=str(message),
             time_message=time_,
@@ -222,7 +222,7 @@ class PrintMessage:
                     )
                     sio.emit(
                         "join_room",
-                        data={"room": self.bot.pid},
+                        data={"room": self.bot.id_execucao},
                         namespace="/bot",
                     )
 
@@ -273,7 +273,7 @@ class PrintMessage:
 
         self.emit_message(
             Message(
-                pid=self.bot.pid,
+                id_execucao=self.bot.id_execucao,
                 row=0,
                 message=str(message),
                 time_message=time_,
