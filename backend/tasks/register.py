@@ -15,6 +15,7 @@ from .bots import (
     JusdsProvisionamentoTask,
     PJeCapaTask,
     PJeMovimentacaoTask,
+    PreCadastroElaw,
     ProjudiBuscaProcessualTask,
     ProjudiCapaTask,
     ProjudiIntimacoesTask,
@@ -36,6 +37,7 @@ tasks: list[CeleryTask] = [
     PJeMovimentacaoTask,
     JusdsProvisionamentoTask,
     ProjudiBuscaProcessualTask,
+    PreCadastroElaw,
 ]
 
 

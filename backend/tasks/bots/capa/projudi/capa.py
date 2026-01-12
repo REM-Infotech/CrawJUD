@@ -8,13 +8,10 @@ coleta de dados processuais do sistema Projudi.
 
 from __future__ import annotations
 
-from base64 import b64encode
 from contextlib import suppress
-from json import dumps
 from shutil import move
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar, TypedDict
-from uuid import uuid4
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -61,14 +58,6 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
         config.update({
             "sistema": "projudi",
         })
-
-        if not config.get("cookies"):
-            config["cookies"] = b64encode(
-                dumps({
-                    "access_token_cookie": str(uuid4()),
-                }).encode(),
-            ).decode()
-
         if config.get("frame"):
             self.frame = config.get("frame")
 

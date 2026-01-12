@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class PreCadastroElaw(CadastroElaw):
     bot_data: ElawCadastro
+    name = "pre_cadastro_elaw"
 
     def run(self, config: ConfigArgsRobo) -> None:
 
