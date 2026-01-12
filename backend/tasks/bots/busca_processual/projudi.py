@@ -6,13 +6,10 @@ coleta de dados processuais do sistema Projudi.
 
 from __future__ import annotations
 
-import json
-from base64 import b64encode
 from contextlib import suppress
 from datetime import datetime
 from time import sleep
 from typing import TYPE_CHECKING, ClassVar, Self
-from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from selenium.webdriver.common.by import By
@@ -36,11 +33,6 @@ class BuscaProcessual(ProjudiBot):
 
         config.update({
             "sistema": "projudi",
-            "cookies": b64encode(
-                json.dumps({
-                    "access_token_cookie": str(uuid4()),
-                }).encode(),
-            ).decode(),
         })
 
         self.args = config
