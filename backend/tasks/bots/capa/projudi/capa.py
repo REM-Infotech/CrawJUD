@@ -53,7 +53,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
     frame: list[ProjudiCapa]
     informacao_extraida: InformacaoExtraida
 
-    def run(self, config: ArgumentosRobo) -> None:
+    def run(self, config: ArgumentosRobo) -> InformacaoExtraida:
 
         config.update({
             "sistema": "projudi",

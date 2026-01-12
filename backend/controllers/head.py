@@ -13,6 +13,7 @@ from time import sleep
 from typing import TYPE_CHECKING, ClassVar, Self
 from zoneinfo import ZoneInfo
 
+from celery import shared_task
 from selenium.webdriver.common.by import By
 
 from backend.base.task import CeleryTask
@@ -30,6 +31,8 @@ if TYPE_CHECKING:
     from seleniumwire.webdriver import Chrome
 
     from backend.dicionarios import ConfigArgsRobo
+    from backend.tasks.bots.busca_processual.projudi import BuscaProcessual
+    from backend.tasks.bots.capa.projudi import Capa
 
 
 WORKDIR = Path.cwd()
@@ -280,3 +283,14 @@ class CrawJUD(CeleryTask):
         raise_execution_error(
             message=f'Opção "{to_search}" não encontrada!',
         )
+
+
+@shared_task(name="tarefa-prototipo")
+def tarefa_prototipo(config: ConfigArgsRobo) -> None:  # noqa: D103
+
+    bot: BuscaProcessual = CrawJUD.bots["busca_processual_projudi"]()
+    frame = bot.run(config)
+
+    bot: Capa = CrawJUD.bots["capa_projudi"]()
+    bot.frame = frame
+    _results = bot.run(config)

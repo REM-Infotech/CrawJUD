@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 class BuscaProcessual(ProjudiBot):
     name: ClassVar[str] = "busca_processual_projudi"
 
-    def run(self, config: ArgumentosRobo) -> None:
+    def run(self, config: ArgumentosRobo) -> list[ProjudiCapa]:
         self.args = config
         self.setup(config)
         frame = self.execution()
