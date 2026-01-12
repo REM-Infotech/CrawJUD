@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import zoneinfo
 from abc import abstractmethod
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
-    from backend.dicionarios import ConfigArgsRobo
+    from backend.dicionarios import ConfigArgsRobo, ProjudiCapa
     from backend.tasks.bots.busca_processual.projudi import BuscaProcessual
     from backend.tasks.bots.capa.projudi import Capa
 
@@ -288,12 +289,45 @@ class CrawJUD(CeleryTask):
 @shared_task(name="tarefa-prototipo", bind=True)
 def tarefa_prototipo(self: CeleryTask, config: ConfigArgsRobo) -> None:  # noqa: D103
 
-    config.update({
-        "sistema": "projudi",
-    })
-    bot: BuscaProcessual = CrawJUD.bots["busca_processual_projudi"]()
-    frame = bot.run(config)
+    from backend.extensions import app, db
 
-    bot: Capa = CrawJUD.bots["capa_projudi"]()
-    bot.frame = frame
-    _results = bot.run(config)
+    with app.app_context():
+        from backend.models._bot import Processo
+
+        db.create_all()
+
+        config.update({
+            "sistema": "projudi",
+        })
+        bot1: BuscaProcessual = CrawJUD.bots["busca_processual_projudi"]()
+        frame = bot1.run(config)
+
+        new_frame: list[ProjudiCapa] = []
+        to_add: list[Processo] = []
+
+        with db.session.no_autoflush:
+            now = datetime.now(tz=zoneinfo("America/Sao_Paulo"))
+            for processo in frame:
+                query = (
+                    db.session
+                    .query(Processo)
+                    .filter(processo["NUMERO_PROCESSO"] == Processo.NUMERO_PROCESSO)
+                    .first()
+                )
+                if not query:
+                    new_frame.append(processo)
+
+                    to_add.append(
+                        Processo(
+                            NUMERO_PROCESSO=processo["NUMERO_PROCESSO"],
+                            DATA_DISTRIBUICAO=now,
+                        ),
+                    )
+
+            if to_add:
+                db.session.add_all(to_add)
+                db.session.commit()
+
+        bot: Capa = CrawJUD.bots["capa_projudi"]()
+        bot.frame = new_frame
+        _results = bot.run(config)

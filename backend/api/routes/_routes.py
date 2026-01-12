@@ -5,7 +5,6 @@ Este módulo define rotas básicas e integra blueprints de autenticação e bots
 
 from __future__ import annotations
 
-import json
 from typing import TYPE_CHECKING
 
 from flask import (
@@ -61,25 +60,15 @@ def apply_cors(response: Response) -> Response:
     return response
 
 
-task_start = []
-configuracao = set()
-
-
 @app.post("/start")
 def start_teste() -> None:
 
-    if len(task_start) > 0:
-        task_start.clear()
-        return jsonify({"ok": "ok"})
-
     config = request.get_json()["config"]
-    configuracao.add(json.dumps(config))
 
-    task = celery.tasks["tarefa-prototipo"].apply_async(
+    _task = celery.tasks["tarefa-prototipo"].apply_async(
         kwargs={
             "config": config,
         },
     )
-    task_start.append(task)
 
     return jsonify({"ok": "ok"})
