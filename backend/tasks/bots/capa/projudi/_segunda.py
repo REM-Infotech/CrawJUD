@@ -15,6 +15,7 @@ def limpa_campo(valor: str) -> str:
 
 
 TDS_MAX_SIZE = 6
+ADVOGADO_INTIMACAO = "OAB 99999999N-AM - Sistema de Citação e Intimação Eletrônica"
 
 
 class SegundaInstancia(ProjudiBot):
@@ -115,22 +116,27 @@ class SegundaInstancia(ProjudiBot):
         endereco = ""
 
         # Encontra todas as linhas principais das partes
-        for tr in soup.find_all("tr", class_="even"):
+        for tr in list(
+            filter(
+                lambda x: x.find_all("td") and len(x.find_all("td")) >= 6,
+                soup.find_all("tr", class_="even"),
+            ),
+        ):
             tds = tr.find_all("td")
-            if not tds or len(tds) < TDS_MAX_SIZE:
-                continue
             # Extrai nome
-            nome = str(tds[1].get_text(strip=True))
+            nome_parte = str(tds[1].get_text(strip=True))
             # Extrai documento (RG ou similar)
-            documento = str(tds[2].get_text(strip=True))
+            documento_parte = str(tds[2].get_text(strip=True))
             # Extrai CPF
-            cpf = str(tds[3].get_text(strip=True))
+            cpf_cnpj_parte = str(tds[3].get_text(strip=True))
             # Extrai OABs e advogados
-            advs = ", ".join([
+            advogados_parte = ", ".join([
                 " ".join(str(li.get_text(" ", strip=True)).split())
                 for li in tds[5].find_all("li")
             ])
 
+            if advogados_parte == ADVOGADO_INTIMACAO:
+                advogados_parte = ""
             # Busca o id da linha expandida para endereço
             row_id = tr.get("id")
             if row_id:
@@ -145,7 +151,7 @@ class SegundaInstancia(ProjudiBot):
                             endereco_div.get_text(" ", strip=True),
                         )
 
-            if ":" not in nome:
+            if ":" not in nome_parte:
                 for li in tds[5].find_all("li"):
                     advogado_e_oab = " ".join(
                         str(li.get_text(" ", strip=True)).split(),
@@ -156,17 +162,17 @@ class SegundaInstancia(ProjudiBot):
                             NUMERO_PROCESSO=processo,
                             NOME=advogado_e_oab[1],
                             OAB=advogado_e_oab[0],
-                            REPRESENTADO=nome,
+                            REPRESENTADO=nome_parte,
                         ),
                     )
 
                 partes.append(
                     PartesProjudiDict(
                         NUMERO_PROCESSO=processo,
-                        NOME=nome,
-                        DOCUMENTO=limpa_campo(documento),
-                        CPF_CNPJ=limpa_campo(cpf),
-                        ADVOGADOS=advs,
+                        NOME=nome_parte,
+                        DOCUMENTO=limpa_campo(documento_parte),
+                        CPF_CNPJ=limpa_campo(cpf_cnpj_parte),
+                        ADVOGADOS=advogados_parte,
                         ENDERECO=limpa_campo(endereco),
                     ),
                 )

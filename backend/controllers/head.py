@@ -285,8 +285,8 @@ class CrawJUD(CeleryTask):
         )
 
 
-@shared_task(name="tarefa-prototipo")
-def tarefa_prototipo(config: ConfigArgsRobo) -> None:  # noqa: D103
+@shared_task(name="tarefa-prototipo", bind=True)
+def tarefa_prototipo(self: CeleryTask, config: ConfigArgsRobo) -> None:  # noqa: D103
 
     config.update({
         "sistema": "projudi",

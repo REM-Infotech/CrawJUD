@@ -1,9 +1,9 @@
-from collections.abc import Callable
-
+from celery import Celery
 from celery.app.task import Task
 
-class CeleryTask[**P, R](Task):
-    run: Callable[P, R]
+type Any = any
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R: ...
-    async def _run(self, *args: P.args, **kwargs: P.kwargs) -> R: ...
+class CeleryTask(Task):
+    app: Celery
+    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
+    async def _run(self, *args: Any, **kwargs: Any) -> Any: ...

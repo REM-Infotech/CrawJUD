@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 
 INTIMACAO_ELETRONICA = "Sistema de Citação e Intimação Eletrônica"
+ADVOGADO_INTIMACAO = "OAB 99999999N-AM - Sistema de Citação e Intimação Eletrônica"
 
 
 class PrimeiraInstancia(ProjudiBot):
@@ -130,10 +131,13 @@ class PrimeiraInstancia(ProjudiBot):
         endereco = ""
 
         # Encontra todas as linhas principais das partes
-        for tr in soup.find_all("tr", class_="even"):
+        for tr in list(
+            filter(
+                lambda x: x.find_all("td") and len(x.find_all("td")) >= 6,
+                soup.find_all("tr", class_="even"),
+            ),
+        ):
             tds = tr.find_all("td")
-            if not tds or len(tds) < 6:
-                continue
             # Extrai nome
             nome_parte = str(tds[1].get_text(strip=True))
             # Extrai documento (RG ou similar)
@@ -145,6 +149,9 @@ class PrimeiraInstancia(ProjudiBot):
                 " ".join(str(li.get_text(" ", strip=True)).split())
                 for li in tds[5].find_all("li")
             ])
+
+            if advogados_parte == ADVOGADO_INTIMACAO:
+                advogados_parte = ""
 
             # Busca o id da linha expandida para endereço
             row_id = tr.get("id")
@@ -161,6 +168,9 @@ class PrimeiraInstancia(ProjudiBot):
                         )
 
             if nome_parte != "Descrição:":
+                if " representado(a) " in nome_parte:
+                    nome_parte = nome_parte.split(" representado(a) ")[0]
+
                 for li in tds[5].find_all("li"):
                     advogado_e_oab = " ".join(
                         str(li.get_text(" ", strip=True)).split(),

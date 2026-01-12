@@ -121,7 +121,9 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
             self.get_process_informations()
 
             if trazer_copia and trazer_copia.lower() == "sim":
+                sleep(2.5)
                 self.copia_pdf()
+                sleep(2.5)
 
             self.print_message(
                 message="Informações extraídas com sucesso!",
