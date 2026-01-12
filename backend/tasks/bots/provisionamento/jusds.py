@@ -209,7 +209,7 @@ class Provisionamento(JusdsBot):
         sleep(0.5)
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
@@ -250,7 +250,7 @@ class Provisionamento(JusdsBot):
 
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
