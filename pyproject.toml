@@ -43,6 +43,7 @@ dependencies = [
     "pythonnet>=3.0.5",
     "quart>=0.20.0",
     "quart-flask-patch>=0.3.0",
+    "quart-socketio",
     "redis>=7.0.1",
     "requests>=2.32.5",
     "rich==14.1.0",
@@ -55,6 +56,7 @@ dependencies = [
     "uvicorn>=0.37.0",
     "webdriver-manager>=4.0.2",
     "werkzeug>=3.1.5",
+    "numpy>=2.4.0",
 ]
 
 [dependency-groups]
@@ -67,3 +69,4 @@ dev = [
 
 [tool.uv.sources]
 flask-keepass = { git = "https://github.com/Robotz213/Flask-Keepass.git" }
+quart-socketio = { git = "https://github.com/Robotz213/Quart-SocketIO.git" }
