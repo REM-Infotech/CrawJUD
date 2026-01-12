@@ -1,10 +1,9 @@
-# ruff: noqa: BLE001
 from __future__ import annotations
 
 from collections import UserString
 from contextlib import suppress
 from time import sleep
-from traceback import format_exception, format_exception_only
+from traceback import format_exception_only
 from typing import TYPE_CHECKING
 
 from selenium.webdriver.common.by import By
@@ -12,7 +11,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
-from tqdm import tqdm
 
 from backend.common.exceptions import ExecutionError
 from backend.controllers.jusds import JusdsBot
@@ -20,13 +18,13 @@ from backend.resources.elements.jusds import Provisionamento as El
 
 if TYPE_CHECKING:
     from backend.controllers.head import BotIterator
-    from backend.dicionarios import JusdsProvisionamento
+    from backend.dicionarios import ConfigArgsRobo, JusdsProvisionamento
     from backend.resources.driver.web_element import WebElement
 
 
 STATUS_EVENTO = {
     "FORMALIZADO": "Formalizado",
-    "NÃO FORMALIZADO": "Não formalizado",
+    "NAO FORMALIZADO": "Não formalizado",
     "CANCELADO": "Cancelado",
 }
 
@@ -89,13 +87,37 @@ class JusdsURL(UserString):
 class Provisionamento(JusdsBot):
     name = "jusds_provisionamento"
 
+    def run(self, config: ConfigArgsRobo) -> None:
+
+        self.setup(config)
+        self.execution()
+
     def execution(self) -> None:
         self.driver.maximize_window()
         list_item: BotIterator[JusdsProvisionamento] = self.frame
         for pos, item in enumerate(list_item):
             self.bot_data = item
             self.row = pos + 1
-            self.queue()
+
+            try:
+                self.queue()
+            except ExecutionError as e:
+                message = str(e)
+                self.print_message(
+                    message=message,
+                    message_type="error",
+                    row=self.row,
+                )
+
+                self.append_error(
+                    "Erros",
+                    data_save=[
+                        {
+                            "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
+                            "ERRO": "\n".join(format_exception_only(e)),
+                        },
+                    ],
+                )
 
         self.finalizar_execucao()
 
@@ -106,24 +128,9 @@ class Provisionamento(JusdsBot):
                 self.alterar_risco()
 
         except Exception as e:
-            exc = format_exception(e)
-            tqdm.write("\n".join(exc))
-
-            self.print_message(
-                message=f"Erro de execução: {exc}",
-                message_type="error",
-                row=self.row,
-            )
-
-            self.append_error(
-                "Erros",
-                data_save=[
-                    {
-                        "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
-                        "ERRO": "\n".join(format_exception_only(e)),
-                    },
-                ],
-            )
+            exc = format_exception_only(e)
+            message = f"Erro de execução. {exc}"
+            raise ExecutionError(message=message, exc=e) from e
 
     def alterar_risco(self) -> None:
 
@@ -179,26 +186,27 @@ class Provisionamento(JusdsBot):
         input_nivel = self.wait.until(
             presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_NIVEL)),
         )
-
+        sleep(0.5)
         self.driver.execute_script(
             "arguments[0].value = arguments[1]",
             input_nivel,
             value,
         )
-
+        sleep(0.5)
         items_table = (
             self.wait
             .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
-
+        sleep(0.5)
         items_table.reverse()
         select_element = Select(
             items_table[0]
             .find_elements(By.TAG_NAME, "td")[0]
             .find_element(By.TAG_NAME, "select"),
         )
+        sleep(0.5)
         select_element.select_by_value(value)
 
     def _informa_status(self) -> None:
@@ -207,13 +215,14 @@ class Provisionamento(JusdsBot):
         input_status = self.wait.until(
             presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_STATUS_EVENTO)),
         )
+        sleep(0.5)
 
         self.driver.execute_script(
             "arguments[0].value = arguments[1]",
             input_status,
             value,
         )
-
+        sleep(0.5)
         items_table = (
             self.wait
             .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
@@ -221,21 +230,25 @@ class Provisionamento(JusdsBot):
             .find_elements(By.TAG_NAME, "tr")
         )
         items_table.reverse()
+        sleep(0.5)
 
         tds = list(items_table[0].find_elements(By.TAG_NAME, "td"))
+        sleep(0.5)
         tds.reverse()
         table_data = tds[0].find_elements(By.TAG_NAME, "div")[1]
+        sleep(0.5)
 
         select_element = Select(
             table_data.find_element(By.TAG_NAME, "select"),
         )
+        sleep(0.5)
         select_element.select_by_value(value)
 
     def _informa_campos(self) -> None:
 
         for nome in ELEMENTOS:
             el = self.driver.find_element(By.CSS_SELECTOR, ELEMENTOS[nome])
-
+            sleep(0.5)
             val = "SELIC"
             if nome != "INDICE":
                 val = str(self.bot_data[nome])
@@ -243,6 +256,7 @@ class Provisionamento(JusdsBot):
             if nome == "MOMENTO_PROCESSUAL":
                 val = self.bot_data[nome].upper()
 
+            sleep(0.5)
             self.send_data(val, el)
 
     def _informa_objeto(self) -> str:
@@ -297,18 +311,19 @@ class Provisionamento(JusdsBot):
                 '//*[@id="TMAKERGRIDbar"]/*[@id="addButton"]',
             )),
         )
-
+        sleep(0.5)
         adicionar_risco_btn.click()
 
         input_objeto_risco = self.wait.until(
             presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_OBJETO)),
         )
-
+        sleep(0.5)
         self.send_data(self.bot_data["OBJETO_RISCO"].upper(), input_objeto_risco)
-
+        sleep(0.5)
         input_objeto_porcentagem = self.wait.until(
             presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_PORCENTAGEM_OBJETO)),
         )
+        sleep(0.5)
 
         self.send_data(self.bot_data["OBJETO_PORCENTAGEM"], input_objeto_porcentagem)
 
@@ -320,10 +335,6 @@ class Provisionamento(JusdsBot):
         sleep(2)
 
     def acessa_pagina_risco(self) -> None:
-
-        btn_pagina_risco = self.wait.until(
-            presence_of_element_located((By.XPATH, '//*[@id="tabButton8"]')),
-        )
 
         with suppress(Exception):
             w = WebDriverWait(self.driver, 10)
@@ -337,6 +348,10 @@ class Provisionamento(JusdsBot):
             self.driver.execute_script("$(arguments[0]).toggle()", message_popup)
 
         with suppress(Exception):
+            btn_pagina_risco = self.wait.until(
+                presence_of_element_located((By.XPATH, '//*[@id="tabButton8"]')),
+            )
+            sleep(0.5)
             btn_pagina_risco.click()
 
     def salva_alteracoes(self) -> None:
@@ -347,9 +362,9 @@ class Provisionamento(JusdsBot):
                 '//div[@id="TMAKERGRID9bar"]/i[@id="saveButton"]',
             )),
         )
+        sleep(0.5)
 
         btn_salvar.click()
-
         sleep(2)
 
     def send_data(self, val: str, el: WebElement) -> None:
@@ -358,7 +373,7 @@ class Provisionamento(JusdsBot):
         el.send_keys(val)
         sleep(2)
         el.send_keys(Keys.ENTER)
-        sleep(1)
+        sleep(0.5)
 
         with suppress(Exception):
             self.driver.execute_script("return $(arguments[0]).blur()", el)
