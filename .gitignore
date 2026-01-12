@@ -20,6 +20,7 @@ users_202511251518.json
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 chrome-data/
+automate_elaw.py
 # Runtime data
 pids
 *.pid

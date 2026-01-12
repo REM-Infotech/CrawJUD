@@ -88,7 +88,6 @@ def on_listagem_execucoes(self: BlueprintNamespace) -> list[Execucao]:
 
 
 @botNS.on("logbot")
-@jwt_sio_required
 def on_logbot(self: BlueprintNamespace, data: Message) -> None:
     """Log bot."""
     self.emit(
@@ -138,7 +137,6 @@ def on_bot_stop(self: BlueprintNamespace, data: dict[str, str]) -> None:
 
 
 @botNS.on("join_room")
-@jwt_sio_required
 def on_join_room(
     self: BlueprintNamespace,
     data: dict[str, str],
@@ -181,7 +179,6 @@ def on_provide_credentials(
 
 
 @botNS.on("connect")
-@jwt_sio_required
 def on_connect(
     self: BlueprintNamespace,
     *args: Any,
@@ -191,7 +188,6 @@ def on_connect(
 
 
 @botNS.on("disconnect")
-@jwt_sio_required
 def on_disconnect(
     self: BlueprintNamespace,
     *args: Any,

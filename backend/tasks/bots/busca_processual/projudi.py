@@ -16,6 +16,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from selenium.webdriver.support.wait import WebDriverWait
 
+from backend.common.exceptions import ExecutionError
 from backend.controllers import ProjudiBot
 from backend.dicionarios import ProjudiCapa
 from backend.resources.driver.web_element import WebElement
@@ -23,81 +24,88 @@ from backend.resources.driver.web_element import WebElement
 if TYPE_CHECKING:
     from backend.dicionarios import ArgumentosRobo
     from backend.resources.driver import WebElement
-    from backend.tasks.bots.capa.projudi import Capa
 
 
 class BuscaProcessual(ProjudiBot):
     name: ClassVar[str] = "busca_processual_projudi"
 
     def run(self, config: ArgumentosRobo) -> None:
-
-        config.update({
-            "sistema": "projudi",
-        })
-
         self.args = config
         self.setup(config)
         frame = self.execution()
         self.driver.quit()
+        if frame:
+            self.append_success("Processos", frame)
+            self.finalizar_execucao()
 
-        capa_projudi: Capa = self.bots["capa_projudi"]().setup(config)
-        capa_projudi.frame = frame
-        _info_extraida = capa_projudi.execution()
-
-        return
+        return frame
 
     def execution(self) -> list[ProjudiCapa]:
 
-        endpoint = "buscaProcessosQualquerInstancia.do?actionType=pesquisar"
-        url_busca = f"https://projudi.tjam.jus.br/projudi/processo/{endpoint}"
-        self.driver.get(url_busca)
-        sleep(2)
+        try:
+            endpoint = "buscaProcessosQualquerInstancia.do?actionType=pesquisar"
+            url_busca = f"https://projudi.tjam.jus.br/projudi/processo/{endpoint}"
+            self.driver.get(url_busca)
+            sleep(2)
 
-        input_nome_parte = self.wait.until(presence_of_element_located((By.NAME, "nomeParte")))
-        input_documento_parte = self.wait.until(presence_of_element_located((By.NAME, "cpfCnpj")))
+            input_nome_parte = self.wait.until(
+                presence_of_element_located((By.NAME, "nomeParte")),
+            )
+            input_documento_parte = self.wait.until(
+                presence_of_element_located((By.NAME, "cpfCnpj")),
+            )
 
-        input_data_inicio = self.wait.until(presence_of_element_located((By.NAME, "dataInicio")))
-        input_data_fim = self.wait.until(presence_of_element_located((By.NAME, "dataFim")))
+            input_data_inicio = self.wait.until(
+                presence_of_element_located((By.NAME, "dataInicio")),
+            )
+            input_data_fim = self.wait.until(presence_of_element_located((By.NAME, "dataFim")))
 
-        input_nome_parte.send_keys(self.args["nome_parte"])
-        sleep(0.5)
-        input_documento_parte.send_keys(self.args["documento_parte"])
-        sleep(0.5)
+            input_nome_parte.send_keys(self.args["nome_parte"])
+            sleep(0.5)
+            input_documento_parte.send_keys(self.args["documento_parte"])
+            sleep(0.5)
 
-        now = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y")
+            now = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y")
 
-        input_data_inicio.send_keys(now)
-        sleep(0.5)
-        input_data_fim.send_keys(now)
-        sleep(0.5)
+            input_data_inicio.send_keys(now)
+            sleep(0.5)
+            input_data_fim.send_keys(now)
+            sleep(0.5)
 
-        css_any_processo = 'input[value="qualquerAdvogado"][name="filtroAdvogado"]'
-        self.wait.until(presence_of_element_located((By.CSS_SELECTOR, css_any_processo))).click()
+            css_any_processo = 'input[value="qualquerAdvogado"][name="filtroAdvogado"]'
+            self.wait.until(
+                presence_of_element_located((By.CSS_SELECTOR, css_any_processo)),
+            ).click()
 
-        sleep(0.5)
-        self.wait.until(presence_of_element_located((By.NAME, "pesquisarTodos"))).click()
+            sleep(0.5)
+            self.wait.until(presence_of_element_located((By.NAME, "pesquisarTodos"))).click()
 
-        sleep(0.5)
-        self.wait.until(presence_of_element_located((By.ID, "pesquisar"))).click()
+            sleep(0.5)
+            self.wait.until(presence_of_element_located((By.ID, "pesquisar"))).click()
 
-        sleep(0.5)
+            sleep(0.5)
 
-        return self.extrair()
+            return self.extrair()
+        except ExecutionError:
+            return []
 
     def extrair(self) -> list[ProjudiCapa]:
-
         dados: list[ProjudiCapa] = []
+        try:
+            for item in PaginacaoProjudi(self):
+                informacoes = item.find_elements(By.TAG_NAME, "td")
+                dados.append(
+                    ProjudiCapa(
+                        NUMERO_PROCESSO=informacoes[1].text,
+                        GRAU="1",
+                        TRAZER_COPIA="sim",
+                        TRAZER_MOVIMENTACOES="SIM",
+                    ),
+                )
 
-        for item in PaginacaoProjudi(self):
-            informacoes = item.find_elements(By.TAG_NAME, "td")
-            dados.append(
-                ProjudiCapa(
-                    NUMERO_PROCESSO=informacoes[1].text,
-                    GRAU="1",
-                    TRAZER_COPIA="sim",
-                    TRAZER_MOVIMENTACOES="SIM",
-                ),
-            )
+        except Exception as e:
+            mensagem = "Erro ao buscar processos"
+            raise ExecutionError(message=mensagem, exc=e) from e
 
         return dados
 
