@@ -126,4 +126,4 @@ class BotDriver:
         webelement = WebElement.set_driver(self.driver)
 
         self.driver._web_element_cls = webelement  # noqa: SLF001
-        self.wait = WebDriverWait(self.driver, 30)
+        self.wait = WebDriverWait(self.driver, 10)

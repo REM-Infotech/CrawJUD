@@ -26,7 +26,6 @@ parent_path = Path(__file__).parent.resolve()
 def init_database(app: Flask) -> None:
     """Inicializa o banco de dados."""
     with app.app_context(), db.session.no_autoflush:
-        db.drop_all()
         db.create_all()
 
         user = db.session.query(User).filter_by(login=app.config["ROOT_USERNAME"]).first()

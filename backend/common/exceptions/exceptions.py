@@ -21,7 +21,6 @@ class BaseCrawJUDError(Exception):
     def __init__(
         self,
         message: str = MessageError,
-        exc: Exception | None = None,
     ) -> None:
         """Inicialize a exceção com mensagem e exceção opcional.
 
@@ -30,8 +29,7 @@ class BaseCrawJUDError(Exception):
             exc (Exception | None): Exceção original, se houver.
 
         """
-        self.message = message + formata_msg(exc)
-        Exception.__init__(self, self.message)
+        Exception.__init__(self, message)
 
 
 class ExecutionError(BaseCrawJUDError):
@@ -57,7 +55,7 @@ class ExecutionError(BaseCrawJUDError):
         else:
             self.message = message + formata_msg(exc)
 
-        super().__init__(self.message, self)
+        super().__init__(message)
 
 
 class StartError(BaseCrawJUDError):

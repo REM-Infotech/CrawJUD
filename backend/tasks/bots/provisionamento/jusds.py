@@ -85,7 +85,7 @@ class JusdsURL(UserString):
 
 
 class Provisionamento(JusdsBot):
-    name = "jusds_provisionamento"
+    name = "provisionamento_jusds"
 
     def run(self, config: ConfigArgsRobo) -> None:
 
@@ -125,60 +125,44 @@ class Provisionamento(JusdsBot):
 
         try:
             if self.search():
-                self.alterar_risco()
+                proc = self.bot_data["NUMERO_PROCESSO"]
+                self.acessa_pagina_risco()
+
+                sleep(2)
+
+                btn_novo_risco = self.wait.until(
+                    presence_of_element_located((
+                        By.XPATH,
+                        '//*[@id="TMAKERGRID9bar"]/i[@id="addButton"]',
+                    )),
+                )
+
+                btn_novo_risco.click()
+                id_risco = None
+                self._informa_nivel()
+                self._informa_campos()
+                self._informa_status()  # ultimo
+                self.salva_alteracoes()
+
+                id_risco = self._informa_objeto()
+
+                out = self.output_dir_path
+                comprovante = out.joinpath(f"Comprovante - {proc} - {self.id_execucao}.png")
+                comprovante.write_bytes(self.driver.get_screenshot_as_png())
+                data_save = {
+                    "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
+                    "ID_PROVISAO": id_risco,
+                }
+                self.append_success("Sucessos", [data_save])
+
+                type_ = "success"
+                msg_ = "Execução efetuada com sucesso!"
+                self.print_message(msg_, type_, self.row)
 
         except Exception as e:
-            exc = format_exception_only(e)
+            exc = "\n".join(format_exception_only(e))
             message = f"Erro de execução. {exc}"
             raise ExecutionError(message=message, exc=e) from e
-
-    def alterar_risco(self) -> None:
-
-        proc = self.bot_data["NUMERO_PROCESSO"]
-        self.acessa_pagina_risco()
-
-        sleep(2)
-
-        btn_novo_risco = self.wait.until(
-            presence_of_element_located((
-                By.XPATH,
-                '//*[@id="TMAKERGRID9bar"]/i[@id="addButton"]',
-            )),
-        )
-
-        btn_novo_risco.click()
-        id_risco = None
-        try:
-            self._informa_nivel()
-
-            self._informa_campos()
-
-            self._informa_status()  # ultimo
-
-            self.salva_alteracoes()
-
-            id_risco = self._informa_objeto()
-
-            out = self.output_dir_path
-            comprovante = out.joinpath(f"Comprovante - {proc} - {self.id_execucao}.png")
-            comprovante.write_bytes(self.driver.get_screenshot_as_png())
-
-            self.append_success(
-                "Sucessos",
-                [
-                    {
-                        "NUMERO_PROCESSO": self.bot_data["NUMERO_PROCESSO"],
-                        "ID_PROVISAO": id_risco,
-                    },
-                ],
-            )
-
-            type_ = "success"
-            msg_ = "Execução efetuada com sucesso!"
-            self.print_message(msg_, type_, self.row)
-
-        except Exception as e:
-            raise ExecutionError(message="Erro de operação", exc=e) from e
 
     def _informa_nivel(self) -> None:
 
@@ -195,7 +179,7 @@ class Provisionamento(JusdsBot):
         sleep(0.5)
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CCtable"]')))
+            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
