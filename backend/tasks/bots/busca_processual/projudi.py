@@ -99,7 +99,7 @@ class BuscaProcessual(ProjudiBot):
             informacoes = item.find_elements(By.TAG_NAME, "td")
             dados.append(
                 ProjudiCapa(
-                    NUMERO_PROCESSO=informacoes[0].text,
+                    NUMERO_PROCESSO=informacoes[1].text,
                     GRAU="1",
                     TRAZER_COPIA="sim",
                     TRAZER_MOVIMENTACOES="SIM",
