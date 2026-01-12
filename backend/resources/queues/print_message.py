@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import json
 import sys
 import traceback
-from base64 import b64decode
 from contextlib import suppress
 from datetime import datetime
 from queue import Queue
@@ -16,7 +14,6 @@ from zoneinfo import ZoneInfo
 
 from clear import clear
 from dotenv import load_dotenv
-from requests import Session
 from socketio import Client
 from socketio.exceptions import BadNamespaceError
 from tqdm import tqdm
@@ -191,16 +188,7 @@ class PrintMessage:
 
         """
         socketio_server = settings.get("API_URL")
-
-        cookies = json.loads(
-            b64decode(self.bot.config.get("cookies")).decode(),
-        )
-        session = Session()
-        session.headers.update({
-            "Authorization": f"Bearer {cookies['access_token_cookie']}",
-        })
-
-        sio = Client(http_session=session)
+        sio = Client()
         sio.on(
             "bot_stop",
             self._call_set_event,

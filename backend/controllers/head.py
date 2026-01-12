@@ -288,6 +288,9 @@ class CrawJUD(CeleryTask):
 @shared_task(name="tarefa-prototipo")
 def tarefa_prototipo(config: ConfigArgsRobo) -> None:  # noqa: D103
 
+    config.update({
+        "sistema": "projudi",
+    })
     bot: BuscaProcessual = CrawJUD.bots["busca_processual_projudi"]()
     frame = bot.run(config)
 

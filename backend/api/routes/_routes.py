@@ -75,7 +75,7 @@ def start_teste() -> None:
     config = request.get_json()["config"]
     configuracao.add(json.dumps(config))
 
-    task = celery.tasks["busca_processual_projudi"].apply_async(
+    task = celery.tasks["tarefa-prototipo"].apply_async(
         kwargs={
             "config": config,
         },
