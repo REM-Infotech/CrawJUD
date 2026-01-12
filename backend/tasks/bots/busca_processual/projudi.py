@@ -26,6 +26,7 @@ from backend.resources.driver.web_element import WebElement
 if TYPE_CHECKING:
     from backend.dicionarios import ArgumentosRobo
     from backend.resources.driver import WebElement
+    from backend.tasks.bots.capa.projudi import Capa
 
 
 class BuscaProcessual(ProjudiBot):
@@ -47,9 +48,9 @@ class BuscaProcessual(ProjudiBot):
         frame = self.execution()
         self.driver.quit()
 
-        capa_projudi = self.bots["capa_projudi"]().setup(config)
+        capa_projudi: Capa = self.bots["capa_projudi"]().setup(config)
         capa_projudi.frame = frame
-        capa_projudi.execution()
+        _info_extraida = capa_projudi.execution()
 
         return
 

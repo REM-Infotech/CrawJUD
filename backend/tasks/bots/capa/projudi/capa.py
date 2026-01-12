@@ -8,12 +8,12 @@ coleta de dados processuais do sistema Projudi.
 
 from __future__ import annotations
 
-import json
-import shutil
-import time
 from base64 import b64encode
 from contextlib import suppress
-from typing import TYPE_CHECKING, ClassVar
+from json import dumps
+from shutil import move
+from time import sleep
+from typing import TYPE_CHECKING, ClassVar, TypedDict
 from uuid import uuid4
 
 from selenium.webdriver.common.by import By
@@ -29,7 +29,20 @@ from ._segunda import SegundaInstancia
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from backend.dicionarios import (
+        PartesProjudiDict as PartesProjudi,
+    )
+    from backend.dicionarios import (
+        RepresentantesProjudiDict as RepresentantesProjudi,
+    )
 CONTAGEM = 300
+
+
+class InformacaoExtraida(TypedDict):
+    PrimeiraInstancia: list[ProjudiCapa]
+    SegundaInstancia: list[ProjudiCapa]
+    Partes: list[PartesProjudi]
+    Advogados: list[RepresentantesProjudi]
 
 
 class Capa(PrimeiraInstancia, SegundaInstancia):
@@ -41,6 +54,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
 
     name: ClassVar[str] = "capa_projudi"
     frame: list[ProjudiCapa]
+    informacao_extraida: InformacaoExtraida
 
     def run(self, config: ArgumentosRobo) -> None:
 
@@ -50,7 +64,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
 
         if not config.get("cookies"):
             config["cookies"] = b64encode(
-                json.dumps({
+                dumps({
                     "access_token_cookie": str(uuid4()),
                 }).encode(),
             ).decode()
@@ -62,8 +76,14 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
         self.setup(config)
         return self.execution()
 
-    def execution(self) -> None:
+    def execution(self) -> InformacaoExtraida:
         """Execute a extração de dados dos processos do Projudi."""
+        self.informacao_extraida = {
+            "PrimeiraInstancia": [],
+            "SegundaInstancia": [],
+            "Partes": [],
+            "Advogados": [],
+        }
         for pos, value in enumerate(self.frame):
             if self.bot_stopped.is_set():
                 break
@@ -76,29 +96,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
                     self.auth()
 
             try:
-                driver = self.driver
-                bot_data = self.bot_data
-
-                search = self.search()
-                trazer_copia = bot_data.get("TRAZER_COPIA", "não")
-                if not search:
-                    continue
-
-                self.print_message(
-                    message="Extraindo informações...",
-                    message_type="info",
-                )
-
-                driver.refresh()
-                self.get_process_informations()
-
-                if trazer_copia and trazer_copia.lower() == "sim":
-                    self.copia_pdf()
-
-                self.print_message(
-                    message="Informações extraídas com sucesso!",
-                    message_type="success",
-                )
+                self.queue()
 
             except ExecutionError as e:
                 message_error = str(e)
@@ -112,6 +110,37 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
                 self.append_error(data_save=[self.bot_data])
 
         self.finalizar_execucao()
+        return self.informacao_extraida
+
+    def queue(self) -> None:
+
+        try:
+            driver = self.driver
+            bot_data = self.bot_data
+
+            search = self.search()
+            trazer_copia = bot_data.get("TRAZER_COPIA", "não")
+            if not search:
+                return
+
+            self.print_message(
+                message="Extraindo informações...",
+                message_type="info",
+            )
+
+            driver.refresh()
+            self.get_process_informations()
+
+            if trazer_copia and trazer_copia.lower() == "sim":
+                self.copia_pdf()
+
+            self.print_message(
+                message="Informações extraídas com sucesso!",
+                message_type="success",
+            )
+        except Exception as e:
+            msg = "Erro ao buscar processo!"
+            raise ExecutionError(message=msg, exc=e) from e
 
     def get_process_informations(self) -> None:
         """Extrai informações detalhadas do processo da página atual do Projudi."""
@@ -150,14 +179,18 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
             numero_processo=numero_processo,
         )
 
-        to_add = [
-            ("Primeiro Grau", [process_info]),
-            ("Partes", partes),
-            ("Advogados", advogados),
-        ]
+        to_add = InformacaoExtraida(
+            PrimeiraInstancia=[process_info],
+            Partes=partes,
+            Advogados=advogados,
+        )
 
-        for item in to_add:
-            self.append_success(worksheet=item[0], data_save=item[1])
+        self.informacao_extraida["PrimeiraInstancia"].append(process_info)
+        self.informacao_extraida["Partes"].extend(partes)
+        self.informacao_extraida["Advogados"].extend(advogados)
+
+        for key, value in list(to_add.items()):
+            self.append_success(worksheet=key, data_save=value)
 
     def segundo_grau(self, numero_processo: str) -> None:
         process_info = ProjudiCapa(NUMERO_PROCESSO=numero_processo)
@@ -178,14 +211,18 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
             numero_processo=numero_processo,
         )
 
-        to_add = [
-            ("Segundo Grau", [process_info]),
-            ("Partes", partes),
-            ("Advogados", advogados),
-        ]
+        to_add = InformacaoExtraida(
+            SegundaInstancia=[process_info],
+            Partes=partes,
+            Advogados=advogados,
+        )
 
-        for item in to_add:
-            self.append_success(worksheet=item[0], data_save=item[1])
+        self.informacao_extraida["SegundaInstancia"].append(process_info)
+        self.informacao_extraida["Partes"].extend(partes)
+        self.informacao_extraida["Advogados"].extend(advogados)
+
+        for key, value in list(to_add.items()):
+            self.append_success(worksheet=key, data_save=value)
 
     def copia_pdf(self) -> dict[str, str | int | datetime]:
         """Extract the movements of the legal proceedings and saves a PDF copy.
@@ -205,7 +242,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
                 'input[id="btnMenuExportar"]',
             )),
         )
-        time.sleep(0.5)
+        sleep(0.5)
         btn_exportar.click()
 
         btn_exportar_processo = self.wait.until(
@@ -213,7 +250,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
                 (By.CSS_SELECTOR, 'input[id="exportarProcessoButton"]'),
             ),
         )
-        time.sleep(0.5)
+        sleep(0.5)
         btn_exportar_processo.click()
 
         self.unmark_gen_mov()
@@ -221,7 +258,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
         self.export(id_proc)
 
     def unmark_gen_mov(self) -> None:
-        time.sleep(0.5)
+        sleep(0.5)
         self.wait.until(
             ec.presence_of_element_located((
                 By.CSS_SELECTOR,
@@ -230,7 +267,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
         ).click()
 
     def unmark_add_validate_tag(self) -> None:
-        time.sleep(0.5)
+        sleep(0.5)
         self.wait.until(
             ec.presence_of_element_located((
                 By.CSS_SELECTOR,
@@ -244,7 +281,7 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
             message_type="log",
         )
 
-        time.sleep(5)
+        sleep(5)
         n_processo = self.bot_data.get("NUMERO_PROCESSO")
 
         out_dir = self.output_dir_path
@@ -259,18 +296,18 @@ class Capa(PrimeiraInstancia, SegundaInstancia):
         btn_exportar.click()
 
         count = 0
-        time.sleep(5)
+        sleep(5)
         path_copia = out_dir.joinpath(f"{id_proc}.pdf").resolve()
 
         while count <= CONTAGEM:
             if path_copia.exists():
                 break
 
-            time.sleep(2)
+            sleep(2)
             count += 1
 
         if not path_copia.exists():
             raise ExecutionError(message="Arquivo não encontrado!")
 
-        shutil.move(path_copia, path_pdf)
-        time.sleep(0.5)
+        move(path_copia, path_pdf)
+        sleep(2.5)

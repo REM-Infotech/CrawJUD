@@ -1,4 +1,5 @@
-from ._dicionarios import (
+from .api import BotInfo
+from .dicionarios import (
     ArgumentosRobo,
     AssuntoPJe,
     AudienciaProcessoPJe,
@@ -11,6 +12,7 @@ from ._dicionarios import (
     DictCredencial,
     DictUsers,
     DocumentoPJe,
+    ElawCadastro,
     ElawCondenacao,
     ElawCustas,
     ElawData,
@@ -31,7 +33,6 @@ from ._dicionarios import (
     RepresentantePJe,
     RepresentantesProjudiDict,
 )
-from .api import BotInfo
 
 __all__ = [
     "ArgumentosRobo",
@@ -47,6 +48,7 @@ __all__ = [
     "DictCredencial",
     "DictUsers",
     "DocumentoPJe",
+    "ElawCadastro",
     "ElawCondenacao",
     "ElawCustas",
     "ElawData",

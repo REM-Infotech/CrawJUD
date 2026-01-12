@@ -14,17 +14,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-from backend.common.raises import raise_execution_error
 from backend.controllers.head import CrawJUD
 from backend.dicionarios import DataSucesso
 from backend.dicionarios.robos._cidades import cidades_amazonas
 from backend.resources.auth import AutenticadorElaw
+from backend.resources.elements import elaw as el
 from backend.resources.search import ElawSearch
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    from backend.resources.driver.web_element import WebElement
 
 
 class ElawBot(CrawJUD):
@@ -66,8 +64,9 @@ class ElawBot(CrawJUD):
 
         return data
 
-    def sleep_load(self, element: str) -> None:
+    def sleep_load(self) -> None:
         """Aguarde até que o elemento de carregamento desapareça."""
+        element = el.XPATH_ELEMENT_LOAD
         while True:
             sleep(0.5)
             load = None
@@ -75,7 +74,7 @@ class ElawBot(CrawJUD):
             with suppress(TimeoutException):
                 load = WebDriverWait(self.driver, 5).until(
                     ec.presence_of_element_located((
-                        By.CSS_SELECTOR,
+                        By.XPATH,
                         element,
                     )),
                 )
@@ -156,52 +155,6 @@ class ElawBot(CrawJUD):
         self.driver.close()
 
         self.driver.switch_to.window(main_window)
-
-    def select2(self, element: WebElement, to_search: str) -> None:
-        """Selecione uma opção em campo select2 pelo texto informado.
-
-        Args:
-            element (WebElement): Elemento select2 alvo.
-            to_search (str): Texto da opção a ser selecionada.
-
-        """
-        # Busca todas as opções do select2
-        items = element.find_elements(By.TAG_NAME, "option")
-        opt_itens: dict[str, str] = {}
-
-        # Obtém o id do elemento select
-        id_select = element.get_attribute("id")
-
-        # Mapeia o texto das opções para seus valores
-        for item in items:
-            value_item = item.get_attribute("value")
-            cms = f"select[id='{id_select}'] > option[value='{value_item}']"
-            text_item = self.driver.execute_script(
-                f'return $("{cms}").text();',
-            )
-            text_item = " ".join([
-                item for item in str(text_item).strip().split(" ") if item
-            ]).upper()
-            opt_itens.update({text_item: value_item})
-
-        # Normaliza o texto de busca
-        to_search = " ".join(to_search.split(" ")).upper()
-        value_opt = opt_itens.get(to_search)
-
-        # Seleciona a opção se encontrada
-        if value_opt:
-            css_select = f"select[id='{id_select}']"  # noqa: Q004, RUF100
-            command = f'$("{css_select}").val(["{value_opt}"]);'
-            command2 = f'$("{css_select}").trigger("change");'
-
-            self.driver.execute_script(command)
-            sleep(2)
-            self.driver.execute_script(command2)
-            sleep(2)
-            return
-
-        # Lança exceção se a opção não for encontrada
-        raise_execution_error(message=f'Opção "{to_search}" não encontrada!')
 
     def print_comprovante(self, message: str) -> None:
         """Salve comprovante do processo e registre mensagem de sucesso.

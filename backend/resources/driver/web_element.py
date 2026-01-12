@@ -198,39 +198,24 @@ class WebElement(SEWebElement):
                 sleep(0.01)
                 break
 
-    def select2(self, to_search: str) -> None:
-        r"""Select an option from a Select2 dropdown based on a search text.
+    def select2(self, opcao: str) -> None:
 
-        Args:
-            to_search (str): The option text to search and select.
-
-        """
         items = self.find_elements(By.TAG_NAME, "option")
         opt_itens: dict[str, str] = {}
 
-        id_select = self.get_attribute("id")
-
         for item in items:
             value_item = item.get_attribute("value")
-
-            cms = f"select[id='{id_select}'] > option[value='{value_item}']"
-            text_item = self.parent.execute_script(
-                f'return $("{cms}").text();',
-            )
-
+            command = "return $(arguments[0]).text();"
+            text_item = self.parent.execute_script(command, item)
             text_item = " ".join([
                 item for item in str(text_item).strip().split(" ") if item
             ]).upper()
             opt_itens.update({text_item: value_item})
 
-        to_search = " ".join(to_search.split(" ")).upper()
+        to_search = " ".join(opcao.split(" ")).upper()
         value_opt = opt_itens.get(to_search)
 
         if value_opt:
-            select_element = self.parent.find_element(
-                By.CSS_SELECTOR,
-                f"select[id='{id_select}']",
-            )
             command = """
             const selector = $(arguments[0]);
             selector.val([arguments[1]]);
@@ -238,10 +223,9 @@ class WebElement(SEWebElement):
             """
             self.parent.execute_script(
                 command,
-                select_element,
+                self,
                 value_opt,
             )
-            sleep(5)
             return
 
         raise_execution_error(

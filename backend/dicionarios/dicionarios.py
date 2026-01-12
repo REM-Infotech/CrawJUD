@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, TypedDict
 from .api import HealtCheck, LoginForm
 from .planilhas_robos import (
     BotData,
+    ElawCadastro,
     ElawCondenacao,
     ElawCustas,
     ElawProvisionamento,
@@ -146,6 +147,7 @@ __all__ = [
     "DictCredencial",
     "DictUsers",
     "DocumentoPJe",
+    "ElawCadastro",
     "ElawCondenacao",
     "ElawCustas",
     "ElawData",

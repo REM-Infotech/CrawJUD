@@ -13,10 +13,13 @@ from time import sleep
 from typing import TYPE_CHECKING, ClassVar, Self
 from zoneinfo import ZoneInfo
 
+from selenium.webdriver.common.by import By
+
 from backend.base.task import CeleryTask
 from backend.common.exceptions import StartError
+from backend.common.raises import raise_execution_error
 from backend.extensions import celery
-from backend.resources.driver import BotDriver
+from backend.resources.driver import BotDriver, WebElement
 from backend.resources.iterators import BotIterator
 from backend.resources.managers import CredencialManager, FileManager
 from backend.resources.queues import PrintMessage, SaveError, SaveSuccess
@@ -27,7 +30,6 @@ if TYPE_CHECKING:
     from seleniumwire.webdriver import Chrome
 
     from backend.dicionarios import ConfigArgsRobo
-    from typings import Dict
 
 
 WORKDIR = Path.cwd()
@@ -85,7 +87,7 @@ class CrawJUD(CeleryTask):
         kw["tipo_notificacao"] = "stop"
         celery.send_task("notifica_usuario", kwargs=kw)
 
-    def setup(self, config: Dict) -> Self:
+    def setup(self, config: ConfigArgsRobo) -> Self:
         """Configure o bot com as opções fornecidas.
 
         Args:
@@ -244,3 +246,37 @@ class CrawJUD(CeleryTask):
 
         if hasattr(cls, "name") and cls.name:
             cls.bots[cls.name] = cls
+
+    def select2(self, seletor: WebElement, opcao: str) -> None:
+
+        items = seletor.find_elements(By.TAG_NAME, "option")
+        opt_itens: dict[str, str] = {}
+
+        for item in items:
+            value_item = item.get_attribute("value")
+            command = "return $(arguments[0]).text();"
+            text_item = self.driver.execute_script(command, item)
+            text_item = " ".join([
+                item for item in str(text_item).strip().split(" ") if item
+            ]).upper()
+            opt_itens.update({text_item: value_item})
+
+        to_search = " ".join(opcao.split(" ")).upper()
+        value_opt = opt_itens.get(to_search)
+
+        if value_opt:
+            command = """
+            const selector = $(arguments[0]);
+            selector.val([arguments[1]]);
+            selector.trigger("change");
+            """
+            self.parent.execute_script(
+                command,
+                seletor,
+                value_opt,
+            )
+            return
+
+        raise_execution_error(
+            message=f'Opção "{to_search}" não encontrada!',
+        )
