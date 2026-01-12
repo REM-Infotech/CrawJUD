@@ -32,7 +32,7 @@ class FatalError(Exception):
         self._exc_msg = str(exc)
         self._traceback = "".join(format_exception(exc))
         self._format()
-        super().__init__(*args)
+        Exception.__init__(self, msg)
 
     def _format(self) -> None:
         self.message = self._traceback

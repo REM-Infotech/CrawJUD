@@ -97,52 +97,53 @@ class MailTasks(CeleryTask):
             str: Mensagem de sucesso do envio do e-mail.
 
         """
-        url_web = self.flaskapp.config["WEB_URL"]
+        with self.flaskapp.app_context():
+            url_web = self.flaskapp.config["WEB_URL"]
 
-        with self.db.session.no_autoflush:
-            self.user = self.query_user(user_id)
-            self.bot = self.query_bot(bot_id)
-            self.id_execucao = id_execucao
-            self.tipo_notificacao = tipo_notificacao
+            with self.db.session.no_autoflush:
+                self.user = self.query_user(user_id)
+                self.bot = self.query_bot(bot_id)
+                self.id_execucao = id_execucao
+                self.tipo_notificacao = tipo_notificacao
 
-            with suppress(Exception):
-                self.informacao_database()
+                with suppress(Exception):
+                    self.informacao_database()
 
-            mail: Mail = self.flaskapp.extensions.get("mail")
+                mail: Mail = self.flaskapp.extensions.get("mail")
 
-            if mail:
-                try:
-                    msg = Message(
-                        subject="Notificação de Inicialização"
-                        if tipo_notificacao == "start"
-                        else "Notificação de Parada",
-                        sender=mail.default_sender,
-                        recipients=[self.user.email],
-                    )
+                if mail:
+                    try:
+                        msg = Message(
+                            subject="Notificação de Inicialização"
+                            if tipo_notificacao == "start"
+                            else "Notificação de Parada",
+                            sender=mail.default_sender,
+                            recipients=[self.user.email],
+                        )
 
-                    if not self.user.admin:
-                        email_admin = self.db.session.query(User).filter(User.admin).all()
-                        msg.cc = [email.email for email in email_admin[:3]]
+                        if not self.user.admin:
+                            email_admin = self.db.session.query(User).filter(User.admin).all()
+                            msg.cc = [email.email for email in email_admin[:3]]
 
-                    template = self.notificacoes.get(tipo_notificacao)
-                    msg.html = template.render(
-                        display_name=self.bot.display_name,
-                        id_execucao=id_execucao,
-                        xlsx=xlsx,
-                        url_web=url_web,
-                        username=self.user.nome_usuario,
-                    )
+                        template = self.notificacoes.get(tipo_notificacao)
+                        msg.html = template.render(
+                            display_name=self.bot.display_name,
+                            id_execucao=id_execucao,
+                            xlsx=xlsx,
+                            url_web=url_web,
+                            username=self.user.nome_usuario,
+                        )
 
-                    mail.send(msg)
+                        mail.send(msg)
 
-                except Exception as e:
-                    exc = FatalError(e)
-                    logger.exception("Erro de operação %r", repr(exc))
-                    raise exc from e
+                    except Exception as e:
+                        exc = FatalError(e)
+                        logger.exception("Erro de operação %r", repr(exc))
+                        raise exc from e
 
-                return "E-mail enviado com sucesso!"
+                    return "E-mail enviado com sucesso!"
 
-            return "Falha no envio do email"
+                return "Falha no envio do email"
 
     def informacao_database(self) -> None:
         """Gerencie início ou fim de execução de bot no banco.
