@@ -85,10 +85,3 @@ class CredenciaisRobo(db.Model):
     rastreio: str = Column("rastreio", String(length=64), nullable=False)
     license_id: int = Column(Integer, db.ForeignKey("licencas.id"))
     license_: Mapped[LicenseUser] = rel(back_populates="credenciais")
-
-
-class Processo(db.Model):
-    __tablename__ = "processos"
-    Id: int = Column("id", Integer, primary_key=True)
-    NUMERO_PROCESSO: str = Column("numero_processo", String(length=64), nullable=False)
-    DATA_DISTRIBUICAO: datetime = Column("data_distribuicao", DateTime(timezone=True))

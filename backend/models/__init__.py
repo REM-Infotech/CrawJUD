@@ -4,6 +4,7 @@ from backend.models._bot import Bots, CredenciaisRobo, ExecucoesBot
 from backend.models._users import LicenseUser, User
 
 from ._jwt import TokenBlocklist
+from ._processo import Processo
 from .models import create_bots, import_users, init_database, load_credentials
 
 __all__ = [
@@ -11,6 +12,7 @@ __all__ = [
     "CredenciaisRobo",
     "ExecucoesBot",
     "LicenseUser",
+    "Processo",
     "TokenBlocklist",
     "User",
     "create_bots",
