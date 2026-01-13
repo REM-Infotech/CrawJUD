@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from contextlib import suppress
 from time import sleep
-from typing import TYPE_CHECKING
 
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -17,9 +16,6 @@ from backend.common.exceptions import (
 )
 from backend.resources.auth.pje import AutenticadorBot
 from backend.resources.elements import projudi as el
-
-if TYPE_CHECKING:
-    from selenium.webdriver.common.alert import Alert
 
 
 class AutenticadorProjudi(AutenticadorBot):
@@ -71,18 +67,6 @@ class AutenticadorProjudi(AutenticadorBot):
                         el.chk_login,
                     )),
                 )
-
-            alert = None
-            with suppress(TimeoutException, Exception):
-                alert: type[Alert] = WebDriverWait(
-                    self.driver,
-                    5,
-                ).until(
-                    ec.alert_is_present(),
-                )
-
-            if alert:
-                alert.accept()
 
         except ExecutionError as e:
             raise LoginSystemError(exception=e) from e

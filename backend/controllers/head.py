@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import zoneinfo
 from abc import abstractmethod
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
@@ -295,46 +294,58 @@ def tarefa_prototipo(self: CeleryTask, config: ConfigArgsRobo) -> None:  # noqa:
         to_add: list[Processo] = []
         from backend.models import Processo
 
+        processos = db.session.query(Processo).all()
+
         config.update({
             "sistema": "projudi",
         })
         bot1: BuscaProcessual = CrawJUD.bots["busca_processual_projudi"]()
         bot: Capa = CrawJUD.bots["capa_projudi"]()
-        bot.frame = bot1.run(config)
-        results = bot.run(config)
+        result1 = list(bot1.run(config))
 
-        processos = results.get("PrimeiraInstancia")
-        if results.get("SegundaInstancia"):
-            processos.extend(results.get("SegundaInstancia"))
+        for proc in list(result1):
+            numproc = proc["NUMERO_PROCESSO"]
+            filtro = list(filter(lambda x: numproc == x.NUMERO_PROCESSO, processos))
+            if filtro:
+                result1.remove(proc)
 
-        with db.session.no_autoflush:
-            now = datetime.now(tz=zoneinfo("America/Sao_Paulo"))
-            for processo in processos:
-                query = (
-                    db.session
-                    .query(Processo)
-                    .filter(processo["NUMERO_PROCESSO"] == Processo.NUMERO_PROCESSO)
-                    .first()
-                )
-                if not query:
-                    competencia = (
-                        JEC
-                        if "Juizado Especial Cível" in processo["COMPETENCIA"]
-                        else str(processo["COMPETENCIA"])
+        if result1:
+            bot.frame = result1
+            results = bot.run(config)
+
+            processos = results.get("PrimeiraInstancia")
+            if results.get("SegundaInstancia"):
+                processos.extend(results.get("SegundaInstancia"))
+
+            with db.session.no_autoflush:
+                now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+                for processo in processos:
+                    query = (
+                        db.session
+                        .query(Processo)
+                        .filter(processo["NUMERO_PROCESSO"] == Processo.NUMERO_PROCESSO)
+                        .first()
                     )
-                    to_add.append(
-                        Processo(
-                            NUMERO_PROCESSO=processo["NUMERO_PROCESSO"],
-                            DATA_DISTRIBUICAO=now,
-                            ESTADO="AM - Amazonas",
-                            COMARCA=processo["COMARCA"],
-                            FORO=competencia,
-                            VARA=_extrair_vara(processo["JUIZO"]),
-                        ),
-                    )
-            if to_add:
-                db.session.add_all(to_add)
-                db.session.commit()
+                    vara = _extrair_vara(processo["JUIZO"])
+                    if not query:
+                        competencia = (
+                            JEC
+                            if "Juizado Especial Cível" in processo["COMPETENCIA"]
+                            else str(processo["COMPETENCIA"])
+                        )
+                        to_add.append(
+                            Processo(
+                                NUMERO_PROCESSO=processo["NUMERO_PROCESSO"],
+                                DATA_DISTRIBUICAO=now,
+                                ESTADO="AM - Amazonas",
+                                COMARCA=processo["COMARCA"],
+                                FORO=competencia,
+                                VARA=vara,
+                            ),
+                        )
+                if to_add:
+                    db.session.add_all(to_add)
+                    db.session.commit()
 
 
 def _extrair_vara(juizo: str) -> str:

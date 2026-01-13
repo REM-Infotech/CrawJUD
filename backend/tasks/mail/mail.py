@@ -9,7 +9,7 @@ import logging
 from contextlib import suppress
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar, Literal, overload
+from typing import TYPE_CHECKING, ClassVar, Literal
 from zoneinfo import ZoneInfo
 
 from flask_mail import Message
@@ -62,17 +62,6 @@ class MailTasks(CeleryTask):
         self.db = app.extensions["sqlalchemy"]
 
         super().__init__()
-
-    @overload
-    def __call__(
-        self,
-        id_execucao: str,
-        bot_id: int,
-        user_id: int,
-        tipo_notificacao: Literal["start", "stop"],
-        xlsx: str | None = None,
-        **kwargs: str | Any,
-    ) -> Literal["E-mail enviado com sucesso!"]: ...
 
     def run(
         self,
