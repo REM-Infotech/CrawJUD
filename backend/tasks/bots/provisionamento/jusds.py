@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import UserString
 from contextlib import suppress
 from time import sleep
-from traceback import format_exception_only
+from traceback import format_exception, format_exception_only
 from typing import TYPE_CHECKING
 
 from selenium.webdriver.common.by import By
@@ -144,7 +144,7 @@ class Provisionamento(JusdsBot):
                 self._informa_campos()
                 self._informa_status()  # ultimo
                 self.salva_alteracoes()
-
+                sleep(2)
                 id_risco = self._informa_objeto()
 
                 out = self.output_dir_path
@@ -161,12 +161,12 @@ class Provisionamento(JusdsBot):
                 self.print_message(msg_, type_, self.row)
 
         except Exception as e:
-            exc = "\n".join(format_exception_only(e))
+            exc = "\n".join(format_exception(e))
             message = f"Erro de execução. {exc}"
             raise ExecutionError(message=message, exc=e) from e
 
     def _informa_nivel(self) -> None:
-
+        self.print_message("Informando nível", "log", self.row)
         value = NIVEIS[self.bot_data["NIVEL"].upper()]
         input_nivel = self.wait.until(
             presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_NIVEL)),
@@ -180,7 +180,7 @@ class Provisionamento(JusdsBot):
         sleep(0.5)
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
+            .until(presence_of_element_located((By.XPATH, '//div[@id="isc_C9"]/table')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
@@ -193,6 +193,7 @@ class Provisionamento(JusdsBot):
         )
         sleep(0.5)
         select_element.select_by_value(value)
+        self.print_message("Nível informado!", "info", "log", self.row)
 
     def _informa_status(self) -> None:
 
@@ -210,7 +211,7 @@ class Provisionamento(JusdsBot):
         sleep(0.5)
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
+            .until(presence_of_element_located((By.XPATH, '//div[@id="isc_C9"]/table')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
