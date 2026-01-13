@@ -172,8 +172,7 @@ class MailTasks(CeleryTask):
         self.db.session.add(execucao)
         self.db.session.commit()
 
-    @classmethod
-    def query_bot(cls, db: SQLAlchemy, bot_id: int) -> Bots | None:
+    def query_bot(self, bot_id: int) -> Bots | None:
         """Consulte e retorne um bot pelo ID informado.
 
         Args:
@@ -184,7 +183,7 @@ class MailTasks(CeleryTask):
             Bots | None: Bot encontrado ou None se não existir.
 
         """
-        return db.session.query(Bots).filter(Bots.Id == bot_id).first()
+        return self.db.session.query(Bots).filter(Bots.Id == bot_id).first()
 
     def query_user(self, user_id: int) -> User | None:
         """Consulte e retorne um usuário pelo ID informado.

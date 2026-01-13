@@ -239,11 +239,13 @@ class PrintMessage:
                         mode=mode,
                         encoding="utf-8",
                     ) as fp:
-                        tqdm.write(to_write, file=fp)
+                        prompt = self.formata_mensagem(data)
+                        tqdm.write(prompt, file=fp)
 
     def emit_message(self, data: Message, sio: Client) -> None:
         sio.emit("logbot", data=data, namespace="/bot")
-        tqdm.write(str(data["message"]), file=sys.stdout)
+        prompt = self.formata_mensagem(data)
+        tqdm.write(prompt, file=sys.stdout)
 
     def set_event(self, *args: Any, **kwargs: Any) -> None:
         """Evento de parada do robô.
@@ -277,3 +279,11 @@ class PrintMessage:
         )
 
         self.bot.bot_stopped.set()
+
+    def formata_mensagem(self, data: Message) -> str:
+        now = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime("%H:%M:%S")
+        msg_type = data["message_type"]
+        row = data["row"]
+        log = data["message"]
+        id_execucao = data["id_execucao"]
+        return f"[({id_execucao}, {msg_type}, {row}, {now})> {log}]"
