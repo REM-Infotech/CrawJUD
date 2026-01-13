@@ -21,6 +21,7 @@ class JusdsProvisionamento(BotData):
     VALOR_RISCO: str
     VALOR_PAGO: str
     DATA_PAGAMENTO: str
+    HONORARIOS: str
     STATUS_EVENTO: str
 
 

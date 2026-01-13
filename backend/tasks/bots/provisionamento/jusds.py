@@ -44,6 +44,7 @@ ELEMENTOS = {
     "DATA_BASE": El.CSS_INPUT_DATA_BASE,
     "VALOR_PAGO": El.CSS_INPUT_VALOR_PAGO,
     "DATA_PAGAMENTO": El.CSS_INPUT_DATA_PAGAMENTO,
+    "HONORARIOS": El.CSS_INPUT_HONORARIOS,
 }
 
 
@@ -234,6 +235,8 @@ class Provisionamento(JusdsBot):
             el = self.driver.find_element(By.CSS_SELECTOR, ELEMENTOS[nome])
             sleep(0.5)
             val = "SELIC"
+            if nome == "HONORARIOS":
+                val = str(self.bot_data.get("HONORARIOS", "0"))
             if nome != "INDICE":
                 val = str(self.bot_data[nome])
 
