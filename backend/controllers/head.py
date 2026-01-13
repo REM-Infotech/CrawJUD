@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.support.wait import WebDriverWait
     from seleniumwire.webdriver import Chrome
 
-    from backend.dicionarios import ConfigArgsRobo, ProjudiCapa
+    from backend.dicionarios import ConfigArgsRobo
     from backend.tasks.bots.busca_processual.projudi import BuscaProcessual
     from backend.tasks.bots.capa.projudi import Capa
 
@@ -40,7 +40,7 @@ WORKDIR = Path.cwd()
 MODULE_SPLIT_SIZE = 3
 TZ = ZoneInfo("America/Sao_Paulo")
 FORMAT_TIME = "%d-%m-%Y %H-%M-%S"
-
+JEC = "Vara do Juizado Especial Cível"
 logger = logging.getLogger(__name__)
 pool = ThreadPoolExecutor(1)
 
@@ -292,22 +292,24 @@ def tarefa_prototipo(self: CeleryTask, config: ConfigArgsRobo) -> None:  # noqa:
     from backend.extensions import app, db
 
     with app.app_context():
+        to_add: list[Processo] = []
         from backend.models import Processo
-
-        db.create_all()
 
         config.update({
             "sistema": "projudi",
         })
         bot1: BuscaProcessual = CrawJUD.bots["busca_processual_projudi"]()
-        frame = bot1.run(config)
+        bot: Capa = CrawJUD.bots["capa_projudi"]()
+        bot.frame = bot1.run(config)
+        results = bot.run(config)
 
-        new_frame: list[ProjudiCapa] = []
-        to_add: list[Processo] = []
+        processos = results.get("PrimeiraInstancia")
+        if results.get("SegundaInstancia"):
+            processos.extend(results.get("SegundaInstancia"))
 
         with db.session.no_autoflush:
             now = datetime.now(tz=zoneinfo("America/Sao_Paulo"))
-            for processo in frame:
+            for processo in processos:
                 query = (
                     db.session
                     .query(Processo)
@@ -315,19 +317,31 @@ def tarefa_prototipo(self: CeleryTask, config: ConfigArgsRobo) -> None:  # noqa:
                     .first()
                 )
                 if not query:
-                    new_frame.append(processo)
-
+                    competencia = (
+                        JEC
+                        if "Juizado Especial Cível" in processo["COMPETENCIA"]
+                        else str(processo["COMPETENCIA"])
+                    )
                     to_add.append(
                         Processo(
                             NUMERO_PROCESSO=processo["NUMERO_PROCESSO"],
                             DATA_DISTRIBUICAO=now,
+                            ESTADO="AM - Amazonas",
+                            COMARCA=processo["COMARCA"],
+                            FORO=competencia,
+                            VARA=_extrair_vara(processo["JUIZO"]),
                         ),
                     )
-
             if to_add:
                 db.session.add_all(to_add)
                 db.session.commit()
 
-        bot: Capa = CrawJUD.bots["capa_projudi"]()
-        bot.frame = new_frame
-        _results = bot.run(config)
+
+def _extrair_vara(juizo: str) -> str:
+
+    if "Vara Única" in juizo:
+        return "Vara Única"
+
+    juizo_split = juizo.split(" ")
+    juizo_numero = juizo_split[0].replace("º", "ª")
+    return juizo_numero.zfill(3)
