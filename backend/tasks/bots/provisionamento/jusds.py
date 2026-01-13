@@ -254,7 +254,7 @@ class Provisionamento(JusdsBot):
 
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
+            .until(presence_of_element_located((By.XPATH, '//div[@id="isc_C9"]/table')))
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
@@ -359,9 +359,9 @@ class Provisionamento(JusdsBot):
 
         sleep(0.25)
         el.send_keys(val)
-        sleep(2)
+        sleep(3)
         el.send_keys(Keys.ENTER)
-        sleep(0.5)
+        sleep(1)
 
         with suppress(Exception):
             self.driver.execute_script("return $(arguments[0]).blur()", el)
