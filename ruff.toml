@@ -12,7 +12,7 @@ indent-width = 4
 "**/bots/**" = ["D"]
 "**/typings/**" = ["D", "N802"]
 "**/backend/dicionarios/**" = ["D"]
-
+"**/app/**" = ["D"]
 [lint]
 select = ["ALL"]
 
