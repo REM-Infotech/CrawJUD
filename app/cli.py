@@ -27,7 +27,7 @@ def _thread_asgi() -> None:
 
         except Exception as e:  # noqa: BLE001
             exc = format_exception(e)
-            print(exc)  # noqa: T201
+            print("\n".join(exc))  # noqa: T201
 
 
 __all__ = ["typerapp"]

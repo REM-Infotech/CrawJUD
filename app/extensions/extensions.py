@@ -34,6 +34,7 @@ db = SQLAlchemy()
 
 
 async def create_app() -> Quart:
+    from app.routes import register_routes
 
     FlaskDynaconf(
         app=app,
@@ -42,6 +43,7 @@ async def create_app() -> Quart:
     )
 
     await start_extensions(app)
+    await register_routes(app)
 
     return app
 

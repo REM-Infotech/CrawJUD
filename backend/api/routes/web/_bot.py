@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, TypedDict
 
 from flask_jwt_extended import get_current_user
-from flask_socketio import join_room
+from quart_socketio import join_room
 
 from backend.api.decorators import jwt_sio_required
 from backend.api.routes._blueprints import botNS

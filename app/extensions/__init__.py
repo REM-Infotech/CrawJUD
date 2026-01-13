@@ -1,3 +1,3 @@
-from .extensions import create_app, sio
+from .extensions import app, celery, create_app, sio
 
-__all__ = ["create_app", "sio"]
+__all__ = ["app", "celery", "create_app", "sio"]
