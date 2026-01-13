@@ -292,7 +292,7 @@ def tarefa_prototipo(self: CeleryTask, config: ConfigArgsRobo) -> None:  # noqa:
     from backend.extensions import app, db
 
     with app.app_context():
-        from backend.models._bot import Processo
+        from backend.models import Processo
 
         db.create_all()
 
