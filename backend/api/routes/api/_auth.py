@@ -6,18 +6,17 @@ import traceback
 from contextlib import suppress
 from typing import TYPE_CHECKING
 
-from flask import (
-    Response,
-    abort,
-    current_app,
-    jsonify,
-    make_response,
-    request,
-)
 from flask_jwt_extended import (
     create_access_token,
     set_access_cookies,
     unset_jwt_cookies,
+)
+from quart import (
+    Response,
+    abort,
+    current_app,
+    jsonify,
+    request,
 )
 from werkzeug.exceptions import HTTPException
 
@@ -29,7 +28,7 @@ if TYPE_CHECKING:
 
 
 @auth.post("/login")
-def login() -> Response:
+async def login() -> Response:
     """Rota de autenticação da api.
 
     Returns:
@@ -40,12 +39,13 @@ def login() -> Response:
         db: SQLAlchemy = current_app.extensions["sqlalchemy"]
         data = {}
         with suppress(Exception):
-            data = request.get_json(force=True)  # força o parsing do JSON
+            data = await request.get_json(force=True)  # força o parsing do JSON
 
         # Verifica se os campos obrigatórios estão presentes
         if not data or not data.get("username") or not data.get("password"):
             payload = jsonify(message="Login e senha são obrigatórios.")
-            return make_response(payload, 401)
+            payload.status_code = 401
+            return payload
 
         user = db.session.query(User).filter_by(login=data["username"]).first()
         authenticated = User.authenticate(
@@ -54,20 +54,20 @@ def login() -> Response:
         )
         if not authenticated:
             payload = jsonify({"message": "Credenciais inválidas"})
-            return make_response(payload, 401)
+            payload.status_code = 401
+            return payload
 
         if not user:
             payload = jsonify({"message": "Usuário não encontrado."})
-            return make_response(payload, 401)
+            payload.status_code = 401
+            return payload
 
         access_token = create_access_token(identity=str(user.Id))
-        response = make_response(
-            jsonify(
-                message="Login efetuado com sucesso!",
-                access_token=access_token,
-            ),
-            200,
+        response = jsonify(
+            message="Login efetuado com sucesso!",
+            access_token=access_token,
         )
+        response.status_code = 200
 
         set_access_cookies(
             response=response,
@@ -75,14 +75,13 @@ def login() -> Response:
         )
 
     except HTTPException as e:
-        response = make_response(
-            jsonify({
-                "name": e.name,
-                "status": e.code,
-                "message": e.description,
-            }),
-            e.code,
-        )
+        response = jsonify({
+            "name": e.name,
+            "status": e.code,
+            "message": e.description,
+        })
+
+        response.status_code = e.code
 
     except Exception as e:  # noqa: BLE001
         _exc = traceback.format_exception(e)
@@ -99,8 +98,6 @@ def logout() -> Response:
         Response: Response do logout.
 
     """
-    response = make_response(
-        jsonify(message="Logout efetuado com sucesso!"),
-    )
+    response = jsonify(message="Logout efetuado com sucesso!")
     unset_jwt_cookies(response)
     return response

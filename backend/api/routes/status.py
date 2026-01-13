@@ -4,16 +4,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flask import (
+from flask_jwt_extended import jwt_required
+from quart import (
     Response,
     jsonify,
-    make_response,
     redirect,
     request,
     send_from_directory,
     url_for,
 )
-from flask_jwt_extended import jwt_required
 
 from backend.extensions import app, db
 
@@ -35,24 +34,25 @@ def health_check() -> HealtCheck:
         db_status = "erro"
         code_err = 500
 
-    return make_response(
-        jsonify({
-            "status": "ok" if db_status == "ok" else "erro",
-            "database": db_status,
-            "timestamp": str(db.func.now()),
-        }),
-        code_err,
-    )
+    resp = jsonify({
+        "status": "ok" if db_status == "ok" else "erro",
+        "database": db_status,
+        "timestamp": str(db.func.now()),
+    })
+
+    resp.status_code = code_err
+
+    return resp
 
 
 @app.route("/", methods=["GET"])
 def index() -> Response:
-    return make_response(redirect(url_for("health_check")))
+    return redirect(url_for("health_check"))
 
 
 @app.route("/robots.txt")
-def static_from_root() -> Response:
-    return send_from_directory(app.static_folder, request.path[1:])
+async def static_from_root() -> Response:
+    return await send_from_directory(app.static_folder, request.path[1:])
 
 
 @app.route("/sessao-valida", methods=["GET"])
@@ -67,4 +67,7 @@ def sessao_valida() -> Response:
         Response: Resposta HTTP indicando o status da sessão.
 
     """
-    return make_response(jsonify({"msg": "Sessão válida"}), 200)
+    resp = jsonify({"msg": "Sessão válida"})
+    resp.status_code = 200
+
+    return resp

@@ -10,7 +10,6 @@ from flask import (
     Response,
     abort,
     current_app,
-    make_response,
     request,
 )
 from flask_jwt_extended import verify_jwt_in_request
@@ -249,7 +248,7 @@ class CrossDomain:
                 request.headers.environ.update({
                     f"HTTP_{header_xsrf_name.replace('-', '_')}".upper(): xsrf_token,
                 })
-        return make_response(function(*args, **kwargs))
+        return function(*args, **kwargs)
 
     def _set_cors_headers(
         self,

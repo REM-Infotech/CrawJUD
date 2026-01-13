@@ -9,11 +9,11 @@ from tempfile import gettempdir
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from flask import current_app, jsonify, make_response
 from flask.wrappers import Response
 from flask_jwt_extended import (
     jwt_required,
 )
+from quart import current_app, jsonify
 
 from backend.api._forms.head import FormBot
 from backend.api.decorators import CrossDomain
@@ -91,7 +91,9 @@ def run_bot(sistema: Sistemas) -> Response:
             _exc = "\n".join(traceback.format_exception(e))  # noqa: RUF052
             print(_exc)  # noqa: T201
 
-    return make_response(jsonify(payload), code)
+    response = jsonify(payload)
+    response.status_code = code
+    return response
 
 
 @bots.get("/execucoes/<string:id_execucao>/download")
@@ -131,5 +133,5 @@ def download_execucao(id_execucao: str) -> Response[PayloadDownloadExecucao]:
         "content": b64encode(file_data).decode("utf-8"),
         "file_name": f"{id_execucao}.zip",
     })
-
-    return make_response(payload, 200)
+    payload.status_code = 200
+    return payload

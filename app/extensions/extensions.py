@@ -10,7 +10,7 @@ from flask_jwt_extended import JWTManager
 from flask_keepass import KeepassManager
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
-from quart import Quart
+from quart import Quart, Response, jsonify
 from quart_socketio import SocketIO
 from socketio import RedisManager
 
@@ -34,7 +34,6 @@ db = SQLAlchemy()
 
 
 async def create_app() -> Quart:
-    from app.routes import register_routes
 
     FlaskDynaconf(
         app=app,
@@ -43,9 +42,13 @@ async def create_app() -> Quart:
     )
 
     await start_extensions(app)
-    await register_routes(app)
 
     return app
+
+
+@app.route("/start", methods=["get"])
+def start() -> Response:
+    return jsonify({"ok": "ok"})
 
 
 async def start_extensions(app: Quart) -> Quart:
