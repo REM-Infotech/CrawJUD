@@ -3,8 +3,9 @@ from __future__ import annotations
 from collections import UserString
 from contextlib import suppress
 from time import sleep
-from traceback import format_exception_only
+from traceback import format_exception, format_exception_only
 from typing import TYPE_CHECKING
+from urllib.parse import parse_qs, urlparse
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     from backend.dicionarios import ConfigArgsRobo, JusdsProvisionamento
     from backend.resources.driver.web_element import WebElement
 
-
+MENSAGEM_SUCESSO = "Cadastre os objetos do risco"
 STATUS_EVENTO = {
     "FORMALIZADO": "Formalizado",
     "NAO FORMALIZADO": "Não formalizado",
@@ -104,6 +105,10 @@ class Provisionamento(JusdsBot):
                 self.queue()
             except ExecutionError as e:
                 message = str(e)
+
+                if hasattr(e, "message"):
+                    message = str(e.message)
+
                 self.print_message(
                     message=message,
                     message_type="error",
@@ -144,7 +149,7 @@ class Provisionamento(JusdsBot):
                 self._informa_campos()
                 self._informa_status()  # ultimo
                 self.salva_alteracoes()
-
+                sleep(2)
                 id_risco = self._informa_objeto()
 
                 out = self.output_dir_path
@@ -161,12 +166,16 @@ class Provisionamento(JusdsBot):
                 self.print_message(msg_, type_, self.row)
 
         except Exception as e:
-            exc = "\n".join(format_exception_only(e))
+            exc = "\n".join(format_exception(e))
+
+            if hasattr(e, "message"):
+                exc = str(e.message)
+
             message = f"Erro de execução. {exc}"
             raise ExecutionError(message=message, exc=e) from e
 
     def _informa_nivel(self) -> None:
-
+        self.print_message("Informando nível", "log", self.row)
         value = NIVEIS[self.bot_data["NIVEL"].upper()]
         input_nivel = self.wait.until(
             presence_of_element_located((By.CSS_SELECTOR, El.CSS_INPUT_NIVEL)),
@@ -180,7 +189,10 @@ class Provisionamento(JusdsBot):
         sleep(0.5)
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
+            .until(
+                presence_of_element_located((By.XPATH, '//div[@eventproxy="TMAKERGRID9_body"]')),
+            )
+            .find_element(By.TAG_NAME, "table")
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
@@ -193,6 +205,7 @@ class Provisionamento(JusdsBot):
         )
         sleep(0.5)
         select_element.select_by_value(value)
+        self.print_message("Nível informado!", "info", "log", self.row)
 
     def _informa_status(self) -> None:
 
@@ -210,7 +223,10 @@ class Provisionamento(JusdsBot):
         sleep(0.5)
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
+            .until(
+                presence_of_element_located((By.XPATH, '//div[@eventproxy="TMAKERGRID9_body"]')),
+            )
+            .find_element(By.TAG_NAME, "table")
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
@@ -241,33 +257,67 @@ class Provisionamento(JusdsBot):
                 val = str(self.bot_data[nome])
 
             if nome == "MOMENTO_PROCESSUAL":
-                val = self.bot_data[nome].upper()
+                val = self.bot_data[nome].upper().replace("ª", "a")
 
             sleep(0.5)
             self.send_data(val, el)
 
     def _informa_objeto(self) -> str:
 
-        self.driver.refresh()
-        self.acessa_pagina_risco()
+        w = WebDriverWait(self.driver, 10)
+        message_popup = w.until(
+            presence_of_element_located((
+                By.XPATH,
+                '//*[@id="0143FB23-78A2-4DC4-9ADE-22B059AAEB88"]/div[7]',
+            )),
+        )
+
+        mensagem = message_popup.find_element(By.CLASS_NAME, "swal2-html-container").text
+        if mensagem != MENSAGEM_SUCESSO:
+            raise ExecutionError(message=mensagem)
+
+        self.driver.execute_script("$(arguments[0]).toggle()", message_popup)
 
         items_table = (
             self.wait
-            .until(presence_of_element_located((By.XPATH, '//table[@id="isc_CEtable"]')))
+            .until(
+                presence_of_element_located((By.XPATH, '//div[@eventproxy="TMAKERGRID9_body"]')),
+            )
+            .find_element(By.TAG_NAME, "table")
             .find_element(By.TAG_NAME, "tbody")
             .find_elements(By.TAG_NAME, "tr")
         )
+        window_processo = self.driver.current_window_handle
 
-        id_risco = (
-            items_table[0]
-            .find_element(
-                By.XPATH,
-                '//td[@height="33"][@class="grid" or @class="gridAltCol"]/div',
-            )
-            .text.strip()
+        risco = items_table[0].find_element(
+            By.XPATH,
+            '//img[contains(@id, "grid818807button")]',
         )
 
-        window_processo = self.driver.current_window_handle
+        id_item = risco.get_attribute("id")
+
+        self.driver.execute_script("window.executeGridComponentEvent(arguments[0])", id_item)
+        sleep(1.5)
+        div_risco = self.wait.until(
+            presence_of_element_located((By.ID, "WFRIframeForm464569307")),
+        )
+        iframe_risco = div_risco.find_element(By.TAG_NAME, "iframe")
+        src = iframe_risco.get_attribute("src")
+
+        parsed = urlparse(src)
+
+        query_params = parse_qs(str(parsed.query))
+        id_risco = (
+            query_params["filter"][0]
+            .replace("jrd_riscos_processo.jrd_rsp_id=", "")
+            .replace(
+                "@long",
+                "",
+            )
+        )
+
+        self.driver.execute_script("$(arguments[0]).toggle()", div_risco)
+
         self.driver.switch_to.new_window("tab")
 
         self._criacao_objeto(id_risco=id_risco)
@@ -360,7 +410,7 @@ class Provisionamento(JusdsBot):
         el.send_keys(val)
         sleep(2)
         el.send_keys(Keys.ENTER)
-        sleep(0.5)
+        sleep(1)
 
         with suppress(Exception):
             self.driver.execute_script("return $(arguments[0]).blur()", el)
