@@ -1,3 +1,5 @@
+# ruff: noqa: D101, D100, D107
+
 from __future__ import annotations
 
 from datetime import datetime

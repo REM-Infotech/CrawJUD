@@ -1,3 +1,4 @@
+# ruff: noqa: D101, D107
 """Log bot."""
 
 from __future__ import annotations
