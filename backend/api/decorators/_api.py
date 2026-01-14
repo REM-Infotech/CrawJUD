@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from functools import wraps
+from inspect import iscoroutinefunction
 from typing import TYPE_CHECKING
 
 from flask_jwt_extended import verify_jwt_in_request
@@ -25,9 +26,13 @@ MAX_AGE = 21600
 def jwt_sio_required[**P, T](fn: Callable[P, T]) -> Callable[P, T]:
 
     @wraps(fn)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Callable[P, T]:
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Callable[P, T]:
 
         verify_jwt_in_request()
+
+        if iscoroutinefunction(fn):
+            return await fn(*args, **kwargs)
+
         return fn(*args, **kwargs)
 
     return wrapper
@@ -95,7 +100,7 @@ class CrossDomain:
         _normalized_max_age = self._normalize_max_age(self.max_age)
 
         @wraps(wrapped_function)
-        def _wrapped(
+        async def _wrapped(
             *args: P.args,
             **kwargs: P.kwargs,
         ) -> Response:
@@ -108,10 +113,10 @@ class CrossDomain:
                 )
 
             elif self.automatic_options and request.method == "OPTIONS":
-                response = self._handle_options()
+                response = await self._handle_options()
 
             elif request.method == "POST":
-                response = self._handle_request(
+                response = await self._handle_request(
                     wrapped_function,
                     *args,
                     **kwargs,
@@ -204,16 +209,16 @@ class CrossDomain:
         return options_resp.headers["allow"]
 
     @classmethod
-    def _handle_options(cls) -> Response:
+    async def _handle_options(cls) -> Response:
         """Gera resposta para método OPTIONS.
 
         Returns:
             Response: Resposta padrão para o método OPTIONS.
 
         """
-        return current_app.make_default_options_response()
+        return await current_app.make_default_options_response()
 
-    def _handle_request(
+    async def _handle_request(
         self,
         function: Callable,
         *args: Any,
@@ -226,7 +231,7 @@ class CrossDomain:
 
         """
         module_name = function.__globals__.get("__name__")
-        if module_name == "flask_jwt_extended.view_decorators":
+        if module_name == "quart_jwt_extended.view_decorators":
             cookie_xsrf_name = current_app.config.get(
                 "JWT_ACCESS_CSRF_COOKIE_NAME",
             )
@@ -248,7 +253,8 @@ class CrossDomain:
                 request.headers.update({
                     header_xsrf_name.upper(): xsrf_token,
                 })
-        return function(*args, **kwargs)
+                request.headers.update({header_xsrf_name.lower(): xsrf_token})
+        return await function(*args, **kwargs)
 
     def _set_cors_headers(
         self,

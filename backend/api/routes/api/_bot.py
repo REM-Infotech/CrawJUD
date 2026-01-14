@@ -9,9 +9,7 @@ from tempfile import gettempdir
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from flask_jwt_extended import (
-    jwt_required,
-)
+from flask_jwt_extended import jwt_required
 from quart import current_app, jsonify
 from quart.wrappers import Response
 

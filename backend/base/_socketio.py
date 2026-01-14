@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from asyncio import iscoroutine
+from asyncio import iscoroutinefunction
 from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec, overload
 
@@ -47,7 +47,7 @@ class BlueprintNamespace(Namespace):
         @wraps(fn)
         async def wrapper[T](*args: P.args, **kwargs: P.kwargs) -> T:
 
-            if iscoroutine(fn):
+            if iscoroutinefunction(fn):
                 return await fn(self, *args, **kwargs)
 
             return fn(self, *args, **kwargs)

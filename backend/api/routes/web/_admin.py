@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, TypedDict
 from zoneinfo import ZoneInfo
 
-from flask_jwt_extended import get_current_user, jwt_required
+from flask_jwt_extended import get_current_user
 from quart_socketio import Namespace
 
 if TYPE_CHECKING:
@@ -40,12 +40,10 @@ class AdminNamespace(Namespace):
 
         return ""
 
-    @jwt_required()
     def on_connect(self, *args: Any, **kwargs: Any) -> None:
 
         return ""
 
-    @jwt_required()
     def on_listagem_credenciais(self) -> list[CredencialItem]:
 
         user: User = get_current_user()
@@ -59,7 +57,6 @@ class AdminNamespace(Namespace):
             for item in user.license_.credenciais
         ]
 
-    @jwt_required()
     def on_listagem_usuarios(self) -> list[UsuarioItem]:
 
         user: User = get_current_user()

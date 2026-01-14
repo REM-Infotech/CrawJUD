@@ -59,7 +59,7 @@ class BotNamespace(Namespace):
         super().__init__(namespace, socketio)
 
     @jwt_sio_required
-    def on_listagem_execucoes(self) -> list[Execucao]:
+    async def on_listagem_execucoes(self) -> list[Execucao]:
         """Lista execuções dos bots do usuário autenticado."""
         # Obtém o usuário autenticado
         user: User = get_current_user()
@@ -91,7 +91,8 @@ class BotNamespace(Namespace):
 
         return payload
 
-    def on_logbot(self, data: Message) -> None:
+    @jwt_sio_required
+    async def on_logbot(self, data: Message) -> None:
         """Log bot."""
         self.emit(
             "logbot",
@@ -101,11 +102,7 @@ class BotNamespace(Namespace):
         )
 
     @jwt_sio_required
-    def on_listagem(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> list[BotInfo]:
+    async def on_listagem(self) -> list[BotInfo]:
         """Lista todos os bots disponíveis para o usuário autenticado.
 
         Returns:
@@ -129,21 +126,19 @@ class BotNamespace(Namespace):
         }
 
     @jwt_sio_required
-    def on_bot_stop(self, data: dict[str, str]) -> None:
+    async def on_bot_stop(self, data: dict[str, str]) -> None:
         """Registre parada do bot e salve log."""
         # Emite evento de parada do bot para a sala correspondente
         self.emit("bot_stop", room=data["id_execucao"], namespace="/bot")
 
-    def on_join_room(
-        self,
-        data: dict[str, str],
-    ) -> list[str]:
+    @jwt_sio_required
+    async def on_join_room(self, data: dict[str, str]) -> list[str]:
         """Adicione usuário à sala e retorne logs."""
         # Adiciona o usuário à sala especificada
         join_room(data["room"])
 
     @jwt_sio_required
-    def on_provide_credentials(
+    async def on_provide_credentials(
         self,
         data: dict[Literal["sistema"], Sistemas],
     ) -> list[CredenciaisSelect]:
@@ -172,11 +167,8 @@ class BotNamespace(Namespace):
 
         return list_credentials
 
-    def on_connect(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
+    @jwt_sio_required
+    def on_connect(self) -> None:
         """Log bot."""
 
     def on_disconnect(
