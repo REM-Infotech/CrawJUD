@@ -1,3 +1,5 @@
+# ruff: noqa: D101, D107
+
 """Log bot."""
 
 from __future__ import annotations
@@ -18,6 +20,9 @@ class FileUploadNamespace(Namespace):
     def __init__(self, socketio: SocketIO = None) -> None:
         namespace = "/files"
         super().__init__(namespace, socketio)
+
+    @async_jwt_required
+    def on_connect(self) -> None: ...
 
     @async_jwt_required
     def on_add_file(self, data: dict[str, Any]) -> None:

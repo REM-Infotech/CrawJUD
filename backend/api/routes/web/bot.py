@@ -13,7 +13,7 @@ from backend.api.decorators import async_jwt_required
 if TYPE_CHECKING:
     from backend.dicionarios import BotInfo, Message
     from backend.models import User
-    from typings import Any, Sistemas
+    from typings import Sistemas
 
 
 SISTEMAS: set[Sistemas] = {
@@ -170,11 +170,4 @@ class BotNamespace(Namespace):
 
     @async_jwt_required
     def on_connect(self) -> None:
-        """Log bot."""
-
-    def on_disconnect(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
         """Log bot."""

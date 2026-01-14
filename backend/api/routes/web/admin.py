@@ -9,6 +9,8 @@ from zoneinfo import ZoneInfo
 from flask_jwt_extended import get_current_user
 from quart_socketio import Namespace
 
+from backend.api.decorators import async_jwt_required
+
 if TYPE_CHECKING:
     from quart_socketio import SocketIO
 
@@ -38,13 +40,8 @@ class AdminNamespace(Namespace):
         namespace = "/admin"
         super().__init__(namespace, socketio)
 
-    def on_disconnect(self, *args: Any) -> None:
-
-        return ""
-
-    def on_connect(self, *args: Any, **kwargs: Any) -> None:
-
-        return ""
+    @async_jwt_required
+    def on_connect(self) -> None: ...
 
     def on_listagem_credenciais(self) -> list[CredencialItem]:
 
