@@ -8,12 +8,7 @@ from inspect import iscoroutinefunction
 from typing import TYPE_CHECKING
 
 from flask_jwt_extended import verify_jwt_in_request
-from quart import (
-    Response,
-    abort,
-    current_app,
-    request,
-)
+from quart import Response, abort, current_app, request
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -23,7 +18,7 @@ if TYPE_CHECKING:
 MAX_AGE = 21600
 
 
-def jwt_sio_required[**P, T](fn: Callable[P, T]) -> Callable[P, T]:
+def async_jwt_required[**P, T](fn: Callable[P, T]) -> Callable[P, T]:
 
     @wraps(fn)
     async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Callable[P, T]:

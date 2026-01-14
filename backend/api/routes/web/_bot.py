@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Literal, TypedDict
 from flask_jwt_extended import get_current_user
 from quart_socketio import Namespace, SocketIO, join_room
 
-from backend.api.decorators import jwt_sio_required
+from backend.api.decorators import async_jwt_required
 
 if TYPE_CHECKING:
     from backend.dicionarios import BotInfo, Message
@@ -58,7 +58,7 @@ class BotNamespace(Namespace):
         namespace = "/bot"
         super().__init__(namespace, socketio)
 
-    @jwt_sio_required
+    @async_jwt_required
     async def on_listagem_execucoes(self) -> list[Execucao]:
         """Lista execuções dos bots do usuário autenticado."""
         # Obtém o usuário autenticado
@@ -91,7 +91,7 @@ class BotNamespace(Namespace):
 
         return payload
 
-    @jwt_sio_required
+    @async_jwt_required
     async def on_logbot(self, data: Message) -> None:
         """Log bot."""
         self.emit(
@@ -101,7 +101,7 @@ class BotNamespace(Namespace):
             namespace="/bot",
         )
 
-    @jwt_sio_required
+    @async_jwt_required
     async def on_listagem(self) -> list[BotInfo]:
         """Lista todos os bots disponíveis para o usuário autenticado.
 
@@ -125,19 +125,19 @@ class BotNamespace(Namespace):
             ],
         }
 
-    @jwt_sio_required
+    @async_jwt_required
     async def on_bot_stop(self, data: dict[str, str]) -> None:
         """Registre parada do bot e salve log."""
         # Emite evento de parada do bot para a sala correspondente
         self.emit("bot_stop", room=data["id_execucao"], namespace="/bot")
 
-    @jwt_sio_required
+    @async_jwt_required
     async def on_join_room(self, data: dict[str, str]) -> list[str]:
         """Adicione usuário à sala e retorne logs."""
         # Adiciona o usuário à sala especificada
         join_room(data["room"])
 
-    @jwt_sio_required
+    @async_jwt_required
     async def on_provide_credentials(
         self,
         data: dict[Literal["sistema"], Sistemas],
@@ -167,7 +167,7 @@ class BotNamespace(Namespace):
 
         return list_credentials
 
-    @jwt_sio_required
+    @async_jwt_required
     def on_connect(self) -> None:
         """Log bot."""
 

@@ -9,12 +9,11 @@ from tempfile import gettempdir
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from flask_jwt_extended import jwt_required
 from quart import current_app, jsonify
 from quart.wrappers import Response
 
 from backend.api._forms.head import FormBot
-from backend.api.decorators import CrossDomain
+from backend.api.decorators import CrossDomain, async_jwt_required
 from backend.api.resources import gerar_id
 from backend.api.routes._blueprints import bots
 
@@ -52,7 +51,7 @@ def is_sistema(valor: Sistemas) -> bool:
 
 @bots.post("/<string:sistema>/run")
 @CrossDomain(origin="*", methods=["get", "post", "options"])
-@jwt_required()
+@async_jwt_required
 def run_bot(sistema: Sistemas) -> Response:
     """Inicie a execução de um robô para o sistema informado.
 
@@ -96,7 +95,7 @@ def run_bot(sistema: Sistemas) -> Response:
 
 @bots.get("/execucoes/<string:id_execucao>/download")
 @CrossDomain(origin="*", methods=["get", "post", "options"])
-@jwt_required()
+@async_jwt_required
 def download_execucao(id_execucao: str) -> Response[PayloadDownloadExecucao]:
     """Baixe o arquivo de execução do bot pelo PID informado.
 

@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flask_jwt_extended import jwt_required
 from quart_socketio import Namespace, SocketIO
+
+from backend.api.decorators import async_jwt_required
 
 from .upload import uploader
 
@@ -18,7 +19,7 @@ class FileUploadNamespace(Namespace):
         namespace = "/files"
         super().__init__(namespace, socketio)
 
-    @jwt_required()
+    @async_jwt_required
     def on_add_file(self, data: dict[str, Any]) -> None:
         """Log bot."""
         uploader(data)

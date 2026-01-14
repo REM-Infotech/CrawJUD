@@ -1,9 +1,9 @@
 from base64 import b64decode
 from typing import TypedDict
 
-from flask_jwt_extended import jwt_required
 from quart import abort, request
 
+from backend.api.decorators import async_jwt_required
 from backend.api.routes._blueprints import upload
 
 
@@ -22,7 +22,7 @@ class DataFileUpload(TypedDict):
 
 
 @upload.put("/")
-@jwt_required()
+@async_jwt_required
 def upload_arquivo() -> None:
 
     try:

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flask_jwt_extended import jwt_required
 from quart import (
     Response,
     jsonify,
@@ -14,6 +13,7 @@ from quart import (
     url_for,
 )
 
+from backend.api.decorators import async_jwt_required
 from backend.extensions import app, db
 
 if TYPE_CHECKING:
@@ -56,7 +56,7 @@ async def static_from_root() -> Response:
 
 
 @app.route("/sessao-valida", methods=["GET"])
-@jwt_required()
+@async_jwt_required
 def sessao_valida() -> Response:
     """Verifica se a sessão JWT é válida.
 

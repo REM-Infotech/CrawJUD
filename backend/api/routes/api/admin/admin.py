@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flask_jwt_extended import jwt_required
 from quart import Response, current_app, jsonify, request
 
-from backend.api.decorators import CrossDomain
+from backend.api.decorators import CrossDomain, async_jwt_required
 from backend.api.routes._blueprints import admin
 
 from ._credencial import CredencialBot
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
 
 @admin.post("/cadastro_credencial")
 @CrossDomain(origin="*", methods=["get", "post", "options"])
-@jwt_required()
+@async_jwt_required
 def cadatro_credencial() -> Response:  # noqa: D103
 
     form_ = request.form
@@ -47,6 +46,6 @@ def cadatro_credencial() -> Response:  # noqa: D103
 
 admin.post("/deletar_credencial")(
     CrossDomain(origin="*", methods=["get", "post", "options"])(
-        jwt_required()(CredencialBot.deletar_credencial),
+        async_jwt_required(CredencialBot.deletar_credencial),
     ),
 )
