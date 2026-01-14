@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypedDict, Unpack
+from typing import TYPE_CHECKING, TypedDict, Unpack
 
 from flask_jwt_extended import get_current_user
 from quart_socketio import Namespace, SocketIO, join_room
@@ -51,6 +51,10 @@ class Execucao(TypedDict):
     status: str
     data_inicio: str
     data_fim: str
+
+
+class Sistema(TypedDict):
+    sistema: Sistemas
 
 
 class BotNamespace(Namespace):
@@ -139,10 +143,7 @@ class BotNamespace(Namespace):
         await join_room(data["room"])
 
     @async_jwt_required
-    async def on_provide_credentials(
-        self,
-        **data: Unpack[dict[Literal["sistema"], Sistemas]],
-    ) -> list[CredenciaisSelect]:
+    async def on_provide_credentials(self, **data: Unpack[Sistema]) -> list[CredenciaisSelect]:
         """Lista as credenciais disponíveis para o sistema informado."""
         sistema = data.get("sistema")
         list_credentials = [CredenciaisSelect(value=None, text="Selecione")]
