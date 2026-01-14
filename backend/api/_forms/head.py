@@ -5,8 +5,8 @@ import traceback
 from base64 import b64encode
 from typing import TYPE_CHECKING, ClassVar, Self
 
-from flask import current_app, request
 from flask_jwt_extended import get_current_user
+from quart import current_app, request
 
 from backend.api.resources import camel_to_snake, formata_string
 from backend.common.exceptions._fatal import FatalError

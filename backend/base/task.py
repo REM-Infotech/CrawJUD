@@ -1,4 +1,4 @@
-"""Fornece integração de tarefas Celery com contexto Flask."""
+"""Fornece integração de tarefas Celery com contexto Quart."""
 
 from __future__ import annotations
 
@@ -13,13 +13,13 @@ if TYPE_CHECKING:
 
 
 class CeleryTask[**P, R](Task):
-    """Integre tarefas Celery ao contexto Flask nesta classe."""
+    """Integre tarefas Celery ao contexto Quart nesta classe."""
 
     run: Callable[P, R]
     app: Celery
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        """Executa a tarefa Celery dentro do contexto Flask.
+        """Executa a tarefa Celery dentro do contexto Quart.
 
         Args:
             *args (Any): Argumentos posicionais da tarefa.

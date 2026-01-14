@@ -12,7 +12,7 @@ from dotenv import dotenv_values
 from typer import Typer
 
 if TYPE_CHECKING:
-    from flask_socketio import SocketIO
+    from quart_socketio import SocketIO
 
 environ = dotenv_values()
 FLASK_PORT: int = 5000

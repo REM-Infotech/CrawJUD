@@ -1,8 +1,8 @@
 from base64 import b64decode
 from typing import TypedDict
 
-from flask import abort, request
 from flask_jwt_extended import jwt_required
+from quart import abort, request
 
 from backend.api.routes._blueprints import upload
 

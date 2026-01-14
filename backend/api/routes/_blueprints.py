@@ -1,4 +1,4 @@
-from flask import Blueprint
+from quart import Blueprint
 
 from backend.base import BlueprintNamespace
 

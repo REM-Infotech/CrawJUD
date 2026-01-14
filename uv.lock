@@ -192,6 +192,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "aiohttp" },
+    { name = "anyio" },
     { name = "asn1crypto" },
     { name = "bs4" },
     { name = "celery" },
@@ -258,6 +259,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.13.3" },
+    { name = "anyio", specifier = ">=4.12.1" },
     { name = "asn1crypto", specifier = ">=1.5.1" },
     { name = "bs4", specifier = ">=0.0.2" },
     { name = "celery", specifier = ">=5.5.3" },

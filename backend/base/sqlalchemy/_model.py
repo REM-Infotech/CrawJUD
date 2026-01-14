@@ -3,9 +3,9 @@ from __future__ import annotations
 from contextlib import suppress
 from typing import TYPE_CHECKING, ClassVar, Self, cast
 
-from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.model import Model as FSA_Model
+from quart import current_app
 
 from backend.api.resources import camel_to_snake
 

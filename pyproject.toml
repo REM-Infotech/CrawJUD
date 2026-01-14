@@ -59,6 +59,7 @@ dependencies = [
     "quart-cors",
     "websockets>=16.0",
     "quart-flask-patch",
+    "anyio>=4.12.1",
 ]
 
 [dependency-groups]

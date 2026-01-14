@@ -6,13 +6,13 @@ from datetime import timedelta
 from functools import wraps
 from typing import TYPE_CHECKING
 
-from flask import (
+from flask_jwt_extended import verify_jwt_in_request
+from quart import (
     Response,
     abort,
     current_app,
     request,
 )
-from flask_jwt_extended import verify_jwt_in_request
 
 if TYPE_CHECKING:
     from collections.abc import Callable

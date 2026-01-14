@@ -9,14 +9,14 @@ from celery import Celery
 from celery.signals import after_setup_logger
 from dotenv import load_dotenv
 from dynaconf import FlaskDynaconf
-from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_keepass import KeepassManager
 from flask_mail import Mail
-from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from passlib.context import CryptContext
+from quart import Quart
+from quart_socketio import SocketIO
 from socketio.redis_manager import RedisManager
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 
 __name__ = "crawjud"
 
-app: Flask = Flask(__name__)
+app: Quart = Quart(__name__)
 celery = Celery(__name__, task_cls=CeleryTask)
 db = SQLAlchemy(model_class=Model, query_class=Query)  # pyright: ignore[reportArgumentType]
 jwt = JWTManager()
@@ -54,7 +54,7 @@ after_setup_logger.connect(setup_logger)
 load_dotenv()
 
 
-def make_celery(app: Flask) -> Celery:
+def make_celery(app: Quart) -> Celery:
     """Create and configure a Celery instance with Quart application context.
 
     Returns:
@@ -72,11 +72,11 @@ def make_celery(app: Flask) -> Celery:
     return celery
 
 
-def create_app() -> Flask:
-    """Crie e configure a aplicação Flask.
+def create_app() -> Quart:
+    """Crie e configure a aplicação Quart.
 
     Returns:
-        Flask: Instância configurada da aplicação Flask.
+        Quart: Instância configurada da aplicação Quart.
 
     """
     from backend.api.routes import register_routes
@@ -102,8 +102,8 @@ def create_app() -> Flask:
     return app
 
 
-def start_extensions(app: Flask) -> Flask:
-    """Inicializa as extensões do Flask."""
+def start_extensions(app: Quart) -> Quart:
+    """Inicializa as extensões do Quart."""
     with app.app_context():
         if not app.extensions.get("sqlalchemy"):
             db.init_app(app)

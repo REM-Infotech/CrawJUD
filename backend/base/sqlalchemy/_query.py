@@ -3,11 +3,11 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, ClassVar, Self, TypeVar, cast
 
-from flask import abort
 from flask_sqlalchemy.pagination import Pagination as FSAPagination
 from flask_sqlalchemy.pagination import (
     QueryPagination as FSAQueryPagination,
 )
+from quart import abort
 from sqlalchemy import exc as sa_exc
 from sqlalchemy.orm import Query as SAQuery
 from sqlalchemy.sql._typing import (
@@ -48,11 +48,11 @@ class QueryProperty[T]:
 
 
 class Pagination[T](FSAPagination):
-    """Adds typing to Flask-SQLAlchemy's Pagination."""
+    """Adds typing to Quart-SQLAlchemy's Pagination."""
 
 
 class QueryPagination[T](FSAQueryPagination):
-    """Adds typing to Flask-SQLAlchemy's QueryPagination."""
+    """Adds typing to Quart-SQLAlchemy's QueryPagination."""
 
 
 class Query[T](SAQuery):

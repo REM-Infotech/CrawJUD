@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec, overload
 
-from flask_socketio import Namespace
+from quart_socketio import Namespace
 
 if TYPE_CHECKING:
     from collections.abc import Callable

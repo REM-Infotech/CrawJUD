@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flask import Response, current_app, jsonify, make_response, request
 from flask_jwt_extended import jwt_required
+from quart import Response, current_app, jsonify, request
 
 from backend.api.decorators import CrossDomain
 from backend.api.routes._blueprints import admin
@@ -39,7 +39,10 @@ def cadatro_credencial() -> Response:  # noqa: D103
         }
 
         status_code = 200
-    return make_response(jsonify(payload), status_code)
+
+    response = jsonify(payload)
+    response.status_code = status_code
+    return response
 
 
 admin.post("/deletar_credencial")(

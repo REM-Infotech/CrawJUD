@@ -2,7 +2,7 @@
 
 Este módulo define a task Celery responsável por enviar e-mails de
 notificação de início e fim de execução de robôs, utilizando templates Jinja2
-e integração com Flask-Mail.
+e integração com Quart-Mail.
 """
 
 import logging
@@ -75,7 +75,7 @@ class MailTasks(CeleryTask):
         """Envie notificação de início de tarefa por e-mail.
 
         Args:
-            app (Flask): Instância da aplicação Flask.
+            app (Quart): Instância da aplicação Quart.
             id_execucao (str): Identificador do processo.
             bot_id (int): ID do bot.
             user_id (int): ID do usuário.
@@ -138,7 +138,7 @@ class MailTasks(CeleryTask):
         """Gerencie início ou fim de execução de bot no banco.
 
         Args:
-            app (Flask): Instância da aplicação Flask.
+            app (Quart): Instância da aplicação Quart.
             bot_id (int): ID do bot a ser executado.
             user_id (int): ID do usuário responsável.
             id_execucao (str): Identificador do processo.

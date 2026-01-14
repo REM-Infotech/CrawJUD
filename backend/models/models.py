@@ -3,18 +3,19 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import TYPE_CHECKING, cast
 from uuid import uuid4
+
+from anyio import Path
 
 from backend.extensions import db
 from backend.models._bot import Bots, CredenciaisRobo
 from backend.models._users import LicenseUser, User
 
 if TYPE_CHECKING:
-    from flask import Flask
     from flask_keepass import KeepassManager
     from pykeepass import Group
+    from quart import Quart
 
     from backend.dicionarios import DictCredencial, DictUsers
     from typings import Dict
@@ -23,9 +24,9 @@ if TYPE_CHECKING:
 parent_path = Path(__file__).parent.resolve()
 
 
-def init_database(app: Flask) -> None:
+async def init_database(app: Quart) -> None:
     """Inicializa o banco de dados."""
-    with app.app_context(), db.session.no_autoflush:
+    async with app.app_context(), db.session.no_autoflush:
         db.create_all()
 
         user = db.session.query(User).filter_by(login=app.config["ROOT_USERNAME"]).first()
@@ -56,8 +57,8 @@ def init_database(app: Flask) -> None:
             db.session.commit()
 
 
-def create_bots(app: Flask) -> None:  # noqa: D103
-    with app.app_context():
+async def create_bots(app: Quart) -> None:  # noqa: D103
+    async with app.app_context():
         path_export = parent_path.joinpath("export.json")
 
         lic = db.session.query(LicenseUser).filter(LicenseUser.Nome == "Root License").first()
@@ -78,14 +79,14 @@ def create_bots(app: Flask) -> None:  # noqa: D103
             db.session.commit()
 
 
-def load_credentials(app: Flask) -> None:  # noqa: D103
+async def load_credentials(app: Quart) -> None:  # noqa: D103
     path_credentials = parent_path.joinpath("credentials.json")
 
     if path_credentials.exists():
         list_data: list[DictCredencial] = json.loads(
             path_credentials.read_text(),
         )
-        with app.app_context():
+        async with app.app_context():
             lic = db.session.query(LicenseUser).filter(LicenseUser.Nome == "Root License").first()
 
             keepass: KeepassManager = app.extensions["keepass"]
@@ -143,7 +144,7 @@ def load_credentials(app: Flask) -> None:  # noqa: D103
                         if not keepass.find_attachments(
                             filename=attachment_name,
                         ):
-                            attachment_data = path_cert.read_bytes()
+                            attachment_data = await path_cert.read_bytes()
 
                             binary_id = keepass.add_binary(
                                 attachment_data,
@@ -169,7 +170,7 @@ def load_credentials(app: Flask) -> None:  # noqa: D103
             keepass.save()
 
 
-def import_users(app: Flask) -> None:  # noqa: D103
+def import_users(app: Quart) -> None:  # noqa: D103
     path_users = parent_path.joinpath("users_202511251518.json")
 
     if path_users.exists():

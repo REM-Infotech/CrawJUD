@@ -10,7 +10,7 @@ from threading import Thread
 from time import sleep
 from typing import Self, TypedDict
 
-from flask import request
+from quart import request
 
 from backend.api.resources import formata_string
 from backend.extensions import app, storage

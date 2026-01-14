@@ -10,7 +10,7 @@ from minio.credentials.providers import EnvMinioProvider
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from flask import Flask
+    from quart import Quart
 
     from typings import P
 
@@ -19,11 +19,11 @@ load_dotenv()
 
 
 class Minio(MinioClient):
-    flask_app: Flask
+    flask_app: Quart
 
     def __init__(
         self,
-        app: Flask | None = None,
+        app: Quart | None = None,
     ) -> None:
         if app:
             with app.app_context():
@@ -51,8 +51,8 @@ class Minio(MinioClient):
                 app.extensions["storage"] = self
                 self.decorate_functions()
 
-    def init_app(self, app: Flask) -> None:
-        """Inicializa a extensão com a aplicação Flask."""
+    def init_app(self, app: Quart) -> None:
+        """Inicializa a extensão com a aplicação Quart."""
         if app.extensions.get("storage"):
             return
 
@@ -78,11 +78,7 @@ class Minio(MinioClient):
 
     def decorate_functions(self) -> None:
         for item in dir(self):
-            if (
-                not item.startswith("_")
-                and item != "init_app"
-                and callable(getattr(self, item))
-            ):
+            if not item.startswith("_") and item != "init_app" and callable(getattr(self, item)):
                 setattr(self, item, self.wrapper(getattr(self, item)))
 
     @classmethod

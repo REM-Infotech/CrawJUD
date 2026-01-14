@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flask import (
-    Flask,
+from quart import (
+    Quart,
     Response,
     jsonify,
     request,
@@ -20,13 +20,13 @@ from . import api, status, web
 from ._blueprints import admin, adminNS, auth, botNS, bots, fileNS
 
 if TYPE_CHECKING:
-    from flask_socketio import SocketIO
+    from quart_socketio import SocketIO
 
 
 __all__ = ["api", "status", "web"]
 
 
-def register_routes(app: Flask) -> None:
+def register_routes(app: Quart) -> None:
     blueprints = [auth, bots, admin]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)

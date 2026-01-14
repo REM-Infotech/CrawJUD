@@ -7,18 +7,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Self, TypedDict, Unpack, cast
 from uuid import uuid4
 
-from flask import current_app, jsonify, make_response, request
 from flask_jwt_extended import get_current_user
+from quart import current_app, jsonify, request
 from werkzeug.datastructures import FileStorage
 
 from backend.models import CredenciaisRobo, LicenseUser, User
 
 if TYPE_CHECKING:
-    from flask import Flask
     from flask_keepass import KeepassManager
     from flask_sqlalchemy import SQLAlchemy
     from pykeepass import Attachment
     from pykeepass.group import Group
+    from quart import Quart
 
     from typings import Sistemas
 
@@ -54,7 +54,7 @@ class CredencialBot:
 
     def __init__(
         self,
-        app: Flask,
+        app: Quart,
         **kwargs: Unpack[CredencialBotDict],
     ) -> None:
 
@@ -219,4 +219,7 @@ class CredencialBot:
             except Exception as e:
                 _exc = traceback.format_exception(e)
 
-        return make_response(jsonify(payload, status_code))
+        response = jsonify(payload)
+        response.status_code = status_code
+
+        return response
