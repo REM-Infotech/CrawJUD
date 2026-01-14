@@ -245,8 +245,8 @@ class CrossDomain:
                 abort(401, description="Missing XSRF Token")
 
             else:
-                request.headers.environ.update({
-                    f"HTTP_{header_xsrf_name.replace('-', '_')}".upper(): xsrf_token,
+                request.headers.update({
+                    header_xsrf_name.upper(): xsrf_token,
                 })
         return function(*args, **kwargs)
 
