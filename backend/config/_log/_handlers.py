@@ -21,5 +21,3 @@ class RichQueueHandler(Handler):
     def emit(self, record: LogRecord) -> None:
         msg = self.format(record)
         msg = self.markups[record.levelno].format(msg=msg)
-
-        print(f"[{self.target}] {msg}")

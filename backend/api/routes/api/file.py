@@ -1,3 +1,4 @@
+# ruff: noqa: D103, D100
 from base64 import b64decode
 from typing import TypedDict
 

@@ -9,7 +9,7 @@ from quart import Response, current_app, jsonify, request
 from backend.api.decorators import CrossDomain, async_jwt_required
 from backend.api.routes._blueprints import admin
 
-from ._credencial import CredencialBot
+from .credencial import CredencialBot
 
 if TYPE_CHECKING:
     from flask_sqlalchemy import SQLAlchemy

@@ -1,5 +1,5 @@
 """Rotas API."""
 
-from . import _auth, _bot, admin
+from . import admin, auth, bot
 
-__all__ = ["_auth", "_bot", "admin"]
+__all__ = ["admin", "auth", "bot"]

@@ -30,7 +30,7 @@ class FormBot:
     _subclass: ClassVar[dict[str, type[Self]]] = {}
 
     @classmethod
-    def load_form(cls) -> Self:
+    async def load_form(cls) -> Self:
         """Carregue e retorne uma instância do formulário solicitado.
 
         Args:
@@ -41,7 +41,8 @@ class FormBot:
 
         """
         # Obtém os dados do request e identifica o formulário a ser carregado
-        request_data: Dict = json.loads(request.get_data())
+        data = await request.get_data(as_text=True)
+        request_data: Dict = json.loads(data)
         form_name: str = camel_to_snake(
             request_data["configuracao_form"],
         )

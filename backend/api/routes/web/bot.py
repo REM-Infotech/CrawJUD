@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import TYPE_CHECKING, Literal, TypedDict, Unpack
 
 from flask_jwt_extended import get_current_user
 from quart_socketio import Namespace, SocketIO, join_room
@@ -93,7 +93,7 @@ class BotNamespace(Namespace):
         return payload
 
     @async_jwt_required
-    async def on_logbot(self, data: Message) -> None:
+    async def on_logbot(self, **data: Unpack[Message]) -> None:
         """Log bot."""
         self.emit(
             "logbot",
@@ -127,21 +127,21 @@ class BotNamespace(Namespace):
         }
 
     @async_jwt_required
-    async def on_bot_stop(self, data: dict[str, str]) -> None:
+    async def on_bot_stop(self, **data: str) -> None:
         """Registre parada do bot e salve log."""
         # Emite evento de parada do bot para a sala correspondente
         self.emit("bot_stop", room=data["id_execucao"], namespace="/bot")
 
     @async_jwt_required
-    async def on_join_room(self, data: dict[str, str]) -> list[str]:
+    async def on_join_room(self, **data: str) -> list[str]:
         """Adicione usuário à sala e retorne logs."""
         # Adiciona o usuário à sala especificada
-        join_room(data["room"])
+        await join_room(data["room"])
 
     @async_jwt_required
     async def on_provide_credentials(
         self,
-        data: dict[Literal["sistema"], Sistemas],
+        **data: Unpack[dict[Literal["sistema"], Sistemas]],
     ) -> list[CredenciaisSelect]:
         """Lista as credenciais disponíveis para o sistema informado."""
         sistema = data.get("sistema")

@@ -17,6 +17,9 @@ if TYPE_CHECKING:
 
 MAX_AGE = 21600
 
+JWT_WRAPPER = "backend.api.decorators._api"
+JWT_DEFAULT_WRAPPER = "quart_jwt_extended.view_decorators"
+
 
 def async_jwt_required[**P, T](fn: Callable[P, T]) -> Callable[P, T]:
 
@@ -226,7 +229,7 @@ class CrossDomain:
 
         """
         module_name = function.__globals__.get("__name__")
-        if module_name == "quart_jwt_extended.view_decorators":
+        if module_name in (JWT_DEFAULT_WRAPPER, JWT_WRAPPER):
             cookie_xsrf_name = current_app.config.get(
                 "JWT_ACCESS_CSRF_COOKIE_NAME",
             )
@@ -245,11 +248,20 @@ class CrossDomain:
                 abort(401, description="Missing XSRF Token")
 
             else:
-                request.headers.update({
-                    header_xsrf_name.upper(): xsrf_token,
-                })
-                request.headers.update({header_xsrf_name.lower(): xsrf_token})
-        return await function(*args, **kwargs)
+                header_upper = header_xsrf_name.upper()
+                header_lower = header_xsrf_name.lower()
+                request.headers.update({header_upper: xsrf_token})
+                request.headers.update({header_lower: xsrf_token})
+
+        try:
+            return await function(*args, **kwargs)
+
+        except Exception as e:  # noqa: BLE001
+            if hasattr(e, "args"):
+                abort(401, description=e.args[0])
+
+            current_app.logger.exception(e)
+            abort(500)
 
     def _set_cors_headers(
         self,

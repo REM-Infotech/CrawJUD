@@ -1,4 +1,4 @@
-# ruff: noqa: BLE001
+# ruff: noqa: BLE001, D100, D101, D107
 
 from __future__ import annotations
 

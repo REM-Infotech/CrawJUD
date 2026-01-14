@@ -52,7 +52,7 @@ def is_sistema(valor: Sistemas) -> bool:
 @bots.post("/<string:sistema>/run")
 @CrossDomain(origin="*", methods=["get", "post", "options"])
 @async_jwt_required
-def run_bot(sistema: Sistemas) -> Response:
+async def run_bot(sistema: Sistemas) -> Response:
     """Inicie a execução de um robô para o sistema informado.
 
     Args:
@@ -71,7 +71,7 @@ def run_bot(sistema: Sistemas) -> Response:
     if is_sistema(sistema):
         code = 500
         try:
-            form = FormBot.load_form()
+            form = await FormBot.load_form()
             pid_exec = gerar_id()
             form.handle_task(pid_exec=pid_exec)
 
@@ -85,8 +85,7 @@ def run_bot(sistema: Sistemas) -> Response:
             code = 200
 
         except Exception as e:  # noqa: BLE001
-            _exc = "\n".join(traceback.format_exception(e))  # noqa: RUF052
-            print(_exc)  # noqa: T201
+            _exc = "\n".join(traceback.format_exception(e))
 
     response = jsonify(payload)
     response.status_code = code
