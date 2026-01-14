@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from asyncio import Runner, iscoroutine
 from typing import TYPE_CHECKING
 
 from celery.app.task import Task
@@ -29,6 +30,10 @@ class CeleryTask[**P, R](Task):
             Any: Resultado da execução da tarefa.
 
         """
+        if iscoroutine(self.run):
+            with Runner() as runner:
+                return runner.run(self._run(*args, **kwargs))
+
         return self.run(*args, **kwargs)
 
     async def _run(self, *args: P.args, **kwargs: P.kwargs) -> R:

@@ -58,12 +58,12 @@ class MailTasks(CeleryTask):
     def __init__(self) -> None:  # noqa: D107
         from backend.extensions import app
 
-        self.flaskapp = app
+        self.quartapp = app
         self.db = app.extensions["sqlalchemy"]
 
         super().__init__()
 
-    def run(
+    async def run(
         self,
         id_execucao: str,
         bot_id: int,
@@ -86,8 +86,8 @@ class MailTasks(CeleryTask):
             str: Mensagem de sucesso do envio do e-mail.
 
         """
-        with self.flaskapp.app_context():
-            url_web = self.flaskapp.config["WEB_URL"]
+        async with self.quartapp.app_context():
+            url_web = self.quartapp.config["WEB_URL"]
 
             with self.db.session.no_autoflush:
                 self.user = self.query_user(user_id)
@@ -98,7 +98,7 @@ class MailTasks(CeleryTask):
                 with suppress(Exception):
                     self.informacao_database()
 
-                mail: Mail = self.flaskapp.extensions.get("mail")
+                mail: Mail = self.quartapp.extensions.get("mail")
 
                 if mail:
                     try:

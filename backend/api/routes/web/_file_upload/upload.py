@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from contextlib import suppress
 from io import BytesIO
 from pathlib import Path
@@ -144,7 +145,12 @@ class FileUploader:
         path_file.parent.rmdir()
 
     def queue_upload(self) -> None:
-        with app.app_context():
+
+        with asyncio.Runner() as runner:
+            runner.run(self._queue_upload())
+
+    async def _queue_upload(self) -> None:
+        async with app.app_context():
             for data in IterQueueFile(self.queue_upload_file):
                 if data:
                     self.upload_file(data=data)

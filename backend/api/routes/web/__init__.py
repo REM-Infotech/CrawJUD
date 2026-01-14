@@ -1,5 +1,7 @@
 """Rotas Websocket."""
 
-from . import _admin, _bot, _file_upload
+from ._admin import AdminNamespace
+from ._bot import BotNamespace
+from ._file_upload import FileUploadNamespace
 
-__all__ = ["_admin", "_bot", "_file_upload"]
+__all__ = ["AdminNamespace", "BotNamespace", "FileUploadNamespace"]

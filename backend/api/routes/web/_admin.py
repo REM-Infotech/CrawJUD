@@ -5,12 +5,13 @@ from typing import TYPE_CHECKING, TypedDict
 from zoneinfo import ZoneInfo
 
 from flask_jwt_extended import get_current_user, jwt_required
-
-from backend.api.routes._blueprints import adminNS
+from quart_socketio import Namespace
 
 if TYPE_CHECKING:
-    from backend.base import BlueprintNamespace
+    from quart_socketio import SocketIO
+
     from backend.models import User
+
 
 type Any = any
 
@@ -29,49 +30,48 @@ class UsuarioItem(TypedDict):
     ultimo_login: str
 
 
-@adminNS.on("disconnect")
-@jwt_required()
-def disconnect(self: BlueprintNamespace, args: Any) -> None:
+class AdminNamespace(Namespace):
+    def __init__(self, socketio: SocketIO = None) -> None:
 
-    return ""
+        namespace = "/admin"
+        super().__init__(namespace, socketio)
 
+    def on_disconnect(self, *args: Any) -> None:
 
-@adminNS.on("connect")
-@jwt_required()
-def connect(self: BlueprintNamespace, *args: Any, **kwargs: Any) -> None:
+        return ""
 
-    return ""
+    @jwt_required()
+    def on_connect(self, *args: Any, **kwargs: Any) -> None:
 
+        return ""
 
-@adminNS.on("listagem_credenciais")
-@jwt_required()
-def listagem_credenciais(self: BlueprintNamespace) -> list[CredencialItem]:
+    @jwt_required()
+    def on_listagem_credenciais(self) -> list[CredencialItem]:
 
-    user: User = get_current_user()
+        user: User = get_current_user()
 
-    return [
-        {
-            "Id": item.Id,
-            "nome_credencial": item.nome_credencial,
-            "tipo_autenticacao": item.login_metodo,
-        }
-        for item in user.license_.credenciais
-    ]
+        return [
+            {
+                "Id": item.Id,
+                "nome_credencial": item.nome_credencial,
+                "tipo_autenticacao": item.login_metodo,
+            }
+            for item in user.license_.credenciais
+        ]
 
+    @jwt_required()
+    def on_listagem_usuarios(self) -> list[UsuarioItem]:
 
-@adminNS.on("listagem_usuarios")
-@jwt_required()
-def listagem_usuarios(self: BlueprintNamespace) -> list[UsuarioItem]:
+        user: User = get_current_user()
+        now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
 
-    user: User = get_current_user()
-
-    return [
-        UsuarioItem(
-            Id=item.Id,
-            nome_Usuario=item.nome_usuario,
-            login_usuario=item.login,
-            email=item.email,
-            ultimo_login=datetime.now(tz=ZoneInfo("America/Sao_Paulo")),
-        )
-        for item in user.license_.usuarios
-    ]
+        return [
+            UsuarioItem(
+                Id=item.Id,
+                nome_Usuario=item.nome_usuario,
+                login_usuario=item.login,
+                email=item.email,
+                ultimo_login=now.strftime("%d/%m/%Y, %H:%M:%S"),
+            )
+            for item in user.license_.usuarios
+        ]

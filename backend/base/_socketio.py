@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from asyncio import iscoroutine
 from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec, overload
 
@@ -44,7 +45,11 @@ class BlueprintNamespace(Namespace):
     def _event_register[T](self, event_name: str, fn: Callable[P, T]) -> Callable[P, T]:
 
         @wraps(fn)
-        def wrapper[T](*args: P.args, **kwargs: P.kwargs) -> T:
+        async def wrapper[T](*args: P.args, **kwargs: P.kwargs) -> T:
+
+            if iscoroutine(fn):
+                return await fn(self, *args, **kwargs)
+
             return fn(self, *args, **kwargs)
 
         setattr(self, event_name, wrapper)

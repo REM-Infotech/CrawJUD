@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 from pathlib import Path
 from threading import Thread
@@ -26,12 +27,13 @@ def _api() -> None:
 
     from .extensions import create_app, make_celery
 
-    app = create_app()
-    _celery = make_celery(app)
+    with asyncio.Runner() as runner:
+        app = runner.run(create_app())
+        _celery = make_celery(app)
 
-    io: SocketIO = app.extensions["socketio"]
-    port: int = int(environ.get("FLASK_PORT", FLASK_PORT)) or FLASK_PORT
-    io.run(app, host="localhost", port=port, allow_unsafe_werkzeug=True)
+        io: SocketIO = app.extensions["socketio"]
+        port: int = int(environ.get("FLASK_PORT", FLASK_PORT)) or FLASK_PORT
+        io.run(app, host="localhost", port=port)
 
 
 @typerapp.command(name="api")
@@ -63,16 +65,17 @@ def thread_api() -> NoReturn:
 def thread_celery() -> NoReturn:
     from .extensions import create_app, make_celery
 
-    app = create_app()
-    celery = make_celery(app)
-    worker = Worker(
-        app=celery,
-        pool="threads",
-        loglevel=logging.DEBUG,
-        task_events=True,
-    )
+    with asyncio.Runner() as runner:
+        app = runner.run(create_app())
+        celery = make_celery(app)
+        worker = Worker(
+            app=celery,
+            pool="threads",
+            loglevel=logging.DEBUG,
+            task_events=True,
+        )
 
-    worker.start()
+        worker.start()
 
 
 __all__ = ["typerapp"]

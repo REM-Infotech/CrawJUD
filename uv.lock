@@ -1846,8 +1846,8 @@ dependencies = [
 
 [[package]]
 name = "quart-socketio"
-version = "0.1.1.post2"
-source = { git = "https://github.com/Robotz213/Quart-SocketIO.git#b9ff121f74b29b88d2323214b61f9006934a1f55" }
+version = "0.1.1.post3"
+source = { git = "https://github.com/Robotz213/Quart-SocketIO.git#20820623cb5a5ef05431677bb5819c0ce7773a8d" }
 dependencies = [
     { name = "hypercorn" },
     { name = "python-socketio" },

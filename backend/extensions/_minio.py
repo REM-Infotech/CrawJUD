@@ -12,8 +12,6 @@ if TYPE_CHECKING:
 
     from quart import Quart
 
-    from typings import P
-
 
 load_dotenv()
 
@@ -56,25 +54,24 @@ class Minio(MinioClient):
         if app.extensions.get("storage"):
             return
 
-        with app.app_context():
-            super().__init__(
-                endpoint=app.config["MINIO_ENDPOINT"],
-                access_key=app.config.get("MINIO_ACCESS_KEY", None),
-                secret_key=app.config.get("MINIO_SECRET_KEY", None),
-                session_token=app.config.get(
-                    "MINIO_SESSION_TOKEN",
-                    None,
-                ),
-                secure=app.config.get("MINIO_SECURE", False),
-                region=app.config.get("MINIO_REGION", None),
-                http_client=app.config.get("MINIO_HTTP_CLIENT", None),
-                credentials=EnvMinioProvider(),
-                cert_check=app.config.get("MINIO_CERT_CHECK", False),
-            )
+        super().__init__(
+            endpoint=app.config["MINIO_ENDPOINT"],
+            access_key=app.config.get("MINIO_ACCESS_KEY", None),
+            secret_key=app.config.get("MINIO_SECRET_KEY", None),
+            session_token=app.config.get(
+                "MINIO_SESSION_TOKEN",
+                None,
+            ),
+            secure=app.config.get("MINIO_SECURE", False),
+            region=app.config.get("MINIO_REGION", None),
+            http_client=app.config.get("MINIO_HTTP_CLIENT", None),
+            credentials=EnvMinioProvider(),
+            cert_check=app.config.get("MINIO_CERT_CHECK", False),
+        )
 
-            self.flask_app = app
-            app.extensions["storage"] = self
-            self.decorate_functions()
+        self.flask_app = app
+        app.extensions["storage"] = self
+        self.decorate_functions()
 
     def decorate_functions(self) -> None:
         for item in dir(self):
@@ -82,7 +79,7 @@ class Minio(MinioClient):
                 setattr(self, item, self.wrapper(getattr(self, item)))
 
     @classmethod
-    def wrapper[T](cls, func: Callable[P, T]) -> Callable[P, T]:
+    def wrapper[**P, T](cls, func: Callable[P, T]) -> Callable[P, T]:
         @wraps(func)
         def wrapped_function(*args: P.args, **kwargs: P.kwargs) -> T:
             return func(*args, **kwargs)

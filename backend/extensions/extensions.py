@@ -5,20 +5,19 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import quart_flask_patch as quart_flask_patch
 from celery import Celery
 from celery.signals import after_setup_logger
 from dotenv import load_dotenv
 from dynaconf import FlaskDynaconf
-from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_keepass import KeepassManager
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from passlib.context import CryptContext
 from quart import Quart
+from quart_cors import CORS
 from quart_socketio import SocketIO
-from socketio.redis_manager import RedisManager
-from werkzeug.middleware.proxy_fix import ProxyFix
 
 from backend.base import CeleryTask, Model, Query
 from backend.config import CeleryConfig, settings
@@ -72,7 +71,7 @@ def make_celery(app: Quart) -> Celery:
     return celery
 
 
-def create_app() -> Quart:
+async def create_app() -> Quart:
     """Crie e configure a aplicação Quart.
 
     Returns:
@@ -89,34 +88,21 @@ def create_app() -> Quart:
     )
 
     # Adiciona middleware para corrigir headers de proxy reverso
-    app.wsgi_app = ProxyFix(
-        app.wsgi_app,
-        x_for=1,
-        x_proto=1,
-        x_host=1,
-        x_prefix=1,
-    )
-    start_extensions(app)
-    register_routes(app)
+    await start_extensions(app)
+    await register_routes(app)
 
     return app
 
 
-def start_extensions(app: Quart) -> Quart:
+async def start_extensions(app: Quart) -> Quart:
     """Inicializa as extensões do Quart."""
-    with app.app_context():
+    async with app.app_context():
         if not app.extensions.get("sqlalchemy"):
             db.init_app(app)
 
         jwt.init_app(app)
         mail.init_app(app)
-        io.init_app(
-            app,
-            json=app.json,
-            async_mode="threading",
-            cors_allowed_origins="*",
-            client_manager=RedisManager(app.config["BROKER_URL"]),
-        )
+        io.init_app(app)
         cors.init_app(
             app,
             supports_credentials=True,

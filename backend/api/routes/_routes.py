@@ -16,26 +16,27 @@ from quart import (
 
 from backend.extensions import app, celery
 
-from . import api, status, web
-from ._blueprints import admin, adminNS, auth, botNS, bots, fileNS
+from . import api, status
+from ._blueprints import admin, auth, bots
+from .web import AdminNamespace, BotNamespace, FileUploadNamespace
 
 if TYPE_CHECKING:
     from quart_socketio import SocketIO
 
 
-__all__ = ["api", "status", "web"]
+__all__ = ["api", "status"]
 
 
-def register_routes(app: Quart) -> None:
+async def register_routes(app: Quart) -> None:
     blueprints = [auth, bots, admin]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 
     sio: SocketIO = app.extensions["socketio"]
 
-    with app.app_context():
-        for ns in [adminNS, botNS, fileNS]:
-            sio.on_namespace(ns)
+    async with app.app_context():
+        for ns in [AdminNamespace, BotNamespace, FileUploadNamespace]:
+            sio.on_namespace(ns(sio))
 
 
 @app.after_request
