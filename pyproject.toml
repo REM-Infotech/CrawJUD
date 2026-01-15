@@ -1,6 +1,6 @@
 [project]
 name = "backend"
-version = "0.1.0"
+version = "0.1.1"
 description = "CrawJUD Backend"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -69,9 +69,7 @@ dev = [
     "pyarmor-man>=0.2",
     "pyinstaller>=6.16.0",
 ]
-linux = [
-    "uvloop",
-]
+linux = ["uvloop"]
 
 [tool.uv.sources]
 flask-keepass = { git = "https://github.com/Robotz213/Flask-Keepass.git" }
