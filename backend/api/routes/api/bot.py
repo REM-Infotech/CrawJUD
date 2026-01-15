@@ -9,6 +9,7 @@ from tempfile import gettempdir
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
+from flask_jwt_extended import get_current_user
 from quart import current_app, jsonify
 from quart.wrappers import Response
 
@@ -19,12 +20,12 @@ from backend.api.routes._blueprints import bots
 
 if TYPE_CHECKING:
     from backend.extensions._minio import Minio
+    from backend.models import User
     from typings import (
         PayloadDownloadExecucao,
         Response,
         Sistemas,
     )
-
 
 SISTEMAS: set[Sistemas] = {
     "projudi",
@@ -131,3 +132,24 @@ def download_execucao(id_execucao: str) -> Response[PayloadDownloadExecucao]:
     })
     payload.status_code = 200
     return payload
+
+
+@bots.get("/listagem")
+@async_jwt_required
+def listagem() -> Response:  # noqa: D103
+
+    user: User = get_current_user()
+
+    return jsonify({
+        "listagem": [
+            {
+                "Id": bot.Id,
+                "display_name": bot.display_name,
+                "sistema": bot.sistema,
+                "categoria": bot.categoria,
+                "configuracao_form": bot.configuracao_form,
+                "descricao": bot.descricao,
+            }
+            for bot in user.license_.bots
+        ],
+    })
