@@ -35,7 +35,7 @@ celery = Celery(__name__, task_cls=CeleryTask)
 db = SQLAlchemy(model_class=Model, query_class=Query)  # pyright: ignore[reportArgumentType]
 jwt = JWTManager()
 mail = Mail()
-io = SocketIO()
+io = SocketIO(max_http_buffer_size=104857600)  # 100 MB
 cors = CORS()
 storage = Minio()
 keepass = KeepassManager()

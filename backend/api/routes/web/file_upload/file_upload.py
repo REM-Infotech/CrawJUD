@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from asyncio import create_task
 from typing import TypedDict, Unpack
 
 from quart_socketio import Namespace, SocketIO
@@ -22,6 +23,9 @@ class FileUploadArguments(TypedDict):
     seed: str
 
 
+fileupload = set()
+
+
 class FileUploadNamespace(Namespace):
     def __init__(self, socketio: SocketIO = None) -> None:
         namespace = "/files"
@@ -31,6 +35,7 @@ class FileUploadNamespace(Namespace):
     def on_connect(self) -> None: ...
 
     @async_jwt_required
-    def on_add_file(self, **data: Unpack[FileUploadArguments]) -> None:
+    async def on_add_file(self, **data: Unpack[FileUploadArguments]) -> None:
         """Log bot."""
-        uploader(data)
+        fileupload.add(create_task(uploader(data)).add_done_callback(fileupload.discard))
+        print(data["name"])

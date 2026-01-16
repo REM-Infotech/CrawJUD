@@ -17,7 +17,7 @@ from quart import (
 from backend.extensions import app, celery
 
 from . import api, status
-from ._blueprints import admin, auth, bots
+from ._blueprints import admin, auth, bots, upload
 from .web import AdminNamespace, BotNamespace, FileUploadNamespace
 
 if TYPE_CHECKING:
@@ -28,7 +28,7 @@ __all__ = ["api", "status"]
 
 
 async def register_routes(app: Quart) -> None:
-    blueprints = [auth, bots, admin]
+    blueprints = [auth, bots, admin, upload]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 

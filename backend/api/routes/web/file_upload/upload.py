@@ -106,7 +106,7 @@ class FileUploader:
         self.thread_upload_file = Thread(target=self.queue_upload, daemon=True)
         self.thread_upload_file.start()
 
-    def __call__(self, data: DataFileUpload) -> None:
+    async def __call__(self, data: DataFileUpload) -> None:
         self.sid = request.sid
         self.queue_upload_file.put_nowait(data)
 
@@ -146,7 +146,7 @@ class FileUploader:
 
     def queue_upload(self) -> None:
 
-        with asyncio.Runner() as runner:
+        with asyncio.Runner(loop_factory=asyncio.new_event_loop) as runner:
             runner.run(self._queue_upload())
 
     async def _queue_upload(self) -> None:
