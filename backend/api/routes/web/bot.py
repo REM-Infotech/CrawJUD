@@ -39,11 +39,6 @@ def is_sistema(valor: Sistemas) -> bool:
     return valor in SISTEMAS
 
 
-class CredenciaisSelect(TypedDict):
-    value: int
-    text: str
-
-
 class Execucao(TypedDict):
     Id: 0
     bot: str
@@ -141,33 +136,6 @@ class BotNamespace(Namespace):
         """Adicione usuário à sala e retorne logs."""
         # Adiciona o usuário à sala especificada
         await join_room(data["room"])
-
-    @async_jwt_required
-    async def on_provide_credentials(self, **data: Unpack[Sistema]) -> list[CredenciaisSelect]:
-        """Lista as credenciais disponíveis para o sistema informado."""
-        sistema = data.get("sistema")
-        list_credentials = [CredenciaisSelect(value=None, text="Selecione")]
-
-        if not sistema:
-            return list_credentials
-
-        if is_sistema(sistema):
-            system = sistema.upper()
-            user: User = get_current_user()
-
-            lic = user.license_
-
-            list_credentials.extend([
-                {"value": credential.Id, "text": credential.nome_credencial}
-                for credential in list(
-                    filter(
-                        lambda credential: credential.sistema == system,
-                        lic.credenciais,
-                    ),
-                )
-            ])
-
-        return list_credentials
 
     @async_jwt_required
     def on_connect(self) -> None:

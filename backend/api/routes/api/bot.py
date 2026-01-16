@@ -6,7 +6,7 @@ import traceback
 from base64 import b64encode
 from pathlib import Path
 from tempfile import gettempdir
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypedDict
 from uuid import uuid4
 
 from flask_jwt_extended import get_current_user
@@ -48,6 +48,11 @@ def is_sistema(valor: Sistemas) -> bool:
 
     """
     return valor in SISTEMAS
+
+
+class CredenciaisSelect(TypedDict):  # noqa: D101
+    value: int
+    text: str
 
 
 @bots.post("/<string:sistema>/run")
@@ -153,3 +158,26 @@ def listagem() -> Response:  # noqa: D103
             for bot in user.license_.bots
         ],
     })
+
+
+@async_jwt_required
+@bots.get("/listagem-credenciais/<string:sistema>")
+async def on_provide_credentials(sistema: Sistemas) -> Response:  # noqa: RUF029
+    """Lista as credenciais disponíveis para o sistema informado."""
+    list_credentials = [CredenciaisSelect(value=None, text="Selecione")]
+    system = sistema.upper()
+    user: User = get_current_user()
+
+    lic = user.license_
+
+    list_credentials.extend([
+        {"value": credential.Id, "text": credential.nome_credencial}
+        for credential in list(
+            filter(
+                lambda credential: credential.sistema == system,
+                lic.credenciais,
+            ),
+        )
+    ])
+
+    return jsonify(list_credentials)
