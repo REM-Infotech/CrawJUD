@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TypedDict, Unpack
 
 from quart_socketio import Namespace, SocketIO
 
@@ -12,8 +12,14 @@ from backend.api.decorators import async_jwt_required
 
 from .upload import uploader
 
-if TYPE_CHECKING:
-    from typings import Any
+
+class FileUploadArguments(TypedDict):
+    name: str
+    chunk: bytes
+    current_size: int
+    fileSize: int
+    fileType: str
+    seed: str
 
 
 class FileUploadNamespace(Namespace):
@@ -25,6 +31,6 @@ class FileUploadNamespace(Namespace):
     def on_connect(self) -> None: ...
 
     @async_jwt_required
-    def on_add_file(self, data: dict[str, Any]) -> None:
+    def on_add_file(self, **data: Unpack[FileUploadArguments]) -> None:
         """Log bot."""
         uploader(data)
