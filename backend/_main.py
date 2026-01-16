@@ -35,17 +35,8 @@ def _api() -> None:
         io.run(app, host="localhost", port=port, log_config=LOG_CONFIG)
 
 
-@typerapp.command(name="api")
-def thread_api() -> NoReturn:
+def _celery() -> None:
 
-    api_ = Thread(target=_api, daemon=True)
-    api_.start()
-    while True:
-        ...
-
-
-@typerapp.command(name="celery")
-def thread_celery() -> NoReturn:
     from .extensions import create_app, make_celery
 
     with asyncio.Runner() as runner:
@@ -59,6 +50,24 @@ def thread_celery() -> NoReturn:
         )
 
         worker.start()
+
+
+@typerapp.command(name="api")
+def thread_api() -> NoReturn:
+
+    api_ = Thread(target=_api, daemon=True)
+    api_.start()
+    while True:
+        ...
+
+
+@typerapp.command(name="celery")
+def thread_celery() -> NoReturn:
+
+    celery_ = Thread(target=_celery, daemon=True)
+    celery_.start()
+    while True:
+        ...
 
 
 __all__ = ["typerapp"]
