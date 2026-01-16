@@ -160,14 +160,14 @@ def listagem() -> Response:  # noqa: D103
     })
 
 
-@async_jwt_required
 @bots.get("/listagem-credenciais/<string:sistema>")
+@async_jwt_required
 async def on_provide_credentials(sistema: Sistemas) -> Response:  # noqa: RUF029
     """Lista as credenciais disponíveis para o sistema informado."""
     list_credentials = [CredenciaisSelect(value=None, text="Selecione")]
     system = sistema.upper()
     user: User = get_current_user()
-
+    status_code = 200
     lic = user.license_
 
     list_credentials.extend([
@@ -180,4 +180,10 @@ async def on_provide_credentials(sistema: Sistemas) -> Response:  # noqa: RUF029
         )
     ])
 
-    return jsonify(list_credentials)
+    if list_credentials == [CredenciaisSelect(value=None, text="Selecione")]:
+        status_code = 201
+        list_credentials = []
+
+    response = jsonify({"credenciais": list_credentials})
+    response.status_code = status_code
+    return response
