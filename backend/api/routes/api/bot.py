@@ -27,28 +27,6 @@ if TYPE_CHECKING:
         Sistemas,
     )
 
-SISTEMAS: set[Sistemas] = {
-    "projudi",
-    "elaw",
-    "esaj",
-    "pje",
-    "jusds",
-    "csi",
-}
-
-
-def is_sistema(valor: Sistemas) -> bool:
-    """Verifique se o valor informado pertence aos sistemas cadastrados.
-
-    Args:
-        valor (Sistemas): Valor a ser verificado.
-
-    Returns:
-        bool: Indica se o valor está em SISTEMAS.
-
-    """
-    return valor in SISTEMAS
-
 
 class CredenciaisSelect(TypedDict):  # noqa: D101
     value: int
@@ -73,25 +51,23 @@ async def run_bot(sistema: Sistemas) -> Response:
         "message": "Erro ao iniciar robô",
         "status": "error",
     }
+    code = 400
+    try:
+        form = await FormBot.load_form()
+        pid_exec = gerar_id()
+        form.handle_task(pid_exec=pid_exec)
 
-    if is_sistema(sistema):
-        code = 500
-        try:
-            form = await FormBot.load_form()
-            pid_exec = gerar_id()
-            form.handle_task(pid_exec=pid_exec)
+        payload = {
+            "title": "Sucesso",
+            "message": "Robô inicializado com sucesso!",
+            "status": "success",
+            "id_execucao": pid_exec,
+            "pid_resumido": pid_exec,
+        }
+        code = 200
 
-            payload = {
-                "title": "Sucesso",
-                "message": "Robô inicializado com sucesso!",
-                "status": "success",
-                "id_execucao": pid_exec,
-                "pid_resumido": pid_exec,
-            }
-            code = 200
-
-        except Exception as e:  # noqa: BLE001
-            _exc = "\n".join(traceback.format_exception(e))
+    except Exception as e:  # noqa: BLE001
+        _exc = "\n".join(traceback.format_exception(e))
 
     response = jsonify(payload)
     response.status_code = code
